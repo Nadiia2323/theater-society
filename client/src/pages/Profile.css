@@ -1,0 +1,23 @@
+#root {
+    background-color: black;
+}
+.profile-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+.BIO-container {
+    width: 200px;
+        height: 200px;
+}
+.followers-container{
+    display: flex;
+    flex-direction: row;
+    gap: 5rem;
+}
+.news-container{
+    background-color: #b0baba4d;
+    display: flex;
+    justify-content: center;
+    gap: 5rem;
+}
