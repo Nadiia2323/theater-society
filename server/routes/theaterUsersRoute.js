@@ -1,9 +1,10 @@
 import express from "express"
-import { getAllTheathers } from "../controller/theaterController.js";
+import { getAllTheatherUsers,registerTheater } from "../controller/theaterUserController.js"
 
 const router = express.Router()
 
-router.get('/theaters',getAllTheathers)
+router.get('/theaterUsers', getAllTheatherUsers)
+router.post('/register', registerTheater)
 
 export default router
 // router.get("/test", (req, res) => {

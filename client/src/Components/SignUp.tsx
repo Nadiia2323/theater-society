@@ -1,10 +1,28 @@
 import "../Components/SignUp.css";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 //boolean string, number, null
+interface Theater {
+  theaterName: string;
+  email: string;
+  password: string;
+
+}
+interface User {
+  name: string;
+  email: string;
+  password: string;
+}
 
 export default function SignUp() {
   const [hasAccount, setHasAccount] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [newTheater, setNewTheater] = useState<Theater>({theaterName: '',
+  email: '',
+  password: '',});
+
+  const handelRegisterOnChange = ( e:ChangeEvent<HTMLInputElement>) => {
+    setNewTheater({ ...newTheater, [e.target.name]: e.target.value });
+  }
 
   const heading = !hasAccount ? "SignUp" : "SignIn";
   const buttonLabel: string = !hasAccount
@@ -20,6 +38,29 @@ export default function SignUp() {
   }
   //   function handleInputChange(e:ChangeEvent<HTMLInputElement>) {
   //   console.log('e.target.value :>> ', e.target.value);
+
+  const registration = async() => {
+    console.log('newUser :>> ', newTheater);
+    const myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+const urlencoded = new URLSearchParams();
+urlencoded.append("theaterName", newTheater.theaterName);
+urlencoded.append("email", newTheater.email);
+urlencoded.append("password", newTheater.password);
+
+const requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: urlencoded,
+ 
+};
+
+fetch("http://localhost:5000/myApi/register", requestOptions)
+  .then(response => response.json())
+  .then(result => console.log(result))
+  .catch(error => console.log('error', error));
+  }
   // }
   return (
     <div className="form-container">
@@ -45,14 +86,14 @@ export default function SignUp() {
               </div>
               <div className="reg-form">
                 <label htmlFor="theaterName">Theater Name</label>
-              <input type="text" name="theaterName" />
+              <input type="text" name="theaterName" id="theaterName" onChange={handelRegisterOnChange} />
 
               <label htmlFor="email">Email</label>
-              <input type="email" name="email" />
+              <input type="email" id="email" name="email" onChange={handelRegisterOnChange} />
               <label htmlFor="password">Password</label>
-              <input type="password" name="password" />
+              <input type="password" name="password" id="password" onChange={handelRegisterOnChange} />
               <label htmlFor="repeatPass">Repeat Password</label>
-              <input type="password" id="repeatPass" />
+              <input type="password" name="repeatPass" id="repeatPass" onChange={handelRegisterOnChange}/>
               </div>
               
             </div>
@@ -70,8 +111,8 @@ export default function SignUp() {
               <input type="email" name="email" />
               <label htmlFor="password">Password</label>
               <input type="password" name="password" />
-              <label htmlFor="repeatPass">Repeat Password</label>
-              <input type="password" id="repeatPass" /></div>
+              <label htmlFor="Pass">Repeat Password</label>
+              <input type="password" id="Pass" /></div>
             
             </div>
           )}
@@ -85,7 +126,7 @@ export default function SignUp() {
         </div>
       )}
 
-      <button>{registerButton}</button>
+      <button onClick={registration}>{registerButton}</button>
       <button onClick={toggleHasAccount}>{buttonLabel}</button>
     </div>
   );
