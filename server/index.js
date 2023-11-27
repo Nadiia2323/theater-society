@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import * as dotenv from "dotenv";
 import theaterUsersRouter from "../server/routes/theaterUsersRoute.js"
 import userRouter from "../server/routes/userRoute.js"
-
+import cloudinaryConfig from "./config/cloudinary.js";
 dotenv.config();
 
 // const DBConnection = async() => {
@@ -33,10 +33,11 @@ app.use(
   })
 );
 app.use(cors())
+cloudinaryConfig()
 
 app.use("/myApi", router)
-app.use("/myApi", theaterUsersRouter)
-app.use('/myApi', userRouter)
+app.use("/myApi/theaters", theaterUsersRouter)
+app.use('/myApi/users', userRouter)
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {

@@ -24,7 +24,7 @@ const getAllTheatherUsers = async (req, res) => {
     }
 };
 const registerTheater = async  (req, res) => {
-    console.log('register controller working ');
+    console.log('register theater controller working ');
     console.log(req.body)
     try {
          const existingTheater = await TheaterUserModel.findOne({ email: req.body.email })
@@ -36,7 +36,7 @@ const registerTheater = async  (req, res) => {
         const hashedPassword = await encryptPassword(req.body.password)
     if (hashedPassword) {
         const newTheaterUser = new TheaterUserModel({
-            theaterName: req.body.theaterName,
+            theaterName: req.body.name,
             email: req.body.email,
             password: hashedPassword,
         });

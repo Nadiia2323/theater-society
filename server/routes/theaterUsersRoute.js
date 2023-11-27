@@ -3,7 +3,9 @@ import { getAllTheatherUsers,registerTheater } from "../controller/theaterUserCo
 
 const router = express.Router()
 
-router.get('/theaterUsers', getAllTheatherUsers)
+router.get('/all', getAllTheatherUsers)
+
+
 router.post('/register', registerTheater)
 
 export default router
