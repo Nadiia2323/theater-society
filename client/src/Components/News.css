@@ -1,0 +1,10 @@
+.theaters-container{
+    margin-top: 5vh;
+    display: grid;
+    grid-template-columns:  repeat(3, 1fr);
+    gap: 1rem;
+   
+}
+ .theaterCard{
+    background-color: #3d3f3f;
+ }

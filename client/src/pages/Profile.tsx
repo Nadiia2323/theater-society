@@ -1,6 +1,7 @@
-import { ChangeEvent, FormEvent, MouseEventHandler, useState } from "react";
+import { ChangeEvent,  useState } from "react";
 import NavBar from "../Components/NavBar";
 import "./Profile.css";
+import News from "../Components/News";
 interface ServerOkResponse extends UserImageType {
   message: string;
 }
@@ -46,7 +47,7 @@ export default function Profile() {
       console.log("error :>> ", error);
     }
   };
-  console.log('userPhoto :>> ', userPhoto);
+  // console.log('userPhoto :>> ', userPhoto);
 
   return (
     <>
@@ -70,6 +71,7 @@ export default function Profile() {
           <p>news</p>
           <p>likes</p>
         </div>
+        <News/>
       </div>
     </>
   );

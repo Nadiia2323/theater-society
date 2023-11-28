@@ -13,6 +13,7 @@ interface User {
 }
 
 export default function SignUp() {
+  const [errorMessage, setErrorMessage] = useState('')
   const [hasAccount, setHasAccount] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [newTheater, setNewTheater] = useState<Theater>({
@@ -26,26 +27,36 @@ export default function SignUp() {
     email: "",
     password: "",
   });
-  // const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
-  //   setNewTheater({ ...newTheater, [e.target.name]: e.target.value });
-  //   setNewUser({ ...newUser, [e.target.name]: e.target.value });
-  // };
-  const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
 
-    if (selectedCategory === "Theater") {
+const isValidEmail = (email: string) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const { name, value } = e.target;
+
+  if (selectedCategory === "Theater" && name === "email") {
+    if (!isValidEmail(value)) {
+      
+      console.log("Invalid email format!");
+      setErrorMessage("Invalid email format!")
+    } else {
+      setErrorMessage("");
       setNewTheater({ ...newTheater, [name]: value });
-      setNewUser({  name: "",
-    email: "",
-    password: "",})
-    } else if (selectedCategory === "User") {
-      setNewUser({ ...newUser, [name]: value });
-      setNewTheater({theaterName: "",
-
-    email: "",
-    password: "",})
+      setNewUser({ name: "", email: "", password: "" });
     }
-  };
+  } else if (selectedCategory === "User" && name === "email") {
+    if (!isValidEmail(value)) {
+      setErrorMessage("Invalid email format!")
+    } else {
+      setErrorMessage("");
+      setNewUser({ ...newUser, [name]: value });
+      setNewTheater({ theaterName: "", email: "", password: "" });
+    }
+  }
+};
+
 
   const heading = !hasAccount ? "SignUp" : "SignIn";
   const buttonLabel: string = !hasAccount
@@ -135,20 +146,27 @@ export default function SignUp() {
                   name="email"
                   onChange={handelRegisterOnChange}
                 />
+                {errorMessage && (<p className="errorMessage">{errorMessage}</p>)}
+                <div className="pass">
                 <label htmlFor="password">Password</label>
+                <span className="icon-pass">&#128274;</span>
                 <input
                   type="password"
                   name="password"
                   id="password"
                   onChange={handelRegisterOnChange}
-                />
+                  />
+                  </div>
+                <div className="pass">
                 <label htmlFor="repeatPass">Repeat Password</label>
+                <span className="icon-pass">&#128274;</span>
                 <input
                   type="password"
                   name="repeatPass"
                   id="repeatPass"
                   onChange={handelRegisterOnChange}
-                />
+                  />
+                  </div>
               </div>
             </div>
           )}
@@ -174,15 +192,22 @@ export default function SignUp() {
                   name="email"
                   onChange={handelRegisterOnChange}
                 />
+                {errorMessage && (<p className="errorMessage">{errorMessage}</p>)}
+                <div className="pass">
                 <label htmlFor="passwordUser">Password</label>
+                <span className="icon-pass">&#128274;</span>
                 <input
                   type="password"
                   id="passwordUser"
                     name="password"
                   onChange={handelRegisterOnChange}
-                />
+                  />
+                  </div>
+                <div className="pass">
                 <label htmlFor="Pass">Repeat Password</label>
-                <input type="password" id="Pass" />
+                <span className="icon-pass" >&#128274;</span>
+                  <input type="password" id="Pass" />
+                  </div>
               </div>
             </div>
           )}
