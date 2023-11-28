@@ -1,32 +1,52 @@
-import { ChangeEvent, ChangeEventHandler, useState } from "react";
+import { ChangeEvent, FormEvent, MouseEventHandler, useState } from "react";
 import NavBar from "../Components/NavBar";
 import "./Profile.css";
-export default function Profile() {
+interface ServerOkResponse extends UserImageType {
+  message: string;
+}
+interface UserImageType {
+  profilePhoto: string;
+}
 
-  const [selectedFile, setSelectedFile] = useState<File | string>('')
+export default function Profile() {
+  const [selectedFile, setSelectedFile] = useState<File | string>("");
+  const [userPhoto, setUserPhoto] = useState<UserImageType | null>(null);
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log("e.target :>> ", e);
     const file = e.target.files?.[0] || "";
 
     setSelectedFile(file);
-  }
-  
-    const uploadPhoto = async () => {
-      const formdata = new FormData();
-      formdata.append("profilePhoto", selectedFile);
+    console.log("selectedFile :>> ", selectedFile);
+  };
 
-      const requestOptions = {
-        method: 'POST',
-        body: formdata,
-  
-      };
-      try {
-        const response = await fetch('http://localhost:5000/myApi/users/profilePhoto', requestOptions)
-        const result = await response.json()
-      } catch (error) {
-        console.log('error :>> ', error);
-      }
+  const uploadPhoto = async () => {
+    const formdata = new FormData();
+    formdata.append("profilePhoto", selectedFile);
+    console.log("selectedFile :>> ", selectedFile);
 
+    const requestOptions = {
+      method: "POST",
+      body: formdata,
+    };
+    try {
+      const response = await fetch(
+        "http://localhost:5000/myApi/users/profilePhoto",
+        requestOptions
+      );
+      const result = (await response.json()) as ServerOkResponse;
+      // const result = (await response.json())
+      // const userPicture:UserImageType = result.profilePhoto
+
+      console.log("result :>> ", result);
+     
+      
+        setUserPhoto({profilePhoto:result.profilePhoto});
+      
+    } catch (error) {
+      console.log("error :>> ", error);
     }
+  };
+  console.log('userPhoto :>> ', userPhoto);
 
   return (
     <>
@@ -34,7 +54,8 @@ export default function Profile() {
       <div className="container">
         <div className="profile-container">
           <div className="BIO-container">
-            <img className="photo" src="" alt="your photo" />
+           
+            <img className="photo" src={userPhoto?.profilePhoto} alt="your photo" />
             <p>BIO</p>
             <input type="file" onChange={handleInputChange} />
             <button onClick={uploadPhoto}>upload photo</button>
@@ -53,5 +74,3 @@ export default function Profile() {
     </>
   );
 }
-
-
