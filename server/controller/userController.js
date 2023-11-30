@@ -1,5 +1,5 @@
 import User from "../model/UserModel.js";
-import { encryptPassword } from "../unils/encryptPassword.js";
+import { encryptPassword, verifyPassword } from "../unils/encryptPassword.js";
 import { v2 as cloudinary } from "cloudinary";
 
 const getAllUsers = async (req, res) => {
@@ -84,5 +84,45 @@ const imageUpload = async (req, res) => {
     });
   }
 };
+const login = async (req, res) => {
+  console.log("login working");
+  const { email, password } = req.body;
+  if (!email || !password) {
+    res.status(400).json({
+      message: "password or email are missing",
+    });
+  } else {
+    try {
+      const existingUser = await User.findOne({ email: email });
+      if (!existingUser) {
+        res.status(400).json({
+          message: "do you have an account?",
+        });
+      }
+      
+      if (existingUser) {
+        const isPasswordValid = await verifyPassword(
+          req.body.password,
+          existingUser.password
+        );
+        if (!isPasswordValid) {
+          res.status(400).json({
+            message: "wrong password",
+          });
+        }
+        if (isPasswordValid) {
+          res.status(200).json({
+            message: "password correct",
+          });
+        }
+      }
+    } catch (error) {
+      console.log("error :>> ", error);
+      res.status(400).json({
+        message: "something went wrong",
+      });
+    }
+  }
+};
 
-export { getAllUsers, register, imageUpload };
+export { getAllUsers, register, imageUpload, login };

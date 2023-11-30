@@ -16,10 +16,16 @@ interface Errors {
   passwordError?: string;
 }
 
+// const initFormValues = {
+//   password: "",
+//   repeatPassword: ""
+// }
+
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   //  const [password, setPassword] = useState("");
   // const [repeatPassword, setRepeatPassword] = useState("");
+  // const [formValues, setFormValues]= useState(initFormValues)
 
   const [errorMessage, setErrorMessage] = useState<Errors>();
   const [hasAccount, setHasAccount] = useState(false);
@@ -47,6 +53,21 @@ export default function SignUp() {
   //   const validatePassword = (password, repeatPassword) => {
   //   return password === repeatPassword;
   // };
+  // const IsPasswordsMatch = (password:string,repeatPass:string) => {
+  //   const repeatPasswordValue = e.target.name === "repeatPass" ? e.target.value : ""
+  //   const passwordField =
+  //     selectedCategory === "Theater" ? newTheater.password : newUser.password;
+  //   return(repeatPasswordValue === passwordField)
+  //   // if (repeatPasswordValue !== passwordField) {
+  //   //   console.log('passwords do Not match');
+  //   // } else {
+  //   //   console.log("passwords match!");
+  //   // }
+  // }
+  const IsPasswordsMatch = (password: string, repeatPass: string) => {
+  return password === repeatPass;
+};
+
 
   const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -69,40 +90,59 @@ export default function SignUp() {
         setErrorMessage({});
       }
       setNewUser({ ...newUser, [name]: value });
-      setNewTheater({ theaterName: "", email: "", password: "" });
-    } else if (
-      (selectedCategory === "Theater" || selectedCategory === "User") &&
-      (name === "password" || name === "repeatPass")
-    ) {
-      setNewTheater({ ...newTheater, [name]: value });
-      const passwordField =
-        selectedCategory === "Theater" ? newTheater.password : newUser.password;
-      //  const repeatPassField = selectedCategory === "Theater" ? newTheater.repeatPass : newUser.repeatPass;
-      // if ("repeatPass" !== passwordField) {
+      setNewTheater({ theaterName: "", email: "", password: "" })
+    } else if ((selectedCategory === "Theater" || selectedCategory === "User") &&
+      (name === "password" || name === "repeatPass")) {
+      const passwordField = e.target.name === "password" ? e.target.value:""
+      // selectedCategory === "Theater" ? newTheater.password : newUser.password;
       const repeatPasswordValue = e.target.name === "repeatPass" ? e.target.value : ""
-      
-      if (repeatPasswordValue !== passwordField) {
+      console.log('passwordField :>> ', passwordField);
+      console.log('repeatPasswordValue :>> ', repeatPasswordValue);
 
-        console.log('passwordField :>> ', passwordField);
+      if (!IsPasswordsMatch(passwordField, repeatPasswordValue)) {
+        setErrorMessage({ passwordError: "Passwords do not match!" })
+        console.log("passwords Do not match");
+      } else {
+        console.log("passwords Match");
+        setErrorMessage({})
+      }
+    }
+  
+    //   (selectedCategory === "Theater" || selectedCategory === "User") &&
+    //   (name === "password" || name === "repeatPass")
+    // ) {
+    //   if (!IsPasswordsMatch(password, repeatPass)) {
+    //   setErrorMessage({ passwordError: "Passwords do not match!" })
+    // }
+    //   setNewTheater({ ...newTheater, [name]: value });
+    //   const passwordField =
+    //     selectedCategory === "Theater" ? newTheater.password : newUser.password;
+    //   //  const repeatPassField = selectedCategory === "Theater" ? newTheater.repeatPass : newUser.repeatPass;
+    //   // if ("repeatPass" !== passwordField) {
+    //   const repeatPasswordValue = e.target.name === "repeatPass" ? e.target.value : ""
+      
+    //   if (repeatPasswordValue !== passwordField) {
+
+    //     console.log('passwordField :>> ', passwordField);
         // console.log('selectedCategory :>> ', selectedCategory);
         // console.log('newTheater.password :>> ', newTheater.password);
         // console.log('newTheater.password :>> ', newUser.password);
 
         
-       console.log("password NOT match");
-        setErrorMessage({ passwordError: "Passwords do not match!" });
-      } else {
-        console.log("password MATCH");
-        if (selectedCategory === "Theater") {
-          setErrorMessage({});
-          setNewTheater({ ...newTheater, [name]: value });
-        } else {
-          setErrorMessage({});
-          setNewUser({ ...newUser, [name]: value });
-        }
-      }
+      //  console.log("password NOT match");
+      //   setErrorMessage({ passwordError: "Passwords do not match!" });
+      // } else {
+      //   console.log("password MATCH");
+      //   if (selectedCategory === "Theater") {
+      //     setErrorMessage({});
+      //     setNewTheater({ ...newTheater, [name]: value });
+      //   } else {
+      //     setErrorMessage({});
+      //     setNewUser({ ...newUser, [name]: value });
+      //   }
+      // }
     }
-  };
+  
 
   const heading = !hasAccount ? "SignUp" : "SignIn";
   const buttonLabel: string = !hasAccount
