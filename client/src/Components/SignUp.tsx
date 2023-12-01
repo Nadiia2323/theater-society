@@ -1,10 +1,11 @@
 import "../Components/SignUp.css";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState,useEffect } from "react";
 //boolean string, number, null
 interface Theater {
   theaterName: string;
   email: string;
   password: string;
+  //  repeatPass: string
 }
 interface User {
   name: string;
@@ -16,26 +17,23 @@ interface Errors {
   passwordError?: string;
 }
 
-// const initFormValues = {
-//   password: "",
-//   repeatPassword: ""
-// }
-
+const initialTheaterValues = {
+  theaterName: "",
+  email: "",
+  password: "",
+  // repeatPass: ""
+};
+type loginCredentialsType = {
+  email: string,
+  password:string
+}
 export default function SignUp() {
+  const [loginCredentials, setLoginCredentials] = useState<loginCredentialsType | null> (null)
   const [showPassword, setShowPassword] = useState(false);
-  //  const [password, setPassword] = useState("");
-  // const [repeatPassword, setRepeatPassword] = useState("");
-  // const [formValues, setFormValues]= useState(initFormValues)
-
   const [errorMessage, setErrorMessage] = useState<Errors>();
   const [hasAccount, setHasAccount] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [newTheater, setNewTheater] = useState<Theater>({
-    theaterName: "",
-
-    email: "",
-    password: "",
-  });
+  const [newTheater, setNewTheater] = useState<Theater>(initialTheaterValues);
   const [newUser, setNewUser] = useState<User>({
     name: "",
     email: "",
@@ -46,103 +44,59 @@ export default function SignUp() {
   };
 
   const isValidEmail = (email: string) => {
-    console.log('email :>> ', email);
+    console.log("email :>> ", email);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
-  //   const validatePassword = (password, repeatPassword) => {
-  //   return password === repeatPassword;
-  // };
-  // const IsPasswordsMatch = (password:string,repeatPass:string) => {
-  //   const repeatPasswordValue = e.target.name === "repeatPass" ? e.target.value : ""
-  //   const passwordField =
-  //     selectedCategory === "Theater" ? newTheater.password : newUser.password;
-  //   return(repeatPasswordValue === passwordField)
-  //   // if (repeatPasswordValue !== passwordField) {
-  //   //   console.log('passwords do Not match');
-  //   // } else {
-  //   //   console.log("passwords match!");
-  //   // }
-  // }
-  const IsPasswordsMatch = (password: string, repeatPass: string) => {
+ 
+const IsPasswordsMatch = (password: string, repeatPass: string) => {
   return password === repeatPass;
 };
 
+const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const { name, value } = e.target;
+  setNewTheater({ ...newTheater, [name]: value });
 
-  const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    if (selectedCategory === "Theater" && name === "email") {
-      if (!isValidEmail(value)) {
-        console.log("Invalid email format!");
-        setErrorMessage({ emailError: "Invalid email format!" });
+  if (selectedCategory === "Theater" && name === "email") {
+    if (!isValidEmail(value)) {
+      console.log("Invalid email format!");
+      setErrorMessage({ emailError: "Invalid email format!" });
+    } else {
+      setErrorMessage({});
+    }
+    setNewTheater({ ...newTheater, [name]: value });
+  } else if (selectedCategory === "User" && name === "email") {
+    if (!isValidEmail(value)) {
+      setErrorMessage({ emailError: "Invalid email format" });
+    } else {
+      setErrorMessage({});
+    }
+    setNewUser({ ...newUser, [name]: value });
+  } else if (
+    (selectedCategory === "Theater" || selectedCategory === "User") &&
+    (name === "password" || name === "repeatPass")
+  ) {
+    if (name === "repeatPass") {
+      const passwordField = selectedCategory === "Theater" ? newTheater.password : newUser.password;
+      if (value !== passwordField) {
+        console.log("Passwords do NOT match");
+        setErrorMessage({ passwordError: "Passwords do not match!" });
       } else {
+        console.log("Passwords MATCH");
         setErrorMessage({});
       }
-      console.log('name :>> ', name);
-      console.log('value :>> ', value);
+    }
+
+    if (selectedCategory === "Theater") {
       setNewTheater({ ...newTheater, [name]: value });
-      setNewUser({ name: "", email: "", password: "" });
-    } else if (selectedCategory === "User" && name === "email") {
-      if (!isValidEmail(value)) {
-        setErrorMessage({ emailError: "Invalid email format" });
-      } else {
-        setErrorMessage({});
-      }
+    } else {
       setNewUser({ ...newUser, [name]: value });
-      setNewTheater({ theaterName: "", email: "", password: "" })
-    } else if ((selectedCategory === "Theater" || selectedCategory === "User") &&
-      (name === "password" || name === "repeatPass")) {
-      const passwordField = e.target.name === "password" ? e.target.value:""
-      // selectedCategory === "Theater" ? newTheater.password : newUser.password;
-      const repeatPasswordValue = e.target.name === "repeatPass" ? e.target.value : ""
-      console.log('passwordField :>> ', passwordField);
-      console.log('repeatPasswordValue :>> ', repeatPasswordValue);
-
-      if (!IsPasswordsMatch(passwordField, repeatPasswordValue)) {
-        setErrorMessage({ passwordError: "Passwords do not match!" })
-        console.log("passwords Do not match");
-      } else {
-        console.log("passwords Match");
-        setErrorMessage({})
-      }
     }
-  
-    //   (selectedCategory === "Theater" || selectedCategory === "User") &&
-    //   (name === "password" || name === "repeatPass")
-    // ) {
-    //   if (!IsPasswordsMatch(password, repeatPass)) {
-    //   setErrorMessage({ passwordError: "Passwords do not match!" })
-    // }
-    //   setNewTheater({ ...newTheater, [name]: value });
-    //   const passwordField =
-    //     selectedCategory === "Theater" ? newTheater.password : newUser.password;
-    //   //  const repeatPassField = selectedCategory === "Theater" ? newTheater.repeatPass : newUser.repeatPass;
-    //   // if ("repeatPass" !== passwordField) {
-    //   const repeatPasswordValue = e.target.name === "repeatPass" ? e.target.value : ""
-      
-    //   if (repeatPasswordValue !== passwordField) {
+  }
+};
 
-    //     console.log('passwordField :>> ', passwordField);
-        // console.log('selectedCategory :>> ', selectedCategory);
-        // console.log('newTheater.password :>> ', newTheater.password);
-        // console.log('newTheater.password :>> ', newUser.password);
-
-        
-      //  console.log("password NOT match");
-      //   setErrorMessage({ passwordError: "Passwords do not match!" });
-      // } else {
-      //   console.log("password MATCH");
-      //   if (selectedCategory === "Theater") {
-      //     setErrorMessage({});
-      //     setNewTheater({ ...newTheater, [name]: value });
-      //   } else {
-      //     setErrorMessage({});
-      //     setNewUser({ ...newUser, [name]: value });
-      //   }
-      // }
-    }
   
+
 
   const heading = !hasAccount ? "SignUp" : "SignIn";
   const buttonLabel: string = !hasAccount
@@ -158,7 +112,7 @@ export default function SignUp() {
   }
 
   const registration = async (data: Theater | User, url: String) => {
-    console.log("newTheater :>> ", newTheater);
+    console.warn("newTheater :>> ", newTheater);
 
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
@@ -184,14 +138,75 @@ export default function SignUp() {
       .then((response) => response.json())
       .then((result) => console.log(result))
       .catch((error) => console.log("error", error));
+    
   };
   const handleRegistration = async () => {
     const data = selectedCategory === "Theater" ? newTheater : newUser;
     const endpoint =
       selectedCategory === "Theater" ? "theaters/register" : "users/register";
     await registration(data, endpoint);
+    
+    
   };
+  const handleLoginInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log('e.target.value :>> ', e.target.value);
+    const propetyName = e.target.name;
+    const propetyValue = e.target.value;
+    setLoginCredentials({ ...loginCredentials!, [propetyName]: propetyValue });
+  }
+const login = async() => {
+  console.log('loginCredentials :>> ', loginCredentials);
+  const myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
 
+const urlencoded = new URLSearchParams();
+urlencoded.append("email", loginCredentials!.email);
+urlencoded.append("password", loginCredentials!.password);
+
+const requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: urlencoded,
+  
+  };
+  try {
+    const response = await fetch("http://localhost:5000/myApi/users/login", requestOptions)
+    if (response.ok) {
+      const result = await response.json();
+      console.log('result :>> ', result);
+      if (result.token) {
+        localStorage.setItem('token',result.token)
+      }
+    }
+    if (!response.ok) {
+      const result = await response.json()
+      console.log('result is not ok');
+      alert(result.message)
+    }
+  } catch (error) {
+    console.log('error :>> ', error);
+  }
+
+  
+
+  }
+  const getToken = () => {
+  const token = localStorage.getItem('token');
+  return token
+}
+const isUserLoggedIn = () => {
+  const token = getToken()
+  return token ? true 
+  : false;
+  }
+  useEffect(() => {
+    const isUserLogged = isUserLoggedIn()
+    if (isUserLogged) {
+      console.log("user is logged in", "color:green");
+    } else {
+      console.log("user is logged out", "color:red" );
+    }
+  }, [])
   // }
   return (
     <div className="form-container">
@@ -218,7 +233,8 @@ export default function SignUp() {
               <div className="reg-form">
                 <label htmlFor="theaterName">Theater Name</label>
                 <input
-                  type="text"
+                  // type="text"
+                  type="input"
                   name="theaterName"
                   id="theaterName"
                   onChange={handelRegisterOnChange}
@@ -324,14 +340,16 @@ export default function SignUp() {
       ) : (
         <div className="signin">
           <label htmlFor="email">Email</label>
-          <input type="email" name="email" />
-          <label htmlFor="password">Password</label>
-          <input type="password" name="password" />
+          <input type="email" name="email" onChange={handleLoginInputChange}/>
+          <label htmlFor="password" >Password</label>
+          <input type="password" onChange={handleLoginInputChange} name="password" />
         </div>
       )}
 
       <button onClick={handleRegistration}>{registerButton}</button>
+      {/* <button onClick={}>new test button</button> */}
       <button onClick={toggleHasAccount}>{buttonLabel}</button>
+      <button onClick={login}>hey</button>
     </div>
   );
 }

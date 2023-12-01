@@ -1,6 +1,7 @@
 import User from "../model/UserModel.js";
 import { encryptPassword, verifyPassword } from "../unils/encryptPassword.js";
 import { v2 as cloudinary } from "cloudinary";
+import { issueToken } from "../unils/jwt.js";
 
 const getAllUsers = async (req, res) => {
   console.log("route running");
@@ -111,9 +112,25 @@ const login = async (req, res) => {
           });
         }
         if (isPasswordValid) {
-          res.status(200).json({
-            message: "password correct",
-          });
+         
+          const token =  issueToken(existingUser._id);
+          if (token) {
+            res.status(200).json({
+              message: "user succsefully logged in",
+              user: {
+                userName: existingUser.name,
+                email: existingUser.email,
+                userId: existingUser._id
+
+              },
+              token
+            })
+            
+          } else {
+            res.status(400).json({
+              message:"someting went wrong"
+            })
+          }
         }
       }
     } catch (error) {
