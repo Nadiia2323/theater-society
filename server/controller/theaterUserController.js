@@ -1,5 +1,6 @@
 
 import TheaterUserModel from "../model/TheaterUserModel.js";
+import User from "../model/UserModel.js";
 import { encryptPassword } from "../unils/encryptPassword.js";
 
 const getAllTheatherUsers = async (req, res) => {
@@ -27,11 +28,13 @@ const registerTheater = async  (req, res) => {
     console.log('register theater controller working ');
     console.log(req.body)
     try {
-         const existingTheater = await TheaterUserModel.findOne({ email: req.body.email })
-    if (existingTheater) {
-        res.status(203).json({
-            message: "Email alredy exist"
-        })
+   const existingUser = await User.findOne({ email: req.body.email });
+    const existingTheaterUser = await TheaterUserModel.findOne({ email: req.body.email });
+
+    if (existingUser || existingTheaterUser) {
+      res.status(203).json({
+        message: "Email already exists",
+      });
     } else {
         const hashedPassword = await encryptPassword(req.body.password)
     if (hashedPassword) {

@@ -1,6 +1,7 @@
 import logonav from "../theater/nav-logo.jpg"
 import active from "../theater/navigation-bar.png"
 import "../Components/NavBar.css"
+import { useNavigate } from "react-router-dom"
 // import { Link } from 'react-router-dom';
 
 // type MyObject = {
@@ -9,6 +10,7 @@ import "../Components/NavBar.css"
 //   l?:number
 // }
 export default function NavBar() {
+ const  navigate = useNavigate();
 
 //   const [myvar, setmyvar] = useState<MyObject | null>(null)
 
@@ -18,7 +20,11 @@ export default function NavBar() {
 //   setmyvar(theater)
 // }
 // }, [])
-
+const logout = () => {
+  localStorage.removeItem('token')
+  navigate('/')
+  console.log("logged out");
+}
 
   return (
     <div className="navbar-container">
@@ -33,6 +39,7 @@ export default function NavBar() {
           {/* <a href="#">Sign In</a>
           <p>||</p>
           <a href="">Sign Up</a> */}
+        <button onClick={logout} className="logout-button">logout</button>
       </div>
       
       </div>

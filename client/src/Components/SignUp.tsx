@@ -1,5 +1,7 @@
 import "../Components/SignUp.css";
-import { ChangeEvent, useState,useEffect } from "react";
+import { ChangeEvent, useState, useEffect } from "react";
+import { isUserLoggedIn, getToken } from "../utils/login";
+import { useNavigate } from "react-router-dom";
 //boolean string, number, null
 interface Theater {
   theaterName: string;
@@ -28,6 +30,7 @@ type loginCredentialsType = {
   password:string
 }
 export default function SignUp() {
+  // const [user, setUser]=useState(false)
   const [loginCredentials, setLoginCredentials] = useState<loginCredentialsType | null> (null)
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<Errors>();
@@ -39,6 +42,7 @@ export default function SignUp() {
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
   const toggleVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -49,9 +53,9 @@ export default function SignUp() {
     return emailRegex.test(email);
   };
  
-const IsPasswordsMatch = (password: string, repeatPass: string) => {
-  return password === repeatPass;
-};
+// const IsPasswordsMatch = (password: string, repeatPass: string) => {
+//   return password === repeatPass;
+// };
 
 const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
   const { name, value } = e.target;
@@ -134,10 +138,14 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
       body: urlencoded,
     };
 
-    fetch(`http://localhost:5000/myApi/${url}`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => console.log(result))
-      .catch((error) => console.log("error", error));
+    try {
+      const response = await fetch(`http://localhost:5000/myApi/${url}`, requestOptions)
+      const result = await response.json()
+      console.log('result :>> ', result);
+      // navigate('/profile')
+    } catch (error) {
+      console.log('error :>> ', error);
+    }
     
   };
   const handleRegistration = async () => {
@@ -154,7 +162,8 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     const propetyValue = e.target.value;
     setLoginCredentials({ ...loginCredentials!, [propetyName]: propetyValue });
   }
-const login = async() => {
+  const login = async () => {
+  
   console.log('loginCredentials :>> ', loginCredentials);
   const myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
@@ -175,7 +184,8 @@ const requestOptions = {
       const result = await response.json();
       console.log('result :>> ', result);
       if (result.token) {
-        localStorage.setItem('token',result.token)
+        localStorage.setItem('token', result.token)
+         navigate('/profile')
       }
     }
     if (!response.ok) {
@@ -190,21 +200,15 @@ const requestOptions = {
   
 
   }
-  const getToken = () => {
-  const token = localStorage.getItem('token');
-  return token
-}
-const isUserLoggedIn = () => {
-  const token = getToken()
-  return token ? true 
-  : false;
-  }
-  useEffect(() => {
+    useEffect(() => {
     const isUserLogged = isUserLoggedIn()
     if (isUserLogged) {
-      console.log("user is logged in", "color:green");
+      console.log("user is logged in");
+      // setUser(true)
+      // Navigate('/profile')
+      
     } else {
-      console.log("user is logged out", "color:red" );
+      console.log("user is logged out" );
     }
   }, [])
   // }

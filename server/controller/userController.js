@@ -2,6 +2,7 @@ import User from "../model/UserModel.js";
 import { encryptPassword, verifyPassword } from "../unils/encryptPassword.js";
 import { v2 as cloudinary } from "cloudinary";
 import { issueToken } from "../unils/jwt.js";
+import TheaterUserModel from "../model/TheaterUserModel.js";
 
 const getAllUsers = async (req, res) => {
   console.log("route running");
@@ -30,10 +31,13 @@ const register = async (req, res) => {
   console.log(req.body);
   try {
     const existingUser = await User.findOne({ email: req.body.email });
-    if (existingUser) {
+    const existingTheaterUser = await TheaterUserModel.findOne({ email: req.body.email });
+
+    if (existingUser || existingTheaterUser) {
       res.status(203).json({
-        message: "Email alredy exist",
+        message: "Email already exists",
       });
+   
     } else {
       const hashedPassword = await encryptPassword(req.body.password);
       if (hashedPassword) {
@@ -95,16 +99,18 @@ const login = async (req, res) => {
   } else {
     try {
       const existingUser = await User.findOne({ email: email });
-      if (!existingUser) {
+       const existingTheaterUser = await TheaterUserModel.findOne({ email: req.body.email });
+      if (!existingUser && !existingTheaterUser) {
         res.status(400).json({
           message: "do you have an account?",
         });
       }
       
-      if (existingUser) {
+      if (existingUser || existingTheaterUser) {
+        const user = existingUser || existingTheaterUser
         const isPasswordValid = await verifyPassword(
           req.body.password,
-          existingUser.password
+          user.password
         );
         if (!isPasswordValid) {
           res.status(400).json({
@@ -113,14 +119,14 @@ const login = async (req, res) => {
         }
         if (isPasswordValid) {
          
-          const token =  issueToken(existingUser._id);
+          const token =  issueToken(user._id);
           if (token) {
             res.status(200).json({
               message: "user succsefully logged in",
               user: {
-                userName: existingUser.name,
-                email: existingUser.email,
-                userId: existingUser._id
+                userName: user.name,
+                email: user.email,
+                userId: user._id
 
               },
               token
@@ -142,4 +148,26 @@ const login = async (req, res) => {
   }
 };
 
-export { getAllUsers, register, imageUpload, login };
+const getUserProfile = async (req, res) => {
+  console.log("getUserProfile is running");
+  console.log('req.user :>> ', req.user);
+  if (req.user) {
+    res.status(200).json({
+      message: "user profile",
+      user: {
+        id: req.user._id,
+        email: req.user.email,
+        userName: req.user.name
+      }
+    })
+    
+  }
+  if (!req.user) {
+    res.status(400).json({
+      message:"something went wrong, login one more time"
+    })
+    
+  }
+}
+
+export { getAllUsers, register, imageUpload, login, getUserProfile };

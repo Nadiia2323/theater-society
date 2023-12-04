@@ -8,10 +8,42 @@ interface ServerOkResponse extends UserImageType {
 interface UserImageType {
   profilePhoto: string;
 }
+interface User {
+  userName?: string,
+  userEmail:string,
+}
 
 export default function Profile() {
   const [selectedFile, setSelectedFile] = useState<File | string>("");
   const [userPhoto, setUserPhoto] = useState<UserImageType | null>(null);
+  const [user, setUser] = useState<User | null>(null)
+  const getProfile = async () => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      alert('register first!')
+    } else {
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${token}`);
+
+      const requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+  
+      };
+      try {
+        const response = await fetch("http://localhost:5000/myApi/users/profile", requestOptions)
+        const result = await response.json()
+        console.log('result UserProfile :>> ', result);
+       
+      } catch (error) {
+        console.log('error :>> ', error);
+      }
+    }
+ 
+
+ 
+  }
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     console.log("e.target :>> ", e);
     const file = e.target.files?.[0] || "";
@@ -41,7 +73,7 @@ export default function Profile() {
       console.log("result :>> ", result);
      
       
-        setUserPhoto({profilePhoto:result.profilePhoto});
+      setUserPhoto({ profilePhoto: result.profilePhoto });
       
     } catch (error) {
       console.log("error :>> ", error);
@@ -55,6 +87,7 @@ export default function Profile() {
       <div className="container">
         <div className="profile-container">
           <div className="BIO-container">
+            <button onClick={getProfile}>get Profile</button>
            
             <img className="photo" src={userPhoto?.profilePhoto} alt="your photo" />
             <p>BIO</p>
@@ -71,8 +104,10 @@ export default function Profile() {
           <p>news</p>
           <p>likes</p>
         </div>
-        <News/>
+        <News />
       </div>
+    
+      
     </>
-  );
+  )
 }
