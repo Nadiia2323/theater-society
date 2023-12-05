@@ -68,16 +68,24 @@ const register = async (req, res) => {
 const imageUpload = async (req, res) => {
   console.log("route working");
   console.log("req.file :>> ", req.file);
+  const { _id } = req.body
+  console.log('req.body :>> ', req.body);
   if (req.file) {
     try {
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: "profile_image",
       });
       console.log("result uploading :>> ", result);
+      const user = await User.findById(_id); 
+    if (user) {
+      user.profilePhoto = result.secure_url;
+      await user.save();
+    }
 
       res.status(201).json({
         message: "image uploaded",
         profilePhoto: result.secure_url,
+
       });
     } catch (error) {
       console.log("error :>> ", error);
@@ -126,7 +134,8 @@ const login = async (req, res) => {
               user: {
                 userName: user.name,
                 email: user.email,
-                userId: user._id
+                userId: user._id,
+               
 
               },
               token
@@ -157,7 +166,8 @@ const getUserProfile = async (req, res) => {
       user: {
         id: req.user._id,
         email: req.user.email,
-        userName: req.user.name
+        userName: req.user.name,
+         profilePhoto: req.user.profilePhoto
       }
     })
     
@@ -170,4 +180,27 @@ const getUserProfile = async (req, res) => {
   }
 }
 
-export { getAllUsers, register, imageUpload, login, getUserProfile };
+
+
+const updateProfile = async (req, res) => {
+  console.log("update profile is working");
+  
+  
+  const { name, email, password,profilePhoto } = req.body;
+
+  try {
+    
+    await User.updateOne({ _id: req.user.id }, { name, email, password,profilePhoto });
+    
+    
+    res.status(200).json({ message: "Profile updated successfully" });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
+
+
+export { getAllUsers, register, imageUpload, login, getUserProfile,updateProfile };

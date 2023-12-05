@@ -1,8 +1,10 @@
-import React from 'react'
+import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import Profile from './pages/Profile.tsx';
-import Home from './pages/Home.tsx'
+import Profile from "./pages/Profile.tsx";
+import Home from "./pages/Home.tsx";
+import { AuthContextProvider } from "./context/AuhContext.tsx";
+import UpdateProfile from "./Components/UpdateProfile.tsx";
 
 const router = createBrowserRouter([
   {
@@ -11,12 +13,18 @@ const router = createBrowserRouter([
   },
   {
     path: "/profile",
-    element: <Profile/>
-  }
+    element: <Profile />,
+  },
+   {
+    path: "/profileSettings",
+    element: <UpdateProfile />,
+  },
 ]);
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-   <RouterProvider router={router} />
-  </React.StrictMode>,
-)
+    <AuthContextProvider>
+      <RouterProvider router={router} />
+    </AuthContextProvider>
+  </React.StrictMode>
+);

@@ -17,12 +17,12 @@ const userSchema = new mongoose.Schema({
     require: true,
 
   },
-  photo: {
+  profilePhoto: {
     type: String,
     required: false
   }
   
   
 });
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model("user", userSchema);
 export default User;

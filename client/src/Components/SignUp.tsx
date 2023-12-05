@@ -1,7 +1,9 @@
 import "../Components/SignUp.css";
-import { ChangeEvent, useState, useEffect } from "react";
+import { ChangeEvent, useState, useEffect,useContext } from "react";
 import { isUserLoggedIn, getToken } from "../utils/login";
 import { useNavigate } from "react-router-dom";
+
+import { AuthContext } from "../context/AuhContext";
 //boolean string, number, null
 interface Theater {
   theaterName: string;
@@ -36,12 +38,14 @@ export default function SignUp() {
   const [errorMessage, setErrorMessage] = useState<Errors>();
   const [hasAccount, setHasAccount] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
+
   const [newTheater, setNewTheater] = useState<Theater>(initialTheaterValues);
   const [newUser, setNewUser] = useState<User>({
     name: "",
     email: "",
     password: "",
   });
+  const {registration,login} = useContext (AuthContext)
   const navigate = useNavigate();
   const toggleVisibility = () => {
     setShowPassword(!showPassword);
@@ -115,91 +119,95 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSelectedCategory(category);
   }
 
-  const registration = async (data: Theater | User, url: String) => {
-    console.warn("newTheater :>> ", newTheater);
+  // const registration = async (data: Theater | User, url: String) => {
+  //   console.warn("newTheater :>> ", newTheater);
 
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+  //   const myHeaders = new Headers();
+  //   myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
 
-    const urlencoded = new URLSearchParams();
-    if ("theaterName" in data) {
-      // It's Theater type
-      urlencoded.append("name", data.theaterName);
-    } else {
-      // It's User type
-      urlencoded.append("name", data.name);
-    }
-    urlencoded.append("email", data.email);
-    urlencoded.append("password", data.password);
+  //   const urlencoded = new URLSearchParams();
+  //   if ("theaterName" in data) {
+  //     // It's Theater type
+  //     urlencoded.append("name", data.theaterName);
+  //   } else {
+  //     // It's User type
+  //     urlencoded.append("name", data.name);
+  //   }
+  //   urlencoded.append("email", data.email);
+  //   urlencoded.append("password", data.password);
 
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: urlencoded,
-    };
+  //   const requestOptions = {
+  //     method: "POST",
+  //     headers: myHeaders,
+  //     body: urlencoded,
+  //   };
 
-    try {
-      const response = await fetch(`http://localhost:5000/myApi/${url}`, requestOptions)
-      const result = await response.json()
-      console.log('result :>> ', result);
-      // navigate('/profile')
-    } catch (error) {
-      console.log('error :>> ', error);
-    }
+  //   try {
+  //     const response = await fetch(`http://localhost:5000/myApi/${url}`, requestOptions)
+  //     const result = await response.json()
+  //     console.log('result :>> ', result);
+  //     // navigate('/profile')
+  //   } catch (error) {
+  //     console.log('error :>> ', error);
+  //   }
     
-  };
+  // };
   const handleRegistration = async () => {
     const data = selectedCategory === "Theater" ? newTheater : newUser;
     const endpoint =
       selectedCategory === "Theater" ? "theaters/register" : "users/register";
     await registration(data, endpoint);
     
-    
+    navigate('/profile')
   };
   const handleLoginInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     console.log('e.target.value :>> ', e.target.value);
     const propetyName = e.target.name;
     const propetyValue = e.target.value;
     setLoginCredentials({ ...loginCredentials!, [propetyName]: propetyValue });
+    
   }
-  const login = async () => {
+//   const login = async () => {
   
-  console.log('loginCredentials :>> ', loginCredentials);
-  const myHeaders = new Headers();
-myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+//   console.log('loginCredentials :>> ', loginCredentials);
+//   const myHeaders = new Headers();
+// myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
 
-const urlencoded = new URLSearchParams();
-urlencoded.append("email", loginCredentials!.email);
-urlencoded.append("password", loginCredentials!.password);
+// const urlencoded = new URLSearchParams();
+// urlencoded.append("email", loginCredentials!.email);
+// urlencoded.append("password", loginCredentials!.password);
 
-const requestOptions = {
-  method: 'POST',
-  headers: myHeaders,
-  body: urlencoded,
+// const requestOptions = {
+//   method: 'POST',
+//   headers: myHeaders,
+//   body: urlencoded,
   
-  };
-  try {
-    const response = await fetch("http://localhost:5000/myApi/users/login", requestOptions)
-    if (response.ok) {
-      const result = await response.json();
-      console.log('result :>> ', result);
-      if (result.token) {
-        localStorage.setItem('token', result.token)
-         navigate('/profile')
-      }
-    }
-    if (!response.ok) {
-      const result = await response.json()
-      console.log('result is not ok');
-      alert(result.message)
-    }
-  } catch (error) {
-    console.log('error :>> ', error);
+//   };
+//   try {
+//     const response = await fetch("http://localhost:5000/myApi/users/login", requestOptions)
+//     if (response.ok) {
+//       const result = await response.json();
+//       console.log('result :>> ', result);
+//       if (result.token) {
+//         localStorage.setItem('token', result.token)
+//          navigate('/profile')
+//       }
+//     }
+//     if (!response.ok) {
+//       const result = await response.json()
+//       console.log('result is not ok');
+//       alert(result.message)
+//     }
+//   } catch (error) {
+//     console.log('error :>> ', error);
+//   }
+  const handleLoginOnClick = () => {
+    login(loginCredentials);
+    navigate('/profile')
   }
-
   
 
-  }
+  
     useEffect(() => {
     const isUserLogged = isUserLoggedIn()
     if (isUserLogged) {
@@ -353,7 +361,7 @@ const requestOptions = {
       <button onClick={handleRegistration}>{registerButton}</button>
       {/* <button onClick={}>new test button</button> */}
       <button onClick={toggleHasAccount}>{buttonLabel}</button>
-      <button onClick={login}>hey</button>
+     <button onClick={handleLoginOnClick}>hey</button>
     </div>
   );
-}
+      }

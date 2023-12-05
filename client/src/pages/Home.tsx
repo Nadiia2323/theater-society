@@ -2,12 +2,15 @@ import NavBar from "../Components/NavBar";
 import BGvideo from "../theater/bg-black.mp4"
 import "../pages/Home.css"
 import SignUp from "../Components/SignUp";
-import  { useState } from 'react';
+import  { useState, useContext } from 'react';
+import { AuthContext } from "../context/AuhContext";
 
 
 
 
 export default function Home() {
+  const { user } = useContext(AuthContext)
+  console.log('user :>> ', user ? user.email : "no user in context");
 
   const [showSignUp, setShowSignUp] = useState<Boolean>(false)
   function handelJoinClick() {
