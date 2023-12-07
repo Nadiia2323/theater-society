@@ -67,5 +67,29 @@ const registerTheater = async  (req, res) => {
     }
    
    
+   
+   
 }
-export { getAllTheatherUsers,registerTheater };
+ const getTheaterProfile = async (req, res) => {
+  console.log("gettheaterProfile is running");
+  console.log('req.user :>> ', req.user);
+  if (req.user) {
+    res.status(200).json({
+      message: "theater profile",
+      user: {
+        id: req.user._id,
+        email: req.user.email,
+        userName: req.user.name,
+         profilePhoto: req.user.profilePhoto
+      }
+    })
+    
+  }
+  if (!req.user) {
+    res.status(400).json({
+      message:"something went wrong, login one more time"
+    })
+    
+  }
+}
+export { getAllTheatherUsers,registerTheater, getTheaterProfile };

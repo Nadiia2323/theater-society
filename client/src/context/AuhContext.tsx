@@ -1,15 +1,12 @@
 // create context
 
-import {  useState, createContext, useEffect } from "react";
-
-
+import { useState, createContext, useEffect,  } from "react";
+// import { useNavigate } from "react-router-dom";
 export const AuthContext = createContext({});
 
 export const AuthContextProvider = ({ children }) => {
   console.log("children :>> ", children);
-    const [user, setUser] = useState({ name: "test" });
-    
-    
+  const [user, setUser] = useState({ name: "test" });
 
   const getProfile = async () => {
     const token = localStorage.getItem("token");
@@ -62,57 +59,59 @@ export const AuthContextProvider = ({ children }) => {
       );
       const result = await response.json();
       console.warn("result :>> ", result);
-      // Handle result or update user state 
+      // Handle result or update user state
       setUser(result.savedUser);
-    
     } catch (error) {
       console.log("error :>> ", error);
     }
+  };
+
+  const login = async (loginCredentials) => {
+    console.log("loginCredentials :>> ", loginCredentials);
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+    const urlencoded = new URLSearchParams();
+    urlencoded.append("email", loginCredentials!.email);
+    urlencoded.append("password", loginCredentials!.password);
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: urlencoded,
     };
-    
-    const login = async (loginCredentials) => {
-  
-        console.log('loginCredentials :>> ', loginCredentials);
-        const myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+    try {
+      const response = await fetch(
+        "http://localhost:5000/myApi/users/login",
+        requestOptions
+      );
+      if (response.ok) {
+        const result = await response.json();
 
-        const urlencoded = new URLSearchParams();
-        urlencoded.append("email", loginCredentials!.email);
-        urlencoded.append("password", loginCredentials!.password);
+        if (result.token) {
+          localStorage.setItem("token", result.token);
+          setUser(result.user);
+          // const navigate = useNavigate();
 
-        const requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: urlencoded,
-  
-        };
-        try {
-            const response = await fetch("http://localhost:5000/myApi/users/login", requestOptions)
-            if (response.ok) {
-                const result = await response.json();
-                
-                if (result.token) {
-                    localStorage.setItem('token', result.token)
-                    setUser(result.user)
-                    
-                }
-            }
-            if (!response.ok) {
-                const result = await response.json()
-                console.log('result is not ok');
-                alert(result.message)
-            }
-        } catch (error) {
-            console.log('error :>> ', error);
+          // navigate("/profile");
         }
+      }
+      if (!response.ok) {
+        const result = await response.json();
+        console.log("result is not ok");
+        alert(result.message);
+      }
+    } catch (error) {
+      console.log("error :>> ", error);
     }
+  };
 
   useEffect(() => {
     getProfile();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, registration,login }}>
+    <AuthContext.Provider value={{ user, registration, login }}>
       {children}
     </AuthContext.Provider>
   );

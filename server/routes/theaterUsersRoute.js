@@ -1,9 +1,13 @@
 import express from "express"
 import { getAllTheatherUsers,registerTheater } from "../controller/theaterUserController.js"
+import route from "./userRoute.js"
+import jwtAuth from "../middlewares/jwtAuth.js";
+import { getTheaterProfile } from "../controller/theaterUserController.js";
 
 const router = express.Router()
 
 router.get('/all', getAllTheatherUsers)
+route.get('/profile', jwtAuth, getTheaterProfile)
 
 
 router.post('/register', registerTheater)

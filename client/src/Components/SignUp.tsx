@@ -45,7 +45,9 @@ export default function SignUp() {
     email: "",
     password: "",
   });
-  const {registration,login} = useContext (AuthContext)
+  const { registration, login,user } = useContext(AuthContext)
+  
+  console.log('user :>> ', user ? user.email : "no user");
   const navigate = useNavigate();
   const toggleVisibility = () => {
     setShowPassword(!showPassword);
@@ -157,8 +159,15 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     const endpoint =
       selectedCategory === "Theater" ? "theaters/register" : "users/register";
     await registration(data, endpoint);
+    const isUserLogged = isUserLoggedIn(); 
+    if (isUserLogged) {
+      navigate('/profile');
+    } else {
     
-    navigate('/profile')
+    alert('try to login');
+  }
+    
+    // navigate('/profile')
   };
   const handleLoginInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     console.log('e.target.value :>> ', e.target.value);
@@ -201,10 +210,22 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
 //   } catch (error) {
 //     console.log('error :>> ', error);
 //   }
-  const handleLoginOnClick = () => {
-    login(loginCredentials);
-    navigate('/profile')
+ const handleLoginOnClick = async () => {
+  
+  if (loginCredentials?.email && loginCredentials?.password) {
+    
+    await login(loginCredentials);
+    
+    const isUserLogged = isUserLoggedIn(); 
+    if (isUserLogged) {
+      navigate('/profile');
+    }
+  } else {
+    
+    alert('Please provide both email and password.');
   }
+};
+
   
 
   
@@ -212,8 +233,8 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     const isUserLogged = isUserLoggedIn()
     if (isUserLogged) {
       console.log("user is logged in");
-      // setUser(true)
-      // Navigate('/profile')
+        
+     
       
     } else {
       console.log("user is logged out" );

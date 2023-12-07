@@ -1,0 +1,13 @@
+.post-container{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.post{
+    width: 50vh;
+    height: 50vh;
+}
+.image{
+    width: 40vh;
+    height: 40vh;
+}

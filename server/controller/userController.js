@@ -49,6 +49,28 @@ const register = async (req, res) => {
 
         const savedUser = await newUser.save();
         console.log("savedUser :>> ", savedUser);
+        // if (savedUser) {
+        //   const user = savedUser
+        //   const token =  issueToken(user._id);
+        //   if (token) {
+        //     res.status(200).json({
+        //       message: "user succsefully logged in",
+        //       user: {
+        //         userName: user.name,
+        //         email: user.email,
+        //         userId: user._id,
+               
+
+        //       },
+        //       token
+        //     })
+            
+        //   } else {
+        //     res.status(400).json({
+        //       message:"someting went wrong"
+        //     })
+        //   }
+        // }
 
         res.status(201).json({
           message: "user registered",
@@ -68,7 +90,7 @@ const register = async (req, res) => {
 const imageUpload = async (req, res) => {
   console.log("route working");
   console.log("req.file :>> ", req.file);
-  const { _id } = req.body
+  const { email } = req.body
   console.log('req.body :>> ', req.body);
   if (req.file) {
     try {
@@ -76,7 +98,7 @@ const imageUpload = async (req, res) => {
         folder: "profile_image",
       });
       console.log("result uploading :>> ", result);
-      const user = await User.findById(_id); 
+      const user = await User.findOne(email); 
     if (user) {
       user.profilePhoto = result.secure_url;
       await user.save();
@@ -107,7 +129,8 @@ const login = async (req, res) => {
   } else {
     try {
       const existingUser = await User.findOne({ email: email });
-       const existingTheaterUser = await TheaterUserModel.findOne({ email: req.body.email });
+      const existingTheaterUser = await TheaterUserModel.findOne({ email: req.body.email });
+      // console.log(existingUser, existingTheaterUser)
       if (!existingUser && !existingTheaterUser) {
         res.status(400).json({
           message: "do you have an account?",
@@ -116,6 +139,7 @@ const login = async (req, res) => {
       
       if (existingUser || existingTheaterUser) {
         const user = existingUser || existingTheaterUser
+        console.log(user)
         const isPasswordValid = await verifyPassword(
           req.body.password,
           user.password
@@ -167,7 +191,8 @@ const getUserProfile = async (req, res) => {
         id: req.user._id,
         email: req.user.email,
         userName: req.user.name,
-         profilePhoto: req.user.profilePhoto
+        profilePhoto: req.user.profilePhoto,
+         posts:req.user.posts
       }
     })
     
@@ -181,26 +206,97 @@ const getUserProfile = async (req, res) => {
 }
 
 
-
 const updateProfile = async (req, res) => {
   console.log("update profile is working");
+  console.log('req :>> ', req);
   
-  
-  const { name, email, password,profilePhoto } = req.body;
 
+  const { name, email, password, profilePhoto } = req.body;
+  console.log(req.user)
   try {
-    
-    await User.updateOne({ _id: req.user.id }, { name, email, password,profilePhoto });
-    
-    
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    await User.updateOne({ email: req.user.email }, { name, email, password, profilePhoto });
+
     res.status(200).json({ message: "Profile updated successfully" });
   } catch (error) {
     console.error("Error updating profile:", error);
     res.status(500).json({ error: "Server error" });
   }
 };
+const uploadPosts = async(req,res) => {
+  console.log('uploadposts working');
+  console.log('req.file :>> ', req.file);
+ 
+  const { email, caption } = req.body  //imagine user has sent a caption
+  
+   if (req.file) {
+    try {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "posts",
+      });
+      console.log("result uploading :>> ", result);
+      // const user = await User.findOne(email); 
+      const user = req.user
+      if (user) {
+        const newPost = { imageUrl: result.secure_url, caption: req.body.caption }
+        const posts = [...user.posts, newPost]
+        // await user.save()
+      user.posts = posts;
+      await user.save();
+    }
+
+      res.status(201).json({
+        message: "post uploaded",
+        posts: result.secure_url,
+
+      });
+    } catch (error) {
+      console.log("error :>> ", error);
+      res.status(500).json({ error: "Failed to upload post" });
+    }
+  } else {
+    res.status(500).json({
+      message: "file not supported",
+    });
+  }
+}
+
+const deleteAccount = async (req, res) => {
+  console.log("deleteAccount works");
+  console.log('req.user :>> ', req.user);
+  const user = req.user;
+
+  try {
+    if (!user) {
+      return res.status(401).json({
+        message: "Please log in first"
+      });
+    }
+
+    const deletedUser = await User.findOneAndDelete({ _id: user._id });
+
+    if (!deletedUser) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    return res.status(200).json({
+      message: "User deleted successfully"
+    });
+  } catch (error) {
+    console.log('error :>> ', error);
+    return res.status(500).json({
+      message: "Something went wrong. Please try again later."
+    });
+  }
+};
 
 
 
 
-export { getAllUsers, register, imageUpload, login, getUserProfile,updateProfile };
+
+export { getAllUsers, register, imageUpload, login, getUserProfile,updateProfile,uploadPosts,deleteAccount };

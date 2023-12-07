@@ -1,5 +1,6 @@
 import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
 import User from "../model/UserModel.js";
+import TheaterUserModel from "../model/TheaterUserModel.js";
 
 const jwtOptions = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -11,6 +12,8 @@ const jwtStrategy = new JwtStrategy(jwtOptions,async function (jwt_payload, done
     
     try {
         const user = await User.findOne({ _id: jwt_payload.sub })
+        const theatreUser = await TheaterUserModel.findById(jwt_payload.sub)
+        
         if (user) {
             console.log("token valid,user inserted" );
             return done(null,user)

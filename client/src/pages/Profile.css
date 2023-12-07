@@ -25,3 +25,9 @@
     width: 200px;
     height: 200px;
 }
+.posts {
+    cursor: pointer;
+}
+.news{
+cursor:pointer
+}
