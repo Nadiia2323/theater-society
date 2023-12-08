@@ -20,21 +20,27 @@ export default function Home() {
 
 
   return (
-    <div>
+    <>
       <NavBar />
+    <div>
+      
       <div className="bg-container">
         <video src={BGvideo}autoPlay muted loop></video>
       </div>
-      {!showSignUp ? ( <div className="info-container">
-        <p className="description">StageConnect is your online hub for all things theatre! Join a vibrant community of passionate theatre enthusiasts, actors, directors, and fans. Share your favorite plays, discuss the latest productions, discover audition opportunities, and connect with fellow theatre buffs from around the world. Dive into the dramatic world of storytelling, performance, and the magic of the stage with StageConnect!</p>
-     <button onClick={handelJoinClick} className="buttonJoin">Join the Theatre Society</button>
+        {!showSignUp ? (<div className="info-container">
+          <p className="partText">StageConnect</p>
+        <p className="description"> is your online hub for all things theatre! Join a vibrant community of passionate theatre enthusiasts, actors, directors, and fans. Share your favorite plays, discuss the latest productions, discover audition opportunities, and connect with fellow theatre buffs from around the world. Dive into the dramatic world of storytelling, performance, and the magic of the stage with StageConnect!</p>
+     <div className="joinButton">
+          <button onClick={handelJoinClick} className='glowing-btn'><span className='glowing-txt'>Join <span className='faulty-letter'>the </span>Theatre Society</span></button>
+            {/* <button onClick={handelJoinClick} className="buttonJoin">Join the Theatre Society</button> */}
+            </div>
       </div>) : (
       <SignUp/>
       )}
       
      
     </div>
-    
+    </>
   )
 }
 

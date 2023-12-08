@@ -243,14 +243,26 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
   // }
   return (
     <div className="form-container">
+      {/* <div className="container">
+		<div className="btn"><a href="#">Read more 1</a></div>
+		<div className="btn"><a href="#" >Read more 2</a></div>
+				<div className="btn"><a href="#" >Read more 3</a></div>
+
+	</div>		 */}
       <h3>{heading}</h3>
       {!hasAccount ? (
         <div className="select-category">
           <p>Select your registration category</p>
           <div className="select-buttons">
-            <button onClick={() => handleSelect("Theater")}>Theater</button>
+            <div className="container">
+            {/* <button onClick={() => handleSelect("Theater")}>Theater</button> */}
+              <div className="btn"><a href="#" onClick={() => handleSelect("Theater")}>Theater</a></div>
+              
             <p>or</p>
-            <button onClick={() => handleSelect("User")}>User</button>
+            
+              {/* <button onClick={() => handleSelect("User")}>User</button> */}
+              <div className="btn"><a href="#" onClick={()=>handleSelect("User")}>User</a></div>
+              </div>
           </div>
           {selectedCategory === "Theater" && (
             <div className="theater-container">
@@ -378,10 +390,16 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
           <input type="password" onChange={handleLoginInputChange} name="password" />
         </div>
       )}
+     < div className="container">
 
-      <button onClick={handleRegistration}>{registerButton}</button>
+      {/* <button onClick={handleRegistration}>{registerButton}</button> */}
+       <div className="btn"><a href="#" onClick={handleRegistration}>{registerButton}r</a></div>
       {/* <button onClick={}>new test button</button> */}
-      <button onClick={toggleHasAccount}>{buttonLabel}</button>
+        {/* <button onClick={toggleHasAccount}>{buttonLabel}</button> */}
+        </div>
+       < div className="container">
+         <div className="btn"><a href="#" onClick={toggleHasAccount}>{buttonLabel}r</a></div>
+        </div>
      <button onClick={handleLoginOnClick}>hey</button>
     </div>
   );
