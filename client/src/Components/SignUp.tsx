@@ -255,16 +255,16 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
           <p>Select your registration category</p>
           <div className="select-buttons">
             <div className="container">
-            {/* <button onClick={() => handleSelect("Theater")}>Theater</button> */}
+           
               <div className="btn"><a href="#" onClick={() => handleSelect("Theater")}>Theater</a></div>
               
             <p>or</p>
             
-              {/* <button onClick={() => handleSelect("User")}>User</button> */}
+              
               <div className="btn"><a href="#" onClick={()=>handleSelect("User")}>User</a></div>
               </div>
           </div>
-          {selectedCategory === "Theater" && (
+          {selectedCategory === "Theater" && (<>
             <div className="theater-container">
               <div className="info-holder">
                 <h2>Theater Registration</h2>
@@ -276,22 +276,27 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
                 </p>
               </div>
               <div className="reg-form">
+                <div className="theater-name">
                 <label htmlFor="theaterName">Theater Name</label>
+                <span className="theater-icon">🏛</span>
                 <input
                   // type="text"
                   type="input"
                   name="theaterName"
                   id="theaterName"
                   onChange={handelRegisterOnChange}
-                />
-
+                  />
+                  </div>
+                 <div className="email">
                 <label htmlFor="email">Email</label>
+                <span className="icon-email">✉</span>
                 <input
                   type="email"
                   id="email"
                   name="email"
                   onChange={handelRegisterOnChange}
-                />
+                  />
+                  </div>
                 {errorMessage && (
                   <p className="errorMessage">{errorMessage.emailError}</p>
                 )}
@@ -324,8 +329,15 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
                 </div>
               </div>
             </div>
+            < div className="container">
+
+  
+       <div className="btn"><a href="#" onClick={handleRegistration}>{registerButton}r</a></div>
+     
+            </div>
+            </>
           )}
-          {selectedCategory === "User" && (
+          {selectedCategory === "User" && (<>
             <div className="theater-container">
               <div className="info-holder">
                 <h2>User Registration</h2>
@@ -337,21 +349,27 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
                 </p>
               </div>
               <div className="reg-form">
+                <div className="user-name">
                 <label htmlFor="userName">User Name</label>
+                <span className="user-icon">👤</span>
                 <input
                   type="text"
                   id="userName"
                   name="name"
                   onChange={handelRegisterOnChange}
-                />
+                  />
+                  </div>
+                <div className="email">
                 <label htmlFor="emailUser">Email</label>
+                <span className="icon-email">✉</span>
 
                 <input
                   type="email"
                   id="emailUser"
                   name="email"
                   onChange={handelRegisterOnChange}
-                />
+                  />
+                  </div>
                 {errorMessage && (
                   <p className="errorMessage">{errorMessage.emailError}</p>
                 )}
@@ -378,29 +396,47 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
                     name="repeatPass"
                   />
                 </div>
+                
               </div>
+              
             </div>
+            < div className="container">
+
+  
+       <div className="btn"><a href="#" onClick={handleRegistration}>{registerButton}</a></div>
+     
+        </div>
+            </>
           )}
         </div>
       ) : (
-        <div className="signin">
-          <label htmlFor="email">Email</label>
-          <input type="email" name="email" onChange={handleLoginInputChange}/>
-          <label htmlFor="password" >Password</label>
-          <input type="password" onChange={handleLoginInputChange} name="password" />
-        </div>
-      )}
-     < div className="container">
+          <div className="signin">
+            <div className="email">
+            <label htmlFor="email">Email</label>
+            <span className="icon-email">✉</span>
+            <input type="email" name="email" onChange={handleLoginInputChange} />
+            </div>
+            <div className="pass">
+              <label htmlFor="password" >Password</label>
+              <span className="icon-pass" onClick={toggleVisibility}>
+                    &#128274;
+                  </span>
+            <input  type={showPassword ? "text" : "password"} onChange={handleLoginInputChange} name="password" />
+            </div>
+            < div className="container">
+              <div className="btn" ><a href="#" onClick={handleLoginOnClick}>Login</a></div>
+              {/* <button className="btn" onClick={handleLoginOnClick}>login</button> */}
+              
 
-      {/* <button onClick={handleRegistration}>{registerButton}</button> */}
-       <div className="btn"><a href="#" onClick={handleRegistration}>{registerButton}r</a></div>
-      {/* <button onClick={}>new test button</button> */}
-        {/* <button onClick={toggleHasAccount}>{buttonLabel}</button> */}
-        </div>
+              </div>
+          </div>
+          
+      )}
+     
        < div className="container">
-         <div className="btn"><a href="#" onClick={toggleHasAccount}>{buttonLabel}r</a></div>
+         <div ><a href="#" onClick={toggleHasAccount}>{buttonLabel}</a></div>
         </div>
-     <button onClick={handleLoginOnClick}>hey</button>
+    
     </div>
   );
       }

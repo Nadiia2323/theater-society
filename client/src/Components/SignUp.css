@@ -63,9 +63,34 @@ h3, h2, p {
     color: red;
 }
 .pass{
+    display: flex;
+        flex-direction: column;
     position: relative;
 }
-
+.theater-name{
+    display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+.theater-icon{
+position: absolute;
+    right: 5px;
+    top: 67%;
+    transform: translateY(-50%);
+    color: white;
+}
+.user-name{
+    display: flex;
+        flex-direction: column;
+        position: relative;
+}
+.user-icon{
+    position: absolute;
+        right: 0px;
+        top: 67%;
+        transform: translateY(-50%);
+        /* color: white; */
+}
 .icon-pass {
 position: absolute;
 right: 0px;
@@ -73,8 +98,25 @@ top: 67%;
 transform: translateY(-50%);
 cursor: pointer;
 }
+.email{
+    display: flex;
+    flex-direction: column;
+position: relative;
+}
+.icon-email{
+    color: white;
+    
+position: absolute;
+    right: 5px;
+    top: 67%;
+    transform: translateY(-50%);
+}
+a{
+    color: white;
+}
 
 input{
+    color: white;
     background-color:#8078783d;
     border-radius: 10px;
     border: none;
@@ -236,3 +278,4 @@ input{
     box-shadow: 0 0 5px #1eff45, 0 0 15px #1eff45, 0 0 30px #1eff45,
         0 0 60px #1eff45;
 } */ 
+
