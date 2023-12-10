@@ -31,3 +31,24 @@
 .news{
 cursor:pointer
 }
+
+.addPost {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    width: 55px;
+    
+   
+}
+
+.plus-icon {
+    position: absolute;
+    left: 50px;
+    /* Изменено значение на right */
+    top: 28%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 24px;
+    cursor: pointer
+    
+}

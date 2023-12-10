@@ -9,12 +9,13 @@ interface Theater {
   theaterName: string;
   email: string;
   password: string;
-  //  repeatPass: string
+   repeatPass: string
 }
 interface User {
   name: string;
   email: string;
   password: string;
+    repeatPass: string
 }
 interface Errors {
   emailError?: string;
@@ -25,8 +26,14 @@ const initialTheaterValues = {
   theaterName: "",
   email: "",
   password: "",
-  // repeatPass: ""
+  repeatPass: ""
 };
+const initialUserValues = {
+    name: "",
+  email: "",
+  password: "",
+  repeatPass: ""
+}
 type loginCredentialsType = {
   email: string,
   password:string
@@ -40,11 +47,7 @@ export default function SignUp() {
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const [newTheater, setNewTheater] = useState<Theater>(initialTheaterValues);
-  const [newUser, setNewUser] = useState<User>({
-    name: "",
-    email: "",
-    password: "",
-  });
+  const [newUser, setNewUser] = useState<User>(initialUserValues);
   const { registration, login,user } = useContext(AuthContext)
   
   console.log('user :>> ', user ? user.email : "no user");
@@ -154,7 +157,34 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
   //   }
     
   // };
+  // const handleRegistration = async () => {
+  //   const data = selectedCategory === "Theater" ? newTheater : newUser;
+  //   const endpoint =
+  //     selectedCategory === "Theater" ? "theaters/register" : "users/register";
+  //   await registration(data, endpoint);
+  //   const isUserLogged = isUserLoggedIn(); 
+  //   if (isUserLogged) {
+  //     navigate('/profile');
+  //   } else {
+    
+  //   alert('try to login');
+  // }
+    
+    // navigate('/profile')
+  // };
   const handleRegistration = async () => {
+  if (
+    (selectedCategory === "Theater" &&
+      newTheater.theaterName &&
+      newTheater.email &&
+      newTheater.password &&
+      newTheater.repeatPass) ||
+    (selectedCategory === "User" &&
+      newUser.name &&
+      newUser.email &&
+      newUser.password &&
+      newUser.repeatPass)
+  ) {
     const data = selectedCategory === "Theater" ? newTheater : newUser;
     const endpoint =
       selectedCategory === "Theater" ? "theaters/register" : "users/register";
@@ -163,12 +193,13 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (isUserLogged) {
       navigate('/profile');
     } else {
-    
-    alert('try to login');
+      alert('try to login');
+    }
+  } else {
+    alert('Please fill in all required fields.');
   }
-    
-    // navigate('/profile')
-  };
+};
+
   const handleLoginInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     console.log('e.target.value :>> ', e.target.value);
     const propetyName = e.target.name;
@@ -243,12 +274,7 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
   // }
   return (
     <div className="form-container">
-      {/* <div className="container">
-		<div className="btn"><a href="#">Read more 1</a></div>
-		<div className="btn"><a href="#" >Read more 2</a></div>
-				<div className="btn"><a href="#" >Read more 3</a></div>
-
-	</div>		 */}
+   
       <h3>{heading}</h3>
       {!hasAccount ? (
         <div className="select-category">
@@ -283,7 +309,8 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
                   // type="text"
                   type="input"
                   name="theaterName"
-                  id="theaterName"
+                    id="theaterName"
+                    required
                   onChange={handelRegisterOnChange}
                   />
                   </div>
@@ -293,7 +320,8 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
                 <input
                   type="email"
                   id="email"
-                  name="email"
+                    name="email"
+                    required
                   onChange={handelRegisterOnChange}
                   />
                   </div>
@@ -308,6 +336,7 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
+                    required
                     id="password"
                     onChange={handelRegisterOnChange}
                   />
@@ -321,18 +350,22 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
                     type={showPassword ? "text" : "password"}
                     name="repeatPass"
                     id="repeatPass"
+                    required
                     onChange={handelRegisterOnChange}
                   />
+                  
+                </div>
+                <div>
                   {errorMessage && (
                     <p className="errorMessage">{errorMessage.passwordError}</p>
-                  )}
-                </div>
+                    )}
+                    </div>
               </div>
             </div>
             < div className="container">
 
   
-       <div className="btn"><a href="#" onClick={handleRegistration}>{registerButton}r</a></div>
+       <div className="btn"><a href="#" onClick={handleRegistration}>{registerButton}</a></div>
      
             </div>
             </>
@@ -396,6 +429,11 @@ const handelRegisterOnChange = (e: ChangeEvent<HTMLInputElement>) => {
                     name="repeatPass"
                   />
                 </div>
+                <div>
+                  {errorMessage && (
+                    <p className="errorMessage">{errorMessage.passwordError}</p>
+                    )}
+                    </div>
                 
               </div>
               

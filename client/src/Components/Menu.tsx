@@ -18,7 +18,12 @@ const [isOpen, setIsOpen] = useState(false);
 
       <ul className="nav-menu">
         <li className="li">Home</li>
-        <li className="li">Favorites</li>
+          <li className="li">Favorites</li>
+          <li className="li">Theaters</li>
+          <li className="li">News</li>
+          <li className="li">Settings</li>
+          <li className="li">logout</li>
+          <li className="li">Delete Account</li>
       </ul>
 
       <div className="nav-morph">

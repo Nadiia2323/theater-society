@@ -5,6 +5,7 @@ import Posts from "../Components/Posts";
 // import News from "../Components/News";
 import { AuthContext } from "../context/AuhContext";
 import News from "../Components/News";
+import Menu from "../Components/Menu";
 interface ServerOkResponse extends UserImageType {
   message: string;
 }
@@ -19,8 +20,10 @@ interface User {
 export default function Profile() {
   const { user } = useContext(AuthContext)
   const [showPosts, setShowPosts] = useState(true);
+  const [showPlusIcon, setShowPlusIcon] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | string>("");
   const [userPhoto, setUserPhoto] = useState<UserImageType | null>(null);
+  const [plusClicked, setPlusClicked] = useState(false);
   
   // const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
   //   console.log("e.target :>> ", e);
@@ -55,14 +58,22 @@ export default function Profile() {
   //     console.log("error :>> ", error);
   //   }
   // };
+  const handlePlusIconClick = () => {
   
+  setPlusClicked(true)
+ 
+};
 
 const handlePostsClick = () => {
-  setShowPosts(true); // Show Posts component
+  setShowPosts(true); 
+  setShowPlusIcon(true)
+  setPlusClicked(false)
 };
 
 const handleNewsClick = () => {
-  setShowPosts(false); // Show News component
+  setShowPosts(false); 
+  setShowPlusIcon(false)
+  setPlusClicked(false)
 };
  
  
@@ -70,7 +81,8 @@ const handleNewsClick = () => {
   return (
     <>
       <NavBar />
-      <div className="container">
+      <Menu/>
+      <div className="profile-section">
         <div className="profile-container">
           <div className="BIO-container">
            
@@ -95,11 +107,15 @@ const handleNewsClick = () => {
           </div>
         </div>
         <div className="news-container">
-          <p className="posts" onClick={handlePostsClick}>posts</p>
+          <div className="addPost">
+            <p className="posts" onClick={handlePostsClick}>posts</p>
+            {showPosts && (<span className="plus-icon" onClick={handlePlusIconClick}>+</span>)}
+            
+            </div>
           <p className="news" onClick={handleNewsClick}>news</p>
           <p>likes</p>
         </div>
-        {showPosts ? <Posts/>  : <News/>}
+       {showPosts ? <Posts plusClicked={plusClicked}/> : <News/>}
       </div>
     </>
   );

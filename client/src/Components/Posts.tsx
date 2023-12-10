@@ -1,16 +1,28 @@
 
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, MouseEventHandler, useContext, useState } from "react";
 import { getToken } from "../utils/login";
 import { AuthContext } from "../context/AuhContext";
+import { useEffect } from "react";
 
 
 import "./Posts.css"
+interface PostsProps {
+   plusClicked: boolean;
+}
 
-export default function Posts() {
+export default function Posts({ plusClicked }) {
   const [caption, setCaption] = useState("");
-    const [selectedFile, setSelectedFile] = useState<File | string>("");
-    const { user } = useContext(AuthContext)
-    console.log('user iside posts :>> ', user);
+  const [selectedFile, setSelectedFile] = useState<File | string>("");
+  const [showModal, setShowModal] = useState(false);
+  const { user } = useContext(AuthContext)
+  console.log('user iside posts :>> ', user);
+  console.log('plusClicked :>> ', plusClicked);
+   
+  // const modalOpen = () => {
+  //   if (plusClicked) {
+  //     setShowModal(true)
+  //   }
+  // }
 
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === "caption") {
@@ -22,8 +34,9 @@ export default function Posts() {
     }
   };
 
-    const createPost = async () => {
-      const token = getToken()
+  const createPost = async () => {
+    setShowModal(false)
+    const token = getToken()
     const myHeaders = new Headers();
     myHeaders.append(
       "Authorization",
@@ -50,43 +63,73 @@ export default function Posts() {
     } catch (error) {
       console.log("error", error);
     }
-    };
- 
+  };
+  const cancel = (e:MouseEventHandler<HTMLButtonElement>) => {
+    setShowModal(false)
+  }
+ useEffect(() => {
+    if (plusClicked) {
+      setShowModal(true); // При изменении plusClicked открываем модальное окно
+    }
+  }, [plusClicked]);
     
 
   return (
-    <div>
-      <button onClick={createPost}>Create new post</button>
-      <div>
-        <label>
-          <input
-            name="caption"
-            type="text"
-            placeholder="caption"
-            onChange={handleOnChange}
-          />
-        </label>
-        <img src={selectedFile instanceof File ? URL.createObjectURL(selectedFile) : ""} alt="Selected" />
-        <label>
-          <input
-            name="fileInput"
-            type="file"
-            onChange={handleOnChange}
-          />
-              </label>
-             
-          </div >
-          <div className="post-container">
-          {user && user.posts && user.posts.length > 0 && user.posts.map((post, index: number) => (
-               
-  <div key={index} className="post">
-    <h3 className="caption">{post.caption}</h3>
+    <div >
+      {showModal && (
+        <div className="newPost">
+         
+          <div>
+            
+            <img className="selectedImg"
+              src={
+                selectedFile instanceof File
+                  ? URL.createObjectURL(selectedFile)
+                  : ""
+              }
+              alt="Selected"
+            />
+            <label>
+              <input
+                name="fileInput"
+                type="file"
+                onChange={handleOnChange}
+              />
+            </label>
+            <label>
+              <input
+                name="caption"
+                type="text"
+                placeholder="caption"
+                onChange={handleOnChange}
+              />
+            </label>
+          </div>
+          <button onClick={createPost}>Create new post</button>
+          <button onClick={cancel}>Cancel</button>
+        </div>
+      )}
+
+      <div className="post-container">
+        {user &&
+          user.posts &&
+          user.posts.length > 0 &&
+          user.posts.map((post, index: number) => (
+            <div className="post">
+  <h3 className="caption">{post.caption}</h3>
+  <div className="image-container">
     <img className="image" src={post.imageUrl} alt="" />
-    <p>{post.updatedAt}</p>
-                  
-                  </div>
-))}
+    <div className="post-settings">
+      <span>🪶</span>
+      <span>🗫</span>
+      <span>🗑</span>
+    </div>
+  </div>
+  <p>{post.updatedAt}</p>
 </div>
+
+          ))}
+      </div>
     </div>
   );
 }

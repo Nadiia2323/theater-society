@@ -6,8 +6,48 @@
 .post{
     width: 50vh;
     height: 50vh;
+    position: relative;
+    display: inline-block;
 }
 .image{
     width: 40vh;
     height: 40vh;
+}
+.selectedImg{
+    width: 40vh;
+        height: 40vh;
+}
+
+.newPost {
+    position: fixed;
+    /* Абсолютное позиционирование относительно всего окна браузера */
+    top: 50%;
+    /* Разместить верхнюю границу модального окна на 50% высоты окна */
+    left: 50%;
+    /* Разместить левую границу модального окна на 50% ширины окна */
+    transform: translate(-50%, -50%);
+    /* Сместить модальное окно на половину его ширины и высоты назад */
+    /* Другие стили модального окна */
+    background: #fff;
+    padding: 20px;
+}
+
+
+
+.post .post-settings {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+}
+
+.post:hover .post-settings {
+    display: block;
+   
+}
+.post-settings{
+background-color: #fff;
+    width: 80%;
+    
 }
