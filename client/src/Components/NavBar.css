@@ -81,6 +81,11 @@ body {
 }
 .li {
 color:white;
+cursor: pointer;
+
+}
+.li :hover{
+    background-color:wheat
 }
 .nav--open .nav-menu {
     display: block;
@@ -163,6 +168,19 @@ color:white;
     opacity: 0;
 }
 
+.delete-modal{
+    position: fixed;
+    z-index: 2;
+   
+    top: 50%;
+    
+    left: 50%;
+   
+    transform: translate(-50%, -50%);
+   
+    background: rgb(62, 61, 61);
+    padding: 20px;
+}
 /* * {
     margin: 0;
     padding: 0;

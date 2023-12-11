@@ -1,5 +1,5 @@
 import express from "express"
-import { getAllTheatherUsers,registerTheater } from "../controller/theaterUserController.js"
+import { getAllTheatherUsers,registerTheater, uploadTheaterPosts } from "../controller/theaterUserController.js"
 import route from "./userRoute.js"
 import jwtAuth from "../middlewares/jwtAuth.js";
 import { getTheaterProfile } from "../controller/theaterUserController.js";
@@ -8,6 +8,7 @@ const router = express.Router()
 
 router.get('/all', getAllTheatherUsers)
 route.get('/profile', jwtAuth, getTheaterProfile)
+// route.post('/posts', jwtAuth, multerUpload.single("posts"), uploadTheaterPosts)
 
 
 router.post('/register', registerTheater)

@@ -5,8 +5,9 @@ import { useState, createContext, useEffect,  } from "react";
 export const AuthContext = createContext({});
 
 export const AuthContextProvider = ({ children }) => {
-  console.log("children :>> ", children);
-  const [user, setUser] = useState({ name: "test" });
+  
+  const [user, setUser] = useState(null);
+  const[userChecked,setUserChecked] = useState(false)
 
   const getProfile = async () => {
     const token = localStorage.getItem("token");
@@ -28,6 +29,7 @@ export const AuthContextProvider = ({ children }) => {
         const result = await response.json();
         console.log("%c result UserProfile :>> ", "color:red", result);
         setUser(result.user);
+        setUserChecked(true)
       } catch (error) {
         console.log("error :>> ", error);
       }
@@ -108,10 +110,11 @@ export const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     getProfile();
+    setUserChecked(false)
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, registration, login }}>
+    <AuthContext.Provider value={{ user, registration, login, userChecked }}>
       {children}
     </AuthContext.Provider>
   );

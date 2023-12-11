@@ -116,9 +116,10 @@ export default function Posts({ plusClicked }) {
           user.posts.length > 0 &&
           user.posts.map((post, index: number) => (
             <div className="post">
-  <h3 className="caption">{post.caption}</h3>
+  
   <div className="image-container">
-    <img className="image" src={post.imageUrl} alt="" />
+                <img className="image" src={post.imageUrl} alt="" />
+                <h3 className="caption">{post.caption}</h3>
     <div className="post-settings">
       <span>🪶</span>
       <span>🗫</span>

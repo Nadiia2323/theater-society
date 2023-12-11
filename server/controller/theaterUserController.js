@@ -90,6 +90,43 @@ const registerTheater = async  (req, res) => {
       message:"something went wrong, login one more time"
     })
     
+     
+     }
+     }
+const uploadTheaterPosts = async(req, res) => {
+         const { email, caption } = req.body  //imagine user has sent a caption
+  
+   if (req.file) {
+    try {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "posts",
+      });
+      console.log("result uploading :>> ", result);
+      // const user = await User.findOne(email); 
+      const user = req.user
+      if (user) {
+        const newPost = { imageUrl: result.secure_url, caption: req.body.caption }
+        const posts = [...user.posts, newPost]
+        // await user.save()
+      user.posts = posts;
+      await user.save();
+    }
+
+      res.status(201).json({
+        message: "post uploaded",
+        posts: result.secure_url,
+
+      });
+    } catch (error) {
+      console.log("error :>> ", error);
+      res.status(500).json({ error: "Failed to upload post" });
+    }
+  } else {
+    res.status(500).json({
+      message: "file not supported",
+    });
   }
-}
-export { getAllTheatherUsers,registerTheater, getTheaterProfile };
+
+       
+     }
+export { getAllTheatherUsers,registerTheater, getTheaterProfile, uploadTheaterPosts };

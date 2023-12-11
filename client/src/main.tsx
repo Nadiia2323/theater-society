@@ -5,6 +5,7 @@ import Profile from "./pages/Profile.tsx";
 import Home from "./pages/Home.tsx";
 import { AuthContextProvider } from "./context/AuhContext.tsx";
 import UpdateProfile from "./Components/UpdateProfile.tsx";
+import ProtectedRoute from "./context/ProtectedRoute.tsx";
 
 const router = createBrowserRouter([
   {
@@ -13,11 +14,16 @@ const router = createBrowserRouter([
   },
   {
     path: "/profile",
-    element: <Profile />,
+    element: (
+      <ProtectedRoute>
+        <Profile />
+        </ProtectedRoute>),
   },
    {
     path: "/profileSettings",
-    element: <UpdateProfile />,
+     element: (<ProtectedRoute>
+      <UpdateProfile />
+    </ProtectedRoute>),
   },
 ]);
 

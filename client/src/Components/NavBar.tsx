@@ -1,7 +1,7 @@
 import logonav from "../theater/nav-logo.jpg"
 
 import "../Components/NavBar.css"
-import { useNavigate } from "react-router-dom"
+// import { useNavigate } from "react-router-dom"
 
 
 

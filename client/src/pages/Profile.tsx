@@ -90,14 +90,11 @@ const handleNewsClick = () => {
               <>
                 <img
                   className="photo"
-                  src={ user.profilePhoto}
+                  src={ user.profilePhoto? user.profilePhoto:"https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"}
                   alt="your photo"
                 />
                 <p>BIO</p>
-                {/* <input type="file" onChange={handleInputChange} />
-                <button onClick={() => uploadPhoto(user?.id )}>
-                  upload photo
-                </button> */}
+               
               </>
             )}
           </div>

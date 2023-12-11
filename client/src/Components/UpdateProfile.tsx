@@ -3,6 +3,7 @@ import { AuthContext } from '../context/AuhContext';
 import { useContext } from 'react';
 import "./UpdateProfile.css";
 import { getToken } from '../utils/login';
+import Menu from './Menu';
 
 
 const UpdateProfile = () => {
@@ -16,8 +17,13 @@ const UpdateProfile = () => {
   // const [userPhoto, setUserPhoto] = useState<UserImageType | null>(null);
     const { user } = useContext(AuthContext)
   console.log('user :>> ', user);
- const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log("e.target :>> ", e);
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      [name]: value,
+    }));
+    
     const file = e.target.files?.[0] || "";
 
     setSelectedFile(file);
@@ -86,45 +92,62 @@ const UpdateProfile = () => {
   
    
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-     const token = getToken()
-    const myHeaders = new Headers();
-myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
-    myHeaders.append("Authorization", `Bearer ${token}`);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  const updatedData = {};
 
-const urlencoded = new URLSearchParams();
-    urlencoded.append("name", userData.name);
-    urlencoded.append("email", userData.email);
-    urlencoded.append("password", userData.password);
+  if (userData.name) {
+    updatedData.name = userData.name;
+  }
 
+  if (userData.email) {
+    updatedData.email = userData.email;
+  }
 
-const requestOptions = {
-  method: 'PUT',
-  headers: myHeaders,
-  body: urlencoded,
- 
-};
+  if (userData.password) {
+    updatedData.password = userData.password;
+  }
 
-    
+  if (Object.keys(updatedData).length > 0) {
     try {
-      const response = await fetch("http://localhost:5000/myApi/users/profileSettings", requestOptions)
-      const result = await response.json()
+      const token = getToken();
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+      myHeaders.append("Authorization", `Bearer ${token}`);
+
+      const urlencoded = new URLSearchParams();
+      if (updatedData.name) {
+        urlencoded.append("name", updatedData.name);
+      }
+      if (updatedData.email) {
+        urlencoded.append("email", updatedData.email);
+      }
+      if (updatedData.password) {
+        urlencoded.append("password", updatedData.password);
+      }
+
+      const requestOptions = {
+        method: 'PUT',
+        headers: myHeaders,
+        body: urlencoded,
+      };
+
+      const response = await fetch("http://localhost:5000/myApi/users/profileSettings", requestOptions);
+      const result = await response.json();
       console.log('updated successfully');
     } catch (error) {
       console.error('error:', error);
     }
-  };
+  } else {
+    alert('Please fill in at least one field to update.');
+  }
+};
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserData((prevUserData) => ({
-      ...prevUserData,
-      [name]: value,
-    }));
-  };
 
   return (
+    <>
+    <Menu/>
     <div className='form-container'>
       <h2>Update Profile</h2>
       <input type="file" onChange={handleInputChange} />
@@ -138,21 +161,22 @@ const requestOptions = {
           </label>
           
           Name:{user.userName}
-          <input type="text" name="name" value={userData.name} onChange={handleChange} />
+          <input type="text" name="name" value={userData.name} onClick={handleInputChange} />
               </label>
               
         <label>
                   Email: {user.email }
-          <input type="email" name="email" value={userData.email} onChange={handleChange} />
+          <input type="email" name="email" value={userData.email} onClick={handleInputChange}  />
         </label>
         <label>
           Password:
-          <input type="password" name="password" value={userData.password} onChange={handleChange} />
+          <input type="password" name="password" value={userData.password} onClick={handleInputChange} />
         </label>
        
         <button type="submit">Update</button>
       </form>
-    </div>
+      </div>
+      </>
   );
 };
 
