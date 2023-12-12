@@ -88,6 +88,7 @@ const register = async (req, res) => {
 };
 
 const imageUpload = async (req, res) => {
+  console.log('req.user :>> ', req.user);
   console.log("route working");
   console.log("req.file :>> ", req.file);
   const { email } = req.body
@@ -98,7 +99,8 @@ const imageUpload = async (req, res) => {
         folder: "profile_image",
       });
       console.log("result uploading :>> ", result);
-      const user = await User.findOne(email); 
+      // const user = await User.findOne(email); 
+      const user=req.user
     if (user) {
       user.profilePhoto = result.secure_url;
       await user.save();
@@ -192,7 +194,9 @@ const getUserProfile = async (req, res) => {
         email: req.user.email,
         userName: req.user.name,
         profilePhoto: req.user.profilePhoto,
-         posts:req.user.posts
+        posts: req.user.posts,
+        quote: req.user.quote,
+         about:req.user.about
       }
     })
     
@@ -211,14 +215,14 @@ const updateProfile = async (req, res) => {
   console.log('req :>> ', req);
   
 
-  const { name, email, password, profilePhoto } = req.body;
+  const { name, email, password, profilePhoto,quote,about } = req.body;
   console.log(req.user)
   try {
     if (!req.user || !req.user.id) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    await User.updateOne({ email: req.user.email }, { name, email, password, profilePhoto });
+    await User.updateOne({ email: req.user.email }, { name, email, password, profilePhoto,quote,about });
 
     res.status(200).json({ message: "Profile updated successfully" });
   } catch (error) {
@@ -295,8 +299,40 @@ const deleteAccount = async (req, res) => {
   }
 };
 
+const deletePost = async (req, res) => {
+  const user = req.user
+  console.log('user.posts :>> ', req.user.posts);
+  const postId = req.body._id
+  console.log('postId :>> ', postId);
+ try {
+    if (!user) {
+      return res.status(401).json({
+        message: "Please log in first"
+      });
+    }
+
+    const postIndex = user.posts.findIndex(post => post._id.toString() === postId);
+
+    if (postIndex === -1) {
+      return res.status(404).json({
+        message: "Post not found"
+      });
+    }
+    user.posts.splice(postIndex, 1);
+
+    await user.save();
+
+    return res.status(200).json({
+      message: "Post deleted successfully"
+    });
+  } catch (error) {
+    console.log('error :>> ', error);
+    return res.status(500).json({
+      message: "Something went wrong. Please try again later."
+    });
+  }
+}
 
 
 
-
-export { getAllUsers, register, imageUpload, login, getUserProfile,updateProfile,uploadPosts,deleteAccount };
+export { getAllUsers, register, imageUpload, login, getUserProfile,updateProfile,uploadPosts,deleteAccount,deletePost };

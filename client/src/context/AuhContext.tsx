@@ -3,16 +3,34 @@
 import { useState, createContext, useEffect,  } from "react";
 // import { useNavigate } from "react-router-dom";
 export const AuthContext = createContext({});
-
-export const AuthContextProvider = ({ children }) => {
+export interface User {
   
-  const [user, setUser] = useState(null);
-  const[userChecked,setUserChecked] = useState(false)
+  id: number;
+  name: string;
+  email: string;
+  profilePhoto:string
+}
+
+interface AuthContextProps {
+  user: User | null;
+  userChecked: boolean;
+  isLoading: boolean;
+  registration: (data: any, url: string) => Promise<any>;
+  login: (loginCredentials: { email: string; password: string }) => Promise<void>;
+  getProfile: () => Promise<void>;
+}
+
+export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  
+  const [user, setUser] = useState<User|null>(null);
+  const [userChecked, setUserChecked] = useState(false)
+  const [isLoading, setIsLoading] = useState (false)
 
   const getProfile = async () => {
+    setIsLoading(true)
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("register first!");
+      // alert("register first!");
     } else {
       const myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${token}`);
@@ -32,10 +50,12 @@ export const AuthContextProvider = ({ children }) => {
         setUserChecked(true)
       } catch (error) {
         console.log("error :>> ", error);
+      } finally {
+        setIsLoading(false)
       }
     }
   };
-  const registration = async (data, url) => {
+  const registration = async (data:any, url:string) => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
 
@@ -60,7 +80,8 @@ export const AuthContextProvider = ({ children }) => {
         requestOptions
       );
       const result = await response.json();
-      console.warn("result :>> ", result);
+      return result
+      // console.warn("result :>> ", result);
       // Handle result or update user state
       setUser(result.savedUser);
     } catch (error) {
@@ -68,7 +89,9 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
 
-  const login = async (loginCredentials) => {
+  const login = async(loginCredentials: { email: string; password: string }) => {
+    // setIsLoading(true)
+
     console.log("loginCredentials :>> ", loginCredentials);
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
@@ -105,6 +128,9 @@ export const AuthContextProvider = ({ children }) => {
       }
     } catch (error) {
       console.log("error :>> ", error);
+      // } finally {
+      //   setIsLoading(false)
+      // }
     }
   };
 
@@ -112,9 +138,17 @@ export const AuthContextProvider = ({ children }) => {
     getProfile();
     setUserChecked(false)
   }, []);
+    const contextValue: AuthContextProps = {
+    user,
+    userChecked,
+    isLoading,
+    registration,
+    login,
+    getProfile,
+  };
 
   return (
-    <AuthContext.Provider value={{ user, registration, login, userChecked }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

@@ -28,6 +28,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false
   },
+  quote: {
+    type: String,
+  },
+  about: {
+    type:String
+  },
   posts: [postSchema]
   
   

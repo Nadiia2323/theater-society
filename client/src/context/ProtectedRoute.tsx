@@ -3,16 +3,20 @@ import { AuthContext } from './AuhContext'
 import { Navigate } from 'react-router-dom'
 
 export default function ProtectedRoute({ children }) {
-    const { user,userChecked } = useContext(AuthContext)
+    const { user,userChecked, isLoading } = useContext(AuthContext)
     
-    return userChecked ?
+        const isNotNullOrUndefined = (user !== null) && (user !== undefined)
+        console.log('isNotNullOrUndefined :>> ', isNotNullOrUndefined);
+          return userChecked ?
         (
-            user ? (
+            isNotNullOrUndefined ? (
                 <>
                     {children}
                 </>
             ) : (
                 <Navigate to={'/'} />
-            )) : null;
-  }
+            )) : null;  
+    }
+
+
 

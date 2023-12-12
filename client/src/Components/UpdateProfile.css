@@ -6,3 +6,18 @@
     display: flex;
     flex-direction: column;
 }
+.profilePhto-holder{
+    display: flex;
+    flex-direction: row;
+}
+.upload-button{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.profilePhoto{
+    width: 200px;
+    height: 200px;
+}

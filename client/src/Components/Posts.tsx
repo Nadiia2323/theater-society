@@ -5,6 +5,7 @@ import { AuthContext } from "../context/AuhContext";
 import { useEffect } from "react";
 
 
+
 import "./Posts.css"
 interface PostsProps {
    plusClicked: boolean;
@@ -14,8 +15,10 @@ export default function Posts({ plusClicked }) {
   const [caption, setCaption] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | string>("");
   const [showModal, setShowModal] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null)
   const { user } = useContext(AuthContext)
-  console.log('user iside posts :>> ', user);
+  
+  // console.log('user iside posts :>> ', user);
   console.log('plusClicked :>> ', plusClicked);
    
   // const modalOpen = () => {
@@ -64,12 +67,49 @@ export default function Posts({ plusClicked }) {
       console.log("error", error);
     }
   };
-  const cancel = (e:MouseEventHandler<HTMLButtonElement>) => {
+  const cancel = (e: MouseEventHandler<HTMLButtonElement>) => {
     setShowModal(false)
   }
+
+  const deletePost = async (postId) => {
+    const token = getToken()
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+    myHeaders.append("Authorization", `Bearer ${token}`);
+
+    const urlencoded = new URLSearchParams();
+    urlencoded.append("_id", postId);
+
+    const requestOptions = {
+      method: 'DELETE',
+      headers: myHeaders,
+      body: urlencoded,
+      
+    };
+    try {
+      const response = await fetch("http://localhost:5000/myApi/users/deletePost", requestOptions)
+      const result = await response.json()
+      alert(result.message)
+    } catch (error) {
+      console.log('error :>> ', error);
+    }
+
+   
+    
+  }
+  
+  const handlePostDelete = (postId) => {
+  deletePost(postId);
+}
+ 
+const handlePostClick = (post) => {
+  setSelectedPost(post)
+  console.log('post :>> ', selectedPost);
+}
+
  useEffect(() => {
     if (plusClicked) {
-      setShowModal(true); // При изменении plusClicked открываем модальное окно
+      setShowModal(true); 
     }
   }, [plusClicked]);
     
@@ -115,7 +155,7 @@ export default function Posts({ plusClicked }) {
           user.posts &&
           user.posts.length > 0 &&
           user.posts.map((post, index: number) => (
-            <div className="post">
+            <div key={post._id} onClick={() => handlePostClick(post)} className="post">
   
   <div className="image-container">
                 <img className="image" src={post.imageUrl} alt="" />
@@ -123,8 +163,11 @@ export default function Posts({ plusClicked }) {
     <div className="post-settings">
       <span>🪶</span>
       <span>🗫</span>
-      <span>🗑</span>
-    </div>
+                  <span onClick={() => handlePostDelete(post._id)}>🗑</span>
+                  
+                </div>
+                <div><IoMdHeartEmpty /></div>
+
   </div>
   <p>{post.updatedAt}</p>
 </div>

@@ -6,7 +6,7 @@ import { AuthContext } from "../context/AuhContext";
 
 export default function Menu() {
   const { user } = useContext(AuthContext);
-  console.log('user in menu :>> ', user);
+  // console.log('user in menu :>> ', user);
 
   const [isOpen, setIsOpen] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false)
