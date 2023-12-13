@@ -1,4 +1,6 @@
-import User from "../model/UserModel.js";
+import  User  from "../model/UserModel.js";
+
+
 import { encryptPassword, verifyPassword } from "../unils/encryptPassword.js";
 import { v2 as cloudinary } from "cloudinary";
 import { issueToken } from "../unils/jwt.js";
@@ -196,7 +198,9 @@ const getUserProfile = async (req, res) => {
         profilePhoto: req.user.profilePhoto,
         posts: req.user.posts,
         quote: req.user.quote,
-         about:req.user.about
+        about: req.user.about,
+        favorites:req.user.favorites
+         
       }
     })
     
@@ -333,6 +337,206 @@ const deletePost = async (req, res) => {
   }
 }
 
+const likePost = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const postId = req.body.postId; 
+    const user = req.user;
+
+    if (!userId) {
+      return res.status(401).json({
+        message: "Login first"
+      });
+    }
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    const post = user.posts.find(post => post._id.toString() === postId);
+
+    if (!post) {
+      return res.status(404).json({
+        message: "Post not found"
+      });
+    }
+
+    const alreadyLikedIndex = post.likes.indexOf(userId);
+
+    if (alreadyLikedIndex !== -1) {
+      post.likes.splice(alreadyLikedIndex, 1);
+    } else {
+      post.likes.push(userId);
+    }
+
+    await user.save();
+
+  
+    res.status(200).json({
+      message: alreadyLikedIndex !== -1 ? "Like removed successfully" : "Post liked successfully",
+      updatedPost: post ,
+      number : post.likes.length
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong"
+    });
+  }
+};
+
+const commentPost = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = req.user;
+    const commentText = req.body.text;
+    const postId = req.body.postId;
+
+    if (!userId || !user) {
+      return res.status(401).json({
+        message: "Unauthorized. Please log in first."
+      });
+    }
+
+    const post = user.posts.find(post => post._id.toString() === postId);
+
+    if (!post) {
+      return res.status(404).json({
+        message: "Post not found"
+      });
+    }
+
+    const newComment = {
+      user: userId,
+      text: commentText
+    };
+
+    post.comments.push(newComment);
+    await user.save();
+
+    return res.status(201).json({
+      message: "Comment added successfully",
+      updatedPost: post
+    });
+
+  } catch (error) {
+    console.error(error); // Логирование ошибки для дальнейшего анализа
+    return res.status(400).json({
+      message: "Something went wrong"
+    });
+  }
+};
 
 
-export { getAllUsers, register, imageUpload, login, getUserProfile,updateProfile,uploadPosts,deleteAccount,deletePost };
+const deleteComment = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = req.user;
+    const postId = req.body.postId;
+    const commentId = req.body.commentId; 
+
+    if (!userId) {
+      return res.status(401).json({
+        message: "Login first"
+      });
+    }
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    const post = user.posts.find(post => post._id.toString() === postId);
+
+    if (!post) {
+      return res.status(404).json({
+        message: "Post not found"
+      });
+    }
+
+    const commentIndex = post.comments.findIndex(comment => comment._id.toString() === commentId);
+
+    if (commentIndex === -1) {
+      return res.status(404).json({
+        message: "Comment not found"
+      });
+    }
+
+    const commentToDelete = post.comments[commentIndex];
+    console.log('commentToDelete.user :>> ', commentToDelete.user);
+    console.log('userId :>> ', userId);
+
+    if  (commentToDelete.user.toString() !== userId.toString()) {
+      return res.status(403).json({
+        message: "You are not authorized to delete this comment"
+      });
+    }
+
+    post.comments.splice(commentIndex, 1);
+
+    await user.save();
+
+    res.status(200).json({
+      message: "Comment deleted successfully",
+      updatedPost: post 
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "Something went wrong"
+    });
+  }
+};
+
+const favoritePosts = async (req, res) => {
+  try {
+    const user = req.user;
+    const postId = req.body.postId;
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({
+        message: "Post not found"
+      });
+    }
+
+    const postIndex = user.favorites.findIndex(favorite => favorite.toString() === postId);
+
+    if (postIndex !== -1) {
+      
+      user.favorites.splice(postIndex, 1);
+
+      await user.save();
+
+      return res.status(200).json({
+        message: "Post removed from favorites successfully"
+      });
+    } else {
+      
+      user.favorites.push(post);
+
+      await user.save();
+
+      return res.status(200).json({
+        message: "Post added to favorites successfully"
+      });
+    }
+  } catch (error) {
+    res.status(400).json({
+      message: "Something went wrong"
+    });
+  }
+};
+
+
+export { getAllUsers,favoritePosts ,register, imageUpload, login, getUserProfile,updateProfile,uploadPosts,deleteAccount,deletePost,likePost, commentPost,deleteComment};

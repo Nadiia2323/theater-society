@@ -4,7 +4,18 @@ import mongoose from 'mongoose';
 const postSchema = new mongoose.Schema({
       caption: { type: String },
       imageUrl: { type: String },
-      // likes: [ {type: mongoose.Types.ObjectId}]
+  likes: [{
+    type: mongoose.Types.ObjectId,
+    ref: 'User'
+  }],
+ comments: [{
+    user: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User'
+    },
+    text: { type: String },
+    createdAt: { type: Date, default: Date.now }
+  }]
 }, { timestamps: true })
 
 const userSchema = new mongoose.Schema({
@@ -34,7 +45,10 @@ const userSchema = new mongoose.Schema({
   about: {
     type:String
   },
-  posts: [postSchema]
+  posts: [postSchema],
+  favorites: [
+      {type: mongoose.Types.ObjectId}
+  ]
   
   
 });

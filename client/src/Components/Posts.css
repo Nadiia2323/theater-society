@@ -2,7 +2,9 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
 }
-
+.image-container{
+    position: relative;
+}
 .post{
     width: 50vh;
     height: 50vh;
@@ -55,3 +57,19 @@ span{
     cursor: pointer;
 }
 
+.likes{
+   color: white;
+   font-size: 28px;
+    position: absolute;
+    left: 70%;
+    bottom: 10%;
+        
+}
+.clickedPost{
+    width: 400px;
+    background-color: #fff;
+}
+.clickedPost-img{
+width: 400px;
+height: 400px;
+}

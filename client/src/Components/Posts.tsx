@@ -1,50 +1,37 @@
-
 import { ChangeEvent, MouseEventHandler, useContext, useState } from "react";
 import { getToken } from "../utils/login";
 import { AuthContext } from "../context/AuhContext";
 import { useEffect } from "react";
 
-
-
-import "./Posts.css"
+import "./Posts.css";
+import Comments from "./Comments";
 interface PostsProps {
-   plusClicked: boolean;
+  plusClicked: boolean;
 }
 
 export default function Posts({ plusClicked }) {
   const [caption, setCaption] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | string>("");
   const [showModal, setShowModal] = useState(false);
-  const [selectedPost, setSelectedPost] = useState(null)
-  const { user } = useContext(AuthContext)
-  
-  // console.log('user iside posts :>> ', user);
-  console.log('plusClicked :>> ', plusClicked);
-   
-  // const modalOpen = () => {
-  //   if (plusClicked) {
-  //     setShowModal(true)
-  //   }
-  // }
+  const [postModal, setPostModal] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const[newComment,setNewComment]=useState("")
+  const { user } = useContext(AuthContext);
 
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === "caption") {
       setCaption(e.target.value);
     } else if (e.target.name === "fileInput") {
-      
       const file = e.target.files && e.target.files[0];
-      setSelectedFile(file || ""); // Set the selected file
+      setSelectedFile(file || "");
     }
   };
 
   const createPost = async () => {
-    setShowModal(false)
-    const token = getToken()
+    setShowModal(false);
+    const token = getToken();
     const myHeaders = new Headers();
-    myHeaders.append(
-      "Authorization",
-      `Bearer ${token}`
-    );
+    myHeaders.append("Authorization", `Bearer ${token}`);
 
     const formdata = new FormData();
     formdata.append("caption", caption);
@@ -68,11 +55,11 @@ export default function Posts({ plusClicked }) {
     }
   };
   const cancel = (e: MouseEventHandler<HTMLButtonElement>) => {
-    setShowModal(false)
-  }
+    setShowModal(false);
+  };
 
   const deletePost = async (postId) => {
-    const token = getToken()
+    const token = getToken();
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
     myHeaders.append("Authorization", `Bearer ${token}`);
@@ -81,47 +68,84 @@ export default function Posts({ plusClicked }) {
     urlencoded.append("_id", postId);
 
     const requestOptions = {
-      method: 'DELETE',
+      method: "DELETE",
       headers: myHeaders,
       body: urlencoded,
-      
     };
     try {
-      const response = await fetch("http://localhost:5000/myApi/users/deletePost", requestOptions)
+      const response = await fetch(
+        "http://localhost:5000/myApi/users/deletePost",
+        requestOptions
+      );
+      const result = await response.json();
+      alert(result.message);
+    } catch (error) {
+      console.log("error :>> ", error);
+    }
+  };
+
+  const handlePostDelete = (postId) => {
+    deletePost(postId);
+  };
+
+  const handlePostClick = (post) => {
+    setSelectedPost(post);
+    console.log("post :>> ", selectedPost);
+  };
+
+  const handleOpenPost = () => {
+    setPostModal(true);
+  };
+
+  const handleCommentOnChange = (e) => {
+    console.log('e.target.value :>> ', e.target.value);
+    const comment = e.target.value
+    setNewComment(comment)
+    console.log('NewComment :>> ', newComment);
+  }
+console.log('selectedPost :>> ', selectedPost);
+  const postComment = async () => {
+    const token = getToken()
+    const postId = selectedPost?._id
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+    myHeaders.append("Authorization", `Bearer ${token}`);
+
+    const urlencoded = new URLSearchParams();
+    urlencoded.append("text", newComment);
+    urlencoded.append("postId", postId);
+
+    const requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: urlencoded,
+  
+    };
+    try {
+      const response = await fetch("http://localhost:5000/myApi/users/comments", requestOptions)
       const result = await response.json()
-      alert(result.message)
+      console.log('comment result :>> ', result);
     } catch (error) {
       console.log('error :>> ', error);
     }
 
-   
     
+      
   }
-  
-  const handlePostDelete = (postId) => {
-  deletePost(postId);
-}
- 
-const handlePostClick = (post) => {
-  setSelectedPost(post)
-  console.log('post :>> ', selectedPost);
-}
 
- useEffect(() => {
+  useEffect(() => {
     if (plusClicked) {
-      setShowModal(true); 
+      setShowModal(true);
     }
   }, [plusClicked]);
-    
 
   return (
-    <div >
+    <div>
       {showModal && (
         <div className="newPost">
-         
           <div>
-            
-            <img className="selectedImg"
+            <img
+              className="selectedImg"
               src={
                 selectedFile instanceof File
                   ? URL.createObjectURL(selectedFile)
@@ -130,11 +154,7 @@ const handlePostClick = (post) => {
               alt="Selected"
             />
             <label>
-              <input
-                name="fileInput"
-                type="file"
-                onChange={handleOnChange}
-              />
+              <input name="fileInput" type="file" onChange={handleOnChange} />
             </label>
             <label>
               <input
@@ -155,23 +175,54 @@ const handlePostClick = (post) => {
           user.posts &&
           user.posts.length > 0 &&
           user.posts.map((post, index: number) => (
-            <div key={post._id} onClick={() => handlePostClick(post)} className="post">
-  
-  <div className="image-container">
+            <div
+              key={post._id}
+              onClick={() => handlePostClick(post)}
+              className="post"
+            >
+              <div className="image-container" onClick={handleOpenPost}>
+                <div className="likes">&#x2661;</div>
+
                 <img className="image" src={post.imageUrl} alt="" />
                 <h3 className="caption">{post.caption}</h3>
-    <div className="post-settings">
-      <span>🪶</span>
-      <span>🗫</span>
+                <div className="post-settings">
+                  <span>🪶</span>
+                  <span>🗫</span>
                   <span onClick={() => handlePostDelete(post._id)}>🗑</span>
-                  
+                  {postModal && (
+                    <div className="clickedPost">
+                      <img
+                        className="clickedPost-img"
+                        src={post.imageUrl}
+                        alt=""
+                      />
+                      <h3 className="clickedPost-caption">{post.caption}</h3>
+                      <div className="comments">
+                        {post.comments.map((comment, index) => (
+                          <Comments
+                            comment={comment}
+                            index={index}
+                            key={index}
+                          />
+                        ))}
+                      </div>
+
+                      <form id="commentForm">
+                        <input
+                          type="text"
+                          id="commentText"
+                          
+                          placeholder="Comment..."
+                          onChange={handleCommentOnChange}
+                        />
+                        <button type="submit" onClick={postComment}>send</button>
+                      </form>
+                    </div>
+                  )}
                 </div>
-                <div><IoMdHeartEmpty /></div>
-
-  </div>
-  <p>{post.updatedAt}</p>
-</div>
-
+              </div>
+              <p>{post.updatedAt}</p>
+            </div>
           ))}
       </div>
     </div>
