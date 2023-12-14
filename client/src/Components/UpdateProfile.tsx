@@ -10,7 +10,8 @@ const UpdateProfile = () => {
     name: "",
     email: "",
     password: "",
-    quote:""
+    quote: "",
+    about:""
   });
   const [selectedFile, setSelectedFile] = useState<File | string>("");
   // const [userPhoto, setUserPhoto] = useState<UserImageType | null>(null);
@@ -23,8 +24,8 @@ const UpdateProfile = () => {
       [name]: value,
     }));
 
-    const file = e.target.files?.[0] || "";
-
+    const file = e.target.files?.[0];
+console.log('file :>> ', file);
     setSelectedFile(file);
     console.log("selectedFile :>> ", selectedFile);
   };
@@ -72,6 +73,9 @@ const UpdateProfile = () => {
     if (userData.quote) {
       updatedData.quote = userData.quote
     }
+    if (userData.about) {
+      updatedData.about = userData.about
+    }
 
     if (Object.keys(updatedData).length > 0) {
       try {
@@ -92,6 +96,9 @@ const UpdateProfile = () => {
         }
         if (updatedData.quote) {
           urlencoded.append("quote", updatedData.quote);
+        }
+        if (updatedData.about) {
+          urlencoded.append("about", updatedData.about);
         }
 
         const requestOptions = {
@@ -123,12 +130,12 @@ const UpdateProfile = () => {
         <div className="profilePhto-holder">
         <div>
           
-              <img className="profilePhoto" src={user.profilePhoto || selectedFile} alt="" /> Profile Photo
+              <img className="profilePhoto" src={user.profilePhoto || selectedFile } alt="" /> Profile Photo
             
         </div>
         <div className="upload-button">
           <input type="file" onChange={handleInputChange} />
-        <button onChange={handleProfilePhotoUpload}>upload photo</button>
+        <button onClick={handleProfilePhotoUpload}>upload photo</button>
           </div>
           </div>
         
@@ -155,7 +162,7 @@ const UpdateProfile = () => {
             />
           </label>
           <label > Quote: <input type="text" name="quote" placeholder={user.quote} value={userData.quote} onChange={handleInputChange}/></label>
-          <label > About: <input type="text" placeholder={user.bio} /></label>
+          <label > About: <input type="text" name="about" placeholder={user.about} value={userData.about} onChange={handleInputChange} /></label>
           {/* <label>
             Password:
             <input

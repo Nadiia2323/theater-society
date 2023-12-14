@@ -1,54 +1,81 @@
 #root {
-    background-color: black;
+  background-color: black;
 }
 .profile-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
+  display: flex;
+  flex-direction: row;
+  /* justify-content: space-around; */
+ justify-content: center;
+ gap: 10rem;
 }
-.BIO-container {
-    width: 200px;
-        height: 200px;
+.photo-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
 }
-.followers-container{
-    display: flex;
-    flex-direction: row;
-    gap: 5rem;
+.bio-container{
+    width: 100vh;
+   
 }
-.news-container{
-    background-color: #b0baba4d;
-    display: flex;
-    justify-content: center;
-    gap: 5rem;
+.followers-container {
+  display: flex;
+  flex-direction: row;
+  gap: 5rem;
 }
-.photo{
-    width: 200px;
-    height: 200px;
+.news-container {
+    margin-top: 10vh;
+  background-color: #b0baba4d;
+  display: flex;
+  justify-content: center;
+  gap: 5rem;
 }
+.photo {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  z-index: 1;
+
+  border: 2px solid #edf1f5;
+  filter: drop-shadow(0 0 8px #96c5f4);
+}
+.photoProfile-gradiant {
+  position: relative;
+
+  display: inline-block;
+}
+
 .posts {
-    cursor: pointer;
+  cursor: pointer;
 }
-.news{
-cursor:pointer
+.news {
+  cursor: pointer;
 }
 
 .addPost {
-    display: flex;
-    flex-direction: row;
-    position: relative;
-    width: 55px;
-    
-   
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  width: 55px;
 }
 
 .plus-icon {
-    position: absolute;
-    left: 50px;
-    /* Изменено значение на right */
-    top: 28%;
-    transform: translateY(-50%);
-    color: white;
-    font-size: 24px;
-    cursor: pointer
+  position: absolute;
+  left: 50px;
+  
+  top: 28%;
+  transform: translateY(-50%);
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.quote{
+    font-style: italic;
+}
+.name{
     
+        filter: drop-shadow(0 0 8px #96c5f4);
 }

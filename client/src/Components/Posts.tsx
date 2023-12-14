@@ -15,8 +15,26 @@ export default function Posts({ plusClicked }) {
   const [showModal, setShowModal] = useState(false);
   const [postModal, setPostModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
-  const[newComment,setNewComment]=useState("")
+  const [newComment, setNewComment] = useState("");
+  const[showDropDown,setShowDropDown] = useState(false)
   const { user } = useContext(AuthContext);
+
+  const formatDate = (updatedAt ) => {
+  
+  const date = new Date(updatedAt);
+  
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  
+  
+  
+  return `${day}.${month}.${year} at ${hours}:${minutes}`;
+  };
+  
 
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === "caption") {
@@ -90,23 +108,26 @@ export default function Posts({ plusClicked }) {
 
   const handlePostClick = (post) => {
     setSelectedPost(post);
+    // setPostModal(true);
     console.log("post :>> ", selectedPost);
   };
 
-  const handleOpenPost = () => {
-    setPostModal(true);
+  const handleOpenPost = (post) => {
+  //  setSelectedPost(post);
+  // setPostModal(true);
   };
 
+
   const handleCommentOnChange = (e) => {
-    console.log('e.target.value :>> ', e.target.value);
-    const comment = e.target.value
-    setNewComment(comment)
-    console.log('NewComment :>> ', newComment);
-  }
-console.log('selectedPost :>> ', selectedPost);
+    console.log("e.target.value :>> ", e.target.value);
+    const comment = e.target.value;
+    setNewComment(comment);
+    console.log("NewComment :>> ", newComment);
+  };
+  console.log("selectedPost :>> ", selectedPost);
   const postComment = async () => {
-    const token = getToken()
-    const postId = selectedPost?._id
+    const token = getToken();
+    const postId = selectedPost?._id;
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
     myHeaders.append("Authorization", `Bearer ${token}`);
@@ -116,22 +137,27 @@ console.log('selectedPost :>> ', selectedPost);
     urlencoded.append("postId", postId);
 
     const requestOptions = {
-      method: 'POST',
+      method: "POST",
       headers: myHeaders,
       body: urlencoded,
-  
     };
     try {
-      const response = await fetch("http://localhost:5000/myApi/users/comments", requestOptions)
-      const result = await response.json()
-      console.log('comment result :>> ', result);
+      const response = await fetch(
+        "http://localhost:5000/myApi/users/comments",
+        requestOptions
+      );
+      const result = await response.json();
+      console.log("comment result :>> ", result);
     } catch (error) {
-      console.log('error :>> ', error);
+      console.log("error :>> ", error);
     }
-
-    
-      
-  }
+  };
+  // const handleDropDown = (postId) => {
+  //   setShowDropDown((prevState) => ({
+  //   ...prevState,
+  //   [postId]: !prevState[postId] 
+  // }));
+  // }
 
   useEffect(() => {
     if (plusClicked) {
@@ -181,24 +207,42 @@ console.log('selectedPost :>> ', selectedPost);
               className="post"
             >
               <div className="image-container" onClick={handleOpenPost}>
-                <div className="likes">&#x2661;</div>
-
-                <img className="image" src={post.imageUrl} alt="" />
-                <h3 className="caption">{post.caption}</h3>
+                <div>
+                   <div className="dropdown">
+                    
+                    <ul className="dropbtn icons btn-right showLeft"  >
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                    </ul>
+                    {showDropDown && (<div  id={`myDropdown-${post._id}`} className="dropdown-content">
+                        
+                        <a href="#about">Edit</a>
+                        <a href="#contact">Delete</a>
+                    </div>)}
+                    
+                </div>
+                  <div className="likes">&#x2661;</div>
+                  <img className="image" src={post.imageUrl} alt="" />
+                </div>
+                <p className="date">{formatDate(post.updatedAt)}</p>
+                <div className="caption-overlay">
+                  <h3 className="caption">{post.caption}</h3>
+                </div>
                 <div className="post-settings">
-                  <span>🪶</span>
+                  {/* <span>🪶</span>
                   <span>🗫</span>
-                  <span onClick={() => handlePostDelete(post._id)}>🗑</span>
-                  {postModal && (
+                  <span onClick={() => handlePostDelete(post._id)}>🗑</span> */}
+                  {selectedPost &&(
                     <div className="clickedPost">
                       <img
                         className="clickedPost-img"
-                        src={post.imageUrl}
+                        src={selectedPost.imageUrl}
                         alt=""
                       />
-                      <h3 className="clickedPost-caption">{post.caption}</h3>
+                      <h3 className="clickedPost-caption">{selectedPost.caption}</h3>
                       <div className="comments">
-                        {post.comments.map((comment, index) => (
+                        {selectedPost.comments.map((comment, index) => (
                           <Comments
                             comment={comment}
                             index={index}
@@ -211,17 +255,18 @@ console.log('selectedPost :>> ', selectedPost);
                         <input
                           type="text"
                           id="commentText"
-                          
                           placeholder="Comment..."
                           onChange={handleCommentOnChange}
                         />
-                        <button type="submit" onClick={postComment}>send</button>
+                        <button type="submit" onClick={postComment}>
+                          send
+                        </button>
                       </form>
                     </div>
                   )}
                 </div>
               </div>
-              <p>{post.updatedAt}</p>
+              
             </div>
           ))}
       </div>

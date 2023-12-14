@@ -422,7 +422,7 @@ const commentPost = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error); // Логирование ошибки для дальнейшего анализа
+    console.error(error); 
     return res.status(400).json({
       message: "Something went wrong"
     });
