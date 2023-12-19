@@ -1,22 +1,22 @@
 import { Timestamp } from 'mongodb';
 import mongoose from 'mongoose';
 
-const postSchema = new mongoose.Schema({
-      caption: { type: String },
-      imageUrl: { type: String },
-  likes: [{
-    type: mongoose.Types.ObjectId,
-    ref: 'User'
-  }],
- comments: [{
-    user: {
-      type: mongoose.Types.ObjectId,
-      ref: 'User'
-    },
-    text: { type: String },
-    createdAt: { type: Date, default: Date.now }
-  }]
-}, { timestamps: true })
+// const postSchema = new mongoose.Schema({
+//       caption: { type: String },
+//       imageUrl: { type: String },
+//   likes: [{
+//     type: mongoose.Types.ObjectId,
+//     ref: 'User'
+//   }],
+//  comments: [{
+//     user: {
+//       type: mongoose.Types.ObjectId,
+//       ref: 'User'
+//     },
+//     text: { type: String },
+//     createdAt: { type: Date, default: Date.now }
+//   }]
+// }, { timestamps: true })
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -45,7 +45,10 @@ const userSchema = new mongoose.Schema({
   about: {
     type:String
   },
-  posts: [postSchema],
+   posts: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Post'
+  }],
   favorites: [
       {type: mongoose.Types.ObjectId}
   ]

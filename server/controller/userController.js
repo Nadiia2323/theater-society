@@ -28,6 +28,25 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const getUser = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const userById = await User.findById(userId); 
+        console.log('userById :>> ', userById);
+
+        
+        if (userById) {
+            res.status(200).json(userById);
+        } else {
+            res.status(404).send('User not found');
+        }
+    } catch (error) {
+        console.error('Error :>> ', error);
+        res.status(500).send('Server error');
+    }
+};
+
+
 const register = async (req, res) => {
   console.log("register user controller working ");
   console.log(req.body);
@@ -188,30 +207,34 @@ const login = async (req, res) => {
 const getUserProfile = async (req, res) => {
   console.log("getUserProfile is running");
   console.log('req.user :>> ', req.user);
-  if (req.user) {
-    res.status(200).json({
-      message: "user profile",
-      user: {
-        id: req.user._id,
-        email: req.user.email,
-        userName: req.user.name,
-        profilePhoto: req.user.profilePhoto,
-        posts: req.user.posts,
-        quote: req.user.quote,
-        about: req.user.about,
-        favorites:req.user.favorites
-         
-      }
-    })
-    
-  }
-  if (!req.user) {
-    res.status(400).json({
-      message:"something went wrong, login one more time"
-    })
-    
+  
+  try {
+    const user = await User.findById(req.user._id).populate('posts');
+    if (user) {
+      res.status(200).json({
+        message: "user profile",
+        user: {
+          id: user._id,
+          email: user.email,
+          userName: user.name,
+          profilePhoto: user.profilePhoto,
+          posts: user.posts,
+          quote: user.quote,
+          about: user.about,
+          favorites: user.favorites
+        }
+      });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error('Error :>> ', error);
+    res.status(500).json({
+      message: "Something went wrong, please try again"
+    });
   }
 }
+
 
 
 const updateProfile = async (req, res) => {
@@ -340,27 +363,16 @@ const deletePost = async (req, res) => {
 const likePost = async (req, res) => {
   try {
     const userId = req.user._id;
-    const postId = req.body.postId; 
-    const user = req.user;
+    const postId = req.body.postId;
 
     if (!userId) {
-      return res.status(401).json({
-        message: "Login first"
-      });
+      return res.status(401).json({ message: "Login first" });
     }
 
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found"
-      });
-    }
-
-    const post = user.posts.find(post => post._id.toString() === postId);
+    const post = await Post.findById(postId);
 
     if (!post) {
-      return res.status(404).json({
-        message: "Post not found"
-      });
+      return res.status(404).json({ message: "Post not found" });
     }
 
     const alreadyLikedIndex = post.likes.indexOf(userId);
@@ -371,21 +383,18 @@ const likePost = async (req, res) => {
       post.likes.push(userId);
     }
 
-    await user.save();
+    await post.save();
 
-  
     res.status(200).json({
       message: alreadyLikedIndex !== -1 ? "Like removed successfully" : "Post liked successfully",
-      updatedPost: post ,
-      number : post.likes.length
+      updatedLikes: post.likes.length
     });
-    
+
   } catch (error) {
-    res.status(500).json({
-      message: "Something went wrong"
-    });
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
+
 
 const commentPost = async (req, res) => {
   try {
@@ -538,5 +547,7 @@ const favoritePosts = async (req, res) => {
   }
 };
 
-
-export { getAllUsers,favoritePosts ,register, imageUpload, login, getUserProfile,updateProfile,uploadPosts,deleteAccount,deletePost,likePost, commentPost,deleteComment};
+const getLikes = async (req,res) => {
+  
+}
+export {getUser,getLikes, getAllUsers,favoritePosts ,register, imageUpload, login, getUserProfile,updateProfile,uploadPosts,deleteAccount,deletePost,likePost, commentPost,deleteComment};

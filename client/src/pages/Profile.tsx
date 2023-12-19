@@ -2,29 +2,36 @@ import { useState, useContext, useEffect } from "react";
 import NavBar from "../Components/NavBar";
 import "./Profile.css";
 import Posts from "../Components/Posts";
-// import News from "../Components/News";
-import { AuthContext } from "../context/AuhContext";
+
+import { AuthContext, AuthContextProps } from "../context/AuhContext";
 import News from "../Components/News";
 import Menu from "../Components/Menu";
-interface ServerOkResponse extends UserImageType {
-  message: string;
-}
+// interface ServerOkResponse extends UserImageType {
+//   message: string;
+// }
 interface UserImageType {
   profilePhoto: string;
 }
-// interface User {
-//   userName?: string;
-//   userEmail: string;
+export interface User {
+  about?: string;
+  email: string;
+  favorites?: []; 
+  id: string;
+  posts?: []; 
+  profilePhoto?: UserImageType;
+  quote?: string;
+  userName?: string;
+}
 
-// }
 
 export default function Profile() {
-  const { user, getProfile } = useContext(AuthContext);
+ const { user, getProfile }:AuthContextProps = useContext(AuthContext);
+
   const [showPosts, setShowPosts] = useState(true);
   const [showPlusIcon, setShowPlusIcon] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | string>("");
-  const [userPhoto, setUserPhoto] = useState<UserImageType | null>(null);
+ 
   const [plusClicked, setPlusClicked] = useState(false);
+  
 
   const handlePlusIconClick = () => {
     setPlusClicked(true);
@@ -45,13 +52,13 @@ export default function Profile() {
   useEffect(() => {
     getProfile();
   }, []);
-
+ 
   return (
-    <>
+    <div >
       <NavBar />
       <Menu />
       {user && (
-        <div className="profile-section">
+        <div className="profile-section"  >
           <div className="profile-container">
             <div className="photo-container">
               <img
@@ -95,6 +102,6 @@ export default function Profile() {
           {showPosts ? <Posts plusClicked={plusClicked} /> : <News />}
         </div>
       )}
-    </>
+    </div>
   );
 }

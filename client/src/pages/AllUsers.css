@@ -1,0 +1,28 @@
+.users-list{
+    color: white;
+list-style-type: none;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+
+}
+.Usersphoto{
+    
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            z-index: 1;
+            
+    
+            border: 2px solid #edf1f5;
+            filter: drop-shadow(0 0 8px #96c5f4);
+        
+}
+.list{
+    gap: 2rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}

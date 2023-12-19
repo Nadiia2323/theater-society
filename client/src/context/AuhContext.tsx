@@ -1,23 +1,24 @@
 // create context
 
 import { useState, createContext, useEffect,  } from "react";
+import { User } from "../pages/Profile";
 // import { useNavigate } from "react-router-dom";
 export const AuthContext = createContext({});
-export interface User {
+// export interface User {
   
-  id: number;
-  name: string;
-  email: string;
-  profilePhoto:string
-}
+//   id: number;
+//   name: string;
+//   email: string;
+//   profilePhoto:string
+// }
 
-interface AuthContextProps {
+ export interface AuthContextProps {
   user: User | null;
-  userChecked: boolean;
-  isLoading: boolean;
-  registration: (data: any, url: string) => Promise<any>;
-  login: (loginCredentials: { email: string; password: string }) => Promise<void>;
-  getProfile: () => Promise<void>;
+  userChecked?: boolean;
+  isLoading?: boolean;
+  registration?: (data: any, url: string) => Promise<any>;
+  login?: (loginCredentials: { email: string; password: string }) => Promise<void>;
+  getProfile?: () => Promise<void>;
 }
 
 export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

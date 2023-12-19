@@ -79,3 +79,12 @@
     
         filter: drop-shadow(0 0 8px #96c5f4);
 }
+
+.close-button{
+  color: white;
+  position: absolute;
+  z-index: 2;
+  left: 95%;
+  top: 2%;
+  
+}

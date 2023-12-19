@@ -1,39 +1,76 @@
-import { ChangeEvent, MouseEventHandler, useContext, useState } from "react";
+import { ChangeEvent,  useContext, useRef, useState } from "react";
 import { getToken } from "../utils/login";
-import { AuthContext } from "../context/AuhContext";
+import { AuthContext, AuthContextProps } from "../context/AuhContext";
 import { useEffect } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart as farHeart } from '@fortawesome/free-regular-svg-icons';
+import { faHeart as fasHeart } from '@fortawesome/free-solid-svg-icons';
+
 
 import "./Posts.css";
-import Comments from "./Comments";
+
+import PostModal, { Post } from "./PostModal";
+import { formatDate } from "../utils/formatDate";
+import Profile from "../pages/Profile";
+
 interface PostsProps {
   plusClicked: boolean;
+ 
 }
 
-export default function Posts({ plusClicked }) {
+
+export default function Posts({ plusClicked }:PostsProps) {
   const [caption, setCaption] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | string>("");
   const [showModal, setShowModal] = useState(false);
-  const [postModal, setPostModal] = useState(false);
-  const [selectedPost, setSelectedPost] = useState(null);
-  const [newComment, setNewComment] = useState("");
-  const[showDropDown,setShowDropDown] = useState(false)
-  const { user } = useContext(AuthContext);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [showDropDown, setShowDropDown] = useState<string | null>(null);
+   const [Likes, setLikes] = useState({});
 
-  const formatDate = (updatedAt ) => {
+  // const handleLike = () => {
+  //   setIsLiked(!isLiked);
+  // };
   
-  const date = new Date(updatedAt);
+
+  const { user } = useContext(AuthContext);
+  //  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const handleLike = async (postId) => {
   
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
+  const token= getToken()
+  const myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+myHeaders.append("Authorization", `Bearer ${token}`)
+
+const urlencoded = new URLSearchParams();
+urlencoded.append("postId", postId);
+
+const requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: urlencoded,
   
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  
-  
-  
-  return `${day}.${month}.${year} at ${hours}:${minutes}`;
   };
+  try {
+    const response = await fetch("http://localhost:5000/myApi/users/likes", requestOptions);
+    const result = await response.json()
+    console.log('result :>> ', result);
+    if (response.ok) {
+    
+    const updatedLikes = result.updatedLikes;
+    setLikes(prevLikes => ({
+      ...prevLikes,
+      [postId]: updatedLikes
+    }));
+  }
+
+  } catch (error) {
+    console.log('error :>> ', error);
+  }
+
+
+  
+}
   
 
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -72,11 +109,11 @@ export default function Posts({ plusClicked }) {
       console.log("error", error);
     }
   };
-  const cancel = (e: MouseEventHandler<HTMLButtonElement>) => {
+  const cancel = () => {
     setShowModal(false);
   };
 
-  const deletePost = async (postId) => {
+  const deletePost = async (postId:string) => {
     const token = getToken();
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
@@ -102,71 +139,42 @@ export default function Posts({ plusClicked }) {
     }
   };
 
-  const handlePostDelete = (postId) => {
+  const handlePostDelete = (postId: string) => {
+    console.log('postId :>> ', postId);
     deletePost(postId);
   };
 
-  const handlePostClick = (post) => {
+  const handlePostClick = (post: Post) => {
     setSelectedPost(post);
-    // setPostModal(true);
-    console.log("post :>> ", selectedPost);
+    console.log('selectedPost :>> ', selectedPost);
+    
+    
+  };
+  const isLikedByCurrentUser = (post) => {
+    
+    
+    return post.likes.includes(user.id);
   };
 
-  const handleOpenPost = (post) => {
-  //  setSelectedPost(post);
-  // setPostModal(true);
-  };
+ 
+ const handleCloseModal = () => {
+   setSelectedPost(null)
+ }
 
-
-  const handleCommentOnChange = (e) => {
-    console.log("e.target.value :>> ", e.target.value);
-    const comment = e.target.value;
-    setNewComment(comment);
-    console.log("NewComment :>> ", newComment);
-  };
-  console.log("selectedPost :>> ", selectedPost);
-  const postComment = async () => {
-    const token = getToken();
-    const postId = selectedPost?._id;
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
-    myHeaders.append("Authorization", `Bearer ${token}`);
-
-    const urlencoded = new URLSearchParams();
-    urlencoded.append("text", newComment);
-    urlencoded.append("postId", postId);
-
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: urlencoded,
-    };
-    try {
-      const response = await fetch(
-        "http://localhost:5000/myApi/users/comments",
-        requestOptions
-      );
-      const result = await response.json();
-      console.log("comment result :>> ", result);
-    } catch (error) {
-      console.log("error :>> ", error);
-    }
-  };
-  // const handleDropDown = (postId) => {
-  //   setShowDropDown((prevState) => ({
-  //   ...prevState,
-  //   [postId]: !prevState[postId] 
-  // }));
-  // }
 
   useEffect(() => {
-    if (plusClicked) {
-      setShowModal(true);
-    }
+   
+  
+      if (plusClicked) {
+
+        setShowModal(true);
+      }
+    
   }, [plusClicked]);
 
+
   return (
-    <div>
+    <div >
       {showModal && (
         <div className="newPost">
           <div>
@@ -196,80 +204,60 @@ export default function Posts({ plusClicked }) {
         </div>
       )}
 
-      <div className="post-container">
-        {user &&
-          user.posts &&
-          user.posts.length > 0 &&
-          user.posts.map((post, index: number) => (
-            <div
-              key={post._id}
-              onClick={() => handlePostClick(post)}
-              className="post"
-            >
-              <div className="image-container" onClick={handleOpenPost}>
-                <div>
-                   <div className="dropdown">
-                    
-                    <ul className="dropbtn icons btn-right showLeft"  >
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                    </ul>
-                    {showDropDown && (<div  id={`myDropdown-${post._id}`} className="dropdown-content">
-                        
-                        <a href="#about">Edit</a>
-                        <a href="#contact">Delete</a>
-                    </div>)}
-                    
-                </div>
-                  <div className="likes">&#x2661;</div>
-                  <img className="image" src={post.imageUrl} alt="" />
-                </div>
-                <p className="date">{formatDate(post.updatedAt)}</p>
-                <div className="caption-overlay">
-                  <h3 className="caption">{post.caption}</h3>
-                </div>
-                <div className="post-settings">
-                  {/* <span>🪶</span>
-                  <span>🗫</span>
-                  <span onClick={() => handlePostDelete(post._id)}>🗑</span> */}
-                  {selectedPost &&(
-                    <div className="clickedPost">
-                      <img
-                        className="clickedPost-img"
-                        src={selectedPost.imageUrl}
-                        alt=""
-                      />
-                      <h3 className="clickedPost-caption">{selectedPost.caption}</h3>
-                      <div className="comments">
-                        {selectedPost.comments.map((comment, index) => (
-                          <Comments
-                            comment={comment}
-                            index={index}
-                            key={index}
-                          />
-                        ))}
-                      </div>
-
-                      <form id="commentForm">
-                        <input
-                          type="text"
-                          id="commentText"
-                          placeholder="Comment..."
-                          onChange={handleCommentOnChange}
-                        />
-                        <button type="submit" onClick={postComment}>
-                          send
-                        </button>
-                      </form>
-                    </div>
-                  )}
-                </div>
-              </div>
+   <div className="post-container" >
+  {user &&
+    user.posts &&
+    user.posts.length > 0 &&
+    user.posts.map((post: Post, index: number) => (
+      <div
+        key={post._id}
+        className="post"
+      >
+        <div className="image-container" >
+          <div className="dropdown" onClick={(e) => e.stopPropagation()}>
+            <ul
+              className="dropbtn icons btn-right showLeft"
               
-            </div>
-          ))}
+            >
+              <li></li>
+              <li></li>
+              <li></li>
+            </ul>
+            
+              <div id={`myDropdown-${post._id}`} className="dropdown-content">
+                <a href="#about">Edit</a>
+                <a href="#contact" onClick={() => handlePostDelete(post._id)}>Delete</a>
+
+              </div>
+            
+          </div>
+          <div className="likes" onClick={() => {
+  
+  handleLike(post._id);
+}}>
+            <FontAwesomeIcon icon={isLikedByCurrentUser(post) ? fasHeart : farHeart} />
+            <p>{post.likes?.length }</p>
+</div>
+         </div>
+          <div> 
+          <img className="image" src={post.imageUrl} alt="" onClick={() => handlePostClick(post)} />
+          <p className="date">{formatDate(post.updatedAt)}</p>
+          <div className="caption-overlay">
+            <h3 className="caption">{post.caption}</h3>
+          </div>
+          <div className="post-settings"></div>
+        </div>
       </div>
+    ))}
+        {selectedPost && (
+  <div className="modal-container">
+    <div className="modal-close-button" onClick={handleCloseModal}>X</div>
+    <PostModal post={selectedPost} />
+  </div>
+)}
+
+</div>
+
     </div>
   );
 }

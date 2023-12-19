@@ -1,0 +1,155 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import NavBar from "../Components/NavBar";
+import Menu from "../Components/Menu";
+import { getToken } from "../utils/login";
+import { formatDate } from "../utils/formatDate";
+import PostModal from "../Components/PostModal";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart as farHeart } from '@fortawesome/free-regular-svg-icons';
+import { faHeart as fasHeart } from '@fortawesome/free-solid-svg-icons';
+
+
+export default function UserPage() {
+    const [user, setUser] = useState(null);
+    const [likes, setLikes] = useState({})
+    const [selectedPost, setSelectedPost] = useState(null)
+    const { userId } = useParams();
+    console.log('id :>> ', userId);
+
+    const getUser = async () => {
+        try {
+            const requestOptions = { method: 'GET' };
+            const response = await fetch(`http://localhost:5000/myApi/users/${userId}`, requestOptions);
+            const result = await response.json();
+            setUser(result);
+        } catch (error) {
+            console.error('Error :>> ', error);
+        }
+    };
+    const isLikedByCurrentUser = (post) => {
+    
+    
+        return post.likes.includes(user.id);
+    };
+    
+    const handleLike = async (postId) => {
+  
+        const token = getToken()
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+        myHeaders.append("Authorization", `Bearer ${token}`)
+
+        const urlencoded = new URLSearchParams();
+        urlencoded.append("postId", postId);
+
+        const requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: urlencoded,
+  
+        };
+        try {
+            const response = await fetch("http://localhost:5000/myApi/users/likes", requestOptions);
+            const result = await response.json()
+            console.log('result :>> ', result);
+            if (response.ok) {
+    
+                const updatedLikes = result.updatedLikes;
+                setLikes(prevLikes => ({
+                    ...prevLikes,
+                    [postId]: updatedLikes
+                }));
+            }
+
+        } catch (error) {
+            console.log('error :>> ', error);
+        }
+
+
+  
+    }
+    const handlePostClick = (post: Post) => {
+        setSelectedPost(post);
+        console.log('selectedPost :>> ', selectedPost);
+    
+    
+    };
+    const handleCloseModal = () => {
+        setSelectedPost(null)
+    }
+    useEffect(() => {
+        getUser();
+    }, [userId]);
+
+    return (
+        <>
+            <NavBar />
+            <Menu />
+            {user && (
+                <div className="profile-section">
+                    <div className="profile-container">
+                        <div className="photo-container">
+                            <img
+                                className="photo"
+                                src={user.profilePhoto || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"}
+                                alt="Profile"
+                            />
+                            <h3 className="name">{user.userName}</h3>
+                        </div>
+                        <div className="bio-container">
+                            <div className="followers-container">
+                                <p>followers:</p>
+                                <p>following:</p>
+                            </div>
+                            <p className="quote">"{user.quote}"</p>
+                            <p className="about">{user.about}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <button>follow</button>
+                        <button>send message</button>
+                        
+                    </div>
+                   
+                </div>)}
+            <div className="post-container" >
+                {user &&
+                    user.posts &&
+                    user.posts.length > 0 &&
+                    user.posts.map((post: Post, index: number) => (
+                        <div
+                            key={post._id}
+                            className="post"
+                        >
+                            <div className="image-container" >
+         
+                                <div className="likes" onClick={() => {
+  
+                                    handleLike(post._id);
+                                }}>
+                                    <FontAwesomeIcon icon={isLikedByCurrentUser(post) ? fasHeart : farHeart} />
+                                    <p>{post.likes?.length}</p>
+                                </div>
+                            </div>
+                            <div>
+                                <img className="image" src={post.imageUrl} alt="" onClick={() => handlePostClick(post)} />
+                                <p className="date">{formatDate(post.updatedAt)}</p>
+                                <div className="caption-overlay">
+                                    <h3 className="caption">{post.caption}</h3>
+                                </div>
+                                <div className="post-settings"></div>
+                            </div>
+                        </div>
+                    ))}</div>
+            {selectedPost && (
+                <div className="modal-container">
+                    <div className="modal-close-button" onClick={handleCloseModal}>X</div>
+                    <PostModal post={selectedPost} />
+                </div>
+            )}
+        </>
+    )
+}
+             
+  
