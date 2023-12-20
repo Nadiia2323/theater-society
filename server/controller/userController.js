@@ -1,4 +1,5 @@
-import  User  from "../model/UserModel.js";
+import User from "../model/UserModel.js";
+import Post from "../model/PostModel.js";
 
 
 import { encryptPassword, verifyPassword } from "../unils/encryptPassword.js";
@@ -29,12 +30,13 @@ const getAllUsers = async (req, res) => {
 };
 
 const getUser = async (req, res) => {
+    console.log('getDyId');
     try {
         const userId = req.params.userId;
-        const userById = await User.findById(userId); 
+        
+        const userById = await User.findById(userId).populate('posts');
         console.log('userById :>> ', userById);
 
-        
         if (userById) {
             res.status(200).json(userById);
         } else {
@@ -46,6 +48,26 @@ const getUser = async (req, res) => {
     }
 };
 
+const getAllPosts = async(req,res) => {
+  try {
+    const allPosts = await Post.find({})
+    if (allPosts && allPosts.length > 0) {
+      return res.json({
+        number: allPosts.length,
+        users: allPosts,
+      });
+    } else {
+      return res.json({
+        message: "No posts found.",
+      });
+    }
+  } catch (error) {
+    console.log(err);
+    return res.status(500).json({
+      errorMessage: "Internal server error.",
+    });
+  }
+}
 
 const register = async (req, res) => {
   console.log("register user controller working ");
@@ -206,10 +228,9 @@ const login = async (req, res) => {
 
 const getUserProfile = async (req, res) => {
   console.log("getUserProfile is running");
-  console.log('req.user :>> ', req.user);
-  
   try {
     const user = await User.findById(req.user._id).populate('posts');
+    console.log('user after :>> ', user);
     if (user) {
       res.status(200).json({
         message: "user profile",
@@ -218,7 +239,7 @@ const getUserProfile = async (req, res) => {
           email: user.email,
           userName: user.name,
           profilePhoto: user.profilePhoto,
-          posts: user.posts,
+          posts: user.posts, 
           quote: user.quote,
           about: user.about,
           favorites: user.favorites
@@ -233,7 +254,8 @@ const getUserProfile = async (req, res) => {
       message: "Something went wrong, please try again"
     });
   }
-}
+};
+
 
 
 
@@ -257,32 +279,37 @@ const updateProfile = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
-const uploadPosts = async(req,res) => {
+const uploadPosts = async(req, res) => {
   console.log('uploadposts working');
   console.log('req.file :>> ', req.file);
- 
-  const { email, caption } = req.body  //imagine user has sent a caption
+
+  const { caption } = req.body; 
   
-   if (req.file) {
+  if (req.file) {
     try {
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: "posts",
       });
       console.log("result uploading :>> ", result);
-      // const user = await User.findOne(email); 
-      const user = req.user
-      if (user) {
-        const newPost = { imageUrl: result.secure_url, caption: req.body.caption }
-        const posts = [...user.posts, newPost]
-        // await user.save()
-      user.posts = posts;
+
+      
+      const newPost = new Post({
+        imageUrl: result.secure_url,
+        caption: caption,
+        user: req.user._id  
+      });
+
+     
+      await newPost.save();
+
+      
+      const user = await User.findById(req.user._id);
+      user.posts.push(newPost._id);
       await user.save();
-    }
 
       res.status(201).json({
         message: "post uploaded",
-        posts: result.secure_url,
-
+        post: newPost,
       });
     } catch (error) {
       console.log("error :>> ", error);
@@ -293,72 +320,71 @@ const uploadPosts = async(req,res) => {
       message: "file not supported",
     });
   }
-}
+};
+
 
 const deleteAccount = async (req, res) => {
   console.log("deleteAccount works");
-  console.log('req.user :>> ', req.user);
   const user = req.user;
 
   try {
     if (!user) {
-      return res.status(401).json({
-        message: "Please log in first"
-      });
+      return res.status(401).json({ message: "Please log in first" });
     }
+
+    
 
     const deletedUser = await User.findOneAndDelete({ _id: user._id });
-
     if (!deletedUser) {
-      return res.status(404).json({
-        message: "User not found"
-      });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    return res.status(200).json({
-      message: "User deleted successfully"
-    });
+    
+
+    return res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     console.log('error :>> ', error);
-    return res.status(500).json({
-      message: "Something went wrong. Please try again later."
-    });
+    return res.status(500).json({ message: "Something went wrong. Please try again later." });
   }
 };
 
+
 const deletePost = async (req, res) => {
-  const user = req.user
-  console.log('user.posts :>> ', req.user.posts);
-  const postId = req.body._id
-  console.log('postId :>> ', postId);
- try {
+  const user = req.user;
+  const postId = req.body._id;
+
+  try {
     if (!user) {
-      return res.status(401).json({
-        message: "Please log in first"
-      });
+      return res.status(401).json({ message: "Please log in first" });
     }
 
-    const postIndex = user.posts.findIndex(post => post._id.toString() === postId);
-
-    if (postIndex === -1) {
-      return res.status(404).json({
-        message: "Post not found"
-      });
+    
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
     }
-    user.posts.splice(postIndex, 1);
 
-    await user.save();
+   
+    if (post.user.toString() !== user._id.toString()) {
+      return res.status(403).json({ message: "You can only delete your own posts" });
+    }
 
-    return res.status(200).json({
-      message: "Post deleted successfully"
-    });
+    const postToDelete = await Post.findByIdAndDelete(postId);
+   
+   
+    const postIndex = user.posts.findIndex(p => p.toString() === postId);
+    if (postIndex > -1) {
+      user.posts.splice(postIndex, 1);
+      await user.save();
+    }
+
+    return res.status(200).json({ message: "Post deleted successfully" });
   } catch (error) {
     console.log('error :>> ', error);
-    return res.status(500).json({
-      message: "Something went wrong. Please try again later."
-    });
+    return res.status(500).json({ message: "Something went wrong. Please try again later." });
   }
-}
+};
+
 
 const likePost = async (req, res) => {
   try {
@@ -550,4 +576,4 @@ const favoritePosts = async (req, res) => {
 const getLikes = async (req,res) => {
   
 }
-export {getUser,getLikes, getAllUsers,favoritePosts ,register, imageUpload, login, getUserProfile,updateProfile,uploadPosts,deleteAccount,deletePost,likePost, commentPost,deleteComment};
+export {getAllPosts,getUser,getLikes, getAllUsers,favoritePosts ,register, imageUpload, login, getUserProfile,updateProfile,uploadPosts,deleteAccount,deletePost,likePost, commentPost,deleteComment};

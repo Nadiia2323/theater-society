@@ -1,5 +1,5 @@
 import express from "express";
-import { commentPost, deleteAccount, deleteComment, deletePost, favoritePosts, getAllUsers, getLikes, getUser, getUserProfile, likePost, login, updateProfile, uploadPosts } from "../controller/userController.js";
+import { commentPost, deleteAccount, deleteComment, deletePost, favoritePosts, getAllPosts, getAllUsers, getLikes, getUser, getUserProfile, likePost, login, updateProfile, uploadPosts } from "../controller/userController.js";
 import { register } from "../controller/userController.js";
 import { imageUpload } from "../controller/userController.js";
 import multerUpload from "../middlewares/multer.js";
@@ -9,11 +9,13 @@ import jwtAuth from "../middlewares/jwtAuth.js";
 
 const route = express.Router()
 route.get('/all', getAllUsers)
-// route.get("/:userId",jwtAuth,getUser)
+route.get('/profile', jwtAuth, getUserProfile)
+route.get('/allPosts',getAllPosts)
+route.get("/:userId",getUser)
 route.post('/register', register)
 route.post('/profilePhoto',jwtAuth, multerUpload.single("profilePhoto"), imageUpload)
 route.post('/login', login)
-route.get('/profile', jwtAuth, getUserProfile)
+
 route.put('/profileSettings',jwtAuth, updateProfile)
 route.post('/posts', jwtAuth, multerUpload.single("posts"), uploadPosts)
 route.delete('/deleteAccount', jwtAuth, deleteAccount)
