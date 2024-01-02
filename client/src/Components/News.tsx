@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import "./News.css"
 import { formatDate } from "../utils/formatDate";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -52,7 +52,7 @@ export default function News() {
   //   useEffect(() => {
   //  getAllTheaters()
   //   }, [])
-    const {user} = useState(AuthContext)
+    const {user} = useContext(AuthContext)
   const [allPosts, setAllPosts] = useState([])
   const [Likes, setLikes] = useState({});
   

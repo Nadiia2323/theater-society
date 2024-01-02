@@ -59,6 +59,7 @@ width: 100%;
 transform: translate(-50%, 20%);
 
   height: 100%;
+  
 }
 .clickedPost {
    z-index: 2;

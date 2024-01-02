@@ -6,6 +6,7 @@ import Posts from "../Components/Posts";
 import { AuthContext, AuthContextProps } from "../context/AuhContext";
 import News from "../Components/News";
 import Menu from "../Components/Menu";
+import Favorites from "../Components/Favorites";
 // interface ServerOkResponse extends UserImageType {
 //   message: string;
 // }
@@ -15,23 +16,24 @@ interface UserImageType {
 export interface User {
   about?: string;
   email: string;
-  favorites?: []; 
+  favorites?: [];
   id: string;
-  posts?: []; 
+  posts?: [];
   profilePhoto?: UserImageType;
   quote?: string;
   userName?: string;
+  followers?: [];
+  following?:[]
 }
 
-
 export default function Profile() {
- const { user, getProfile }:AuthContextProps = useContext(AuthContext);
+  const { user, getProfile }: AuthContextProps = useContext(AuthContext);
 
   const [showPosts, setShowPosts] = useState(true);
   const [showPlusIcon, setShowPlusIcon] = useState(false);
- 
+  const [favorites, setFavorites] = useState(false);
+
   const [plusClicked, setPlusClicked] = useState(false);
-  
 
   const handlePlusIconClick = () => {
     setPlusClicked(true);
@@ -41,9 +43,17 @@ export default function Profile() {
     setShowPosts(true);
     setShowPlusIcon(true);
     setPlusClicked(false);
+    setFavorites(false)
   };
 
   const handleNewsClick = () => {
+    setShowPosts(false);
+    setShowPlusIcon(false);
+    setPlusClicked(false);
+    setFavorites(false)
+  };
+  const handelClickFavorites = () => {
+    setFavorites(true);
     setShowPosts(false);
     setShowPlusIcon(false);
     setPlusClicked(false);
@@ -52,13 +62,13 @@ export default function Profile() {
   useEffect(() => {
     getProfile();
   }, []);
- 
+
   return (
-    <div >
+    <div>
       <NavBar />
       <Menu />
       {user && (
-        <div className="profile-section"  >
+        <div className="profile-section">
           <div className="profile-container">
             <div className="photo-container">
               <img
@@ -74,13 +84,12 @@ export default function Profile() {
             </div>
             <div className="bio-container">
               <div className="followers-container">
-              <p>followers:</p>
-              <p>following:</p>
-            </div>
+                <p>followers:{user.followers?.length }</p>
+                <p>following:{user.following?.length}</p>
+              </div>
               <p className="quote">"{user.quote}"</p>
               <p className="about">{user.about}</p>
             </div>
-            
           </div>
 
           <div className="news-container">
@@ -97,9 +106,12 @@ export default function Profile() {
             <p className="news" onClick={handleNewsClick}>
               news
             </p>
-            <p>likes</p>
+            <p onClick={handelClickFavorites}>favorites </p>
+            
           </div>
-          {showPosts ? <Posts plusClicked={plusClicked} /> : <News />}
+          {showPosts && !favorites && <Posts plusClicked={plusClicked} />}
+          {!showPosts && !favorites && <News />}
+          {favorites && <Favorites />}
         </div>
       )}
     </div>

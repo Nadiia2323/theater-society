@@ -22,7 +22,8 @@ interface PostModalProps {
 }
 
 
-export default function PostModal({post}: PostModalProps) {
+export default function PostModal({ post }: PostModalProps) {
+  console.log('post :>> ', post);
   const [newComment, setNewComment] = useState("");
   
   
@@ -63,6 +64,8 @@ export default function PostModal({post}: PostModalProps) {
       console.log("error :>> ", error);
     }
   };
+
+ 
     return (
       <div className="clichedPost-container" >
         
@@ -80,12 +83,13 @@ export default function PostModal({post}: PostModalProps) {
             <h3>{post.caption}</h3> 
             <div className="post-actions">
       <FontAwesomeIcon icon={faEdit} className="post-action-icon"  />
-      <FontAwesomeIcon icon={faTrash} className="post-action-icon"  />
+              <FontAwesomeIcon icon={faTrash} className="post-action-icon"        />
       </div>
     </div>
                       <div className="comments">
                         {post.comments?.map((comment, index) => (
                           <Comments
+                            post = {post}
                             comment={comment}
                             index={index}
                             key={index}

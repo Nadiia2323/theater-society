@@ -50,10 +50,26 @@ const userSchema = new mongoose.Schema({
     ref: 'Post'
   }],
   favorites: [
-      {type: mongoose.Types.ObjectId}
+       {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Post'
+  }
+  ],
+  following: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  ],
+  followers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
   ]
+}
   
   
-});
+);
 const User = mongoose.model("user", userSchema);
 export default User;

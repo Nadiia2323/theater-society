@@ -30,9 +30,10 @@ const getAllUsers = async (req, res) => {
 };
 
 const getUser = async (req, res) => {
-    console.log('getDyId');
+    
     try {
-        const userId = req.params.userId;
+      const userId = req.params.userId;
+      console.log('userId :>> ', userId);
         
         const userById = await User.findById(userId).populate('posts');
         console.log('userById :>> ', userById);
@@ -242,7 +243,9 @@ const getUserProfile = async (req, res) => {
           posts: user.posts, 
           quote: user.quote,
           about: user.about,
-          favorites: user.favorites
+          favorites: user.favorites,
+          followers: user.followers,
+          following: user.following
         }
       });
     } else {
@@ -396,24 +399,36 @@ const likePost = async (req, res) => {
     }
 
     const post = await Post.findById(postId);
+    const user = await User.findById(userId);
 
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
+    if (!post || !user) {
+      return res.status(404).json({ message: "Post or User not found" });
     }
 
     const alreadyLikedIndex = post.likes.indexOf(userId);
 
     if (alreadyLikedIndex !== -1) {
       post.likes.splice(alreadyLikedIndex, 1);
+      
+      const favoriteIndex = user.favorites.indexOf(postId);
+      if (favoriteIndex !== -1) {
+        user.favorites.splice(favoriteIndex, 1);
+      }
     } else {
       post.likes.push(userId);
+      
+      if (!user.favorites.includes(postId)) {
+        user.favorites.push(postId);
+      }
     }
 
     await post.save();
+    await user.save();
 
     res.status(200).json({
       message: alreadyLikedIndex !== -1 ? "Like removed successfully" : "Post liked successfully",
-      updatedLikes: post.likes.length
+      updatedLikes: post.likes.length,
+      favorites: user.favorites
     });
 
   } catch (error) {
@@ -422,20 +437,23 @@ const likePost = async (req, res) => {
 };
 
 
+
+
 const commentPost = async (req, res) => {
+  
   try {
     const userId = req.user._id;
-    const user = req.user;
     const commentText = req.body.text;
     const postId = req.body.postId;
 
-    if (!userId || !user) {
+    if (!userId) {
       return res.status(401).json({
         message: "Unauthorized. Please log in first."
       });
     }
 
-    const post = user.posts.find(post => post._id.toString() === postId);
+    // Find the post by ID
+    const post = await Post.findById(postId);
 
     if (!post) {
       return res.status(404).json({
@@ -443,13 +461,16 @@ const commentPost = async (req, res) => {
       });
     }
 
+    // Create a new comment
     const newComment = {
       user: userId,
-      text: commentText
+      text: commentText,
+      createdAt: new Date() // Setting the creation date
     };
 
+    // Add the comment to the post's comments array
     post.comments.push(newComment);
-    await user.save();
+    await post.save();
 
     return res.status(201).json({
       message: "Comment added successfully",
@@ -466,73 +487,15 @@ const commentPost = async (req, res) => {
 
 
 const deleteComment = async (req, res) => {
+  
   try {
     const userId = req.user._id;
-    const user = req.user;
     const postId = req.body.postId;
-    const commentId = req.body.commentId; 
+    const commentId = req.body.commentId;
 
     if (!userId) {
       return res.status(401).json({
         message: "Login first"
-      });
-    }
-
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found"
-      });
-    }
-
-    const post = user.posts.find(post => post._id.toString() === postId);
-
-    if (!post) {
-      return res.status(404).json({
-        message: "Post not found"
-      });
-    }
-
-    const commentIndex = post.comments.findIndex(comment => comment._id.toString() === commentId);
-
-    if (commentIndex === -1) {
-      return res.status(404).json({
-        message: "Comment not found"
-      });
-    }
-
-    const commentToDelete = post.comments[commentIndex];
-    console.log('commentToDelete.user :>> ', commentToDelete.user);
-    console.log('userId :>> ', userId);
-
-    if  (commentToDelete.user.toString() !== userId.toString()) {
-      return res.status(403).json({
-        message: "You are not authorized to delete this comment"
-      });
-    }
-
-    post.comments.splice(commentIndex, 1);
-
-    await user.save();
-
-    res.status(200).json({
-      message: "Comment deleted successfully",
-      updatedPost: post 
-    });
-  } catch (error) {
-    res.status(400).json({
-      message: "Something went wrong"
-    });
-  }
-};
-
-const favoritePosts = async (req, res) => {
-  try {
-    const user = req.user;
-    const postId = req.body.postId;
-
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found"
       });
     }
 
@@ -545,35 +508,163 @@ const favoritePosts = async (req, res) => {
       });
     }
 
-    const postIndex = user.favorites.findIndex(favorite => favorite.toString() === postId);
+    
+    const commentIndex = post.comments.findIndex(comment => comment._id.toString() === commentId);
 
-    if (postIndex !== -1) {
-      
-      user.favorites.splice(postIndex, 1);
-
-      await user.save();
-
-      return res.status(200).json({
-        message: "Post removed from favorites successfully"
-      });
-    } else {
-      
-      user.favorites.push(post);
-
-      await user.save();
-
-      return res.status(200).json({
-        message: "Post added to favorites successfully"
+    if (commentIndex === -1) {
+      return res.status(404).json({
+        message: "Comment not found"
       });
     }
+
+    const comment = post.comments[commentIndex];
+    if (comment.user.toString() !== userId.toString() && post.user.toString() !== userId.toString()) {
+      return res.status(403).json({
+        message: "You are not authorized to delete this comment"
+      });
+    }
+
+   
+    post.comments.splice(commentIndex, 1);
+    await post.save();
+
+    return res.status(200).json({
+      message: "Comment deleted successfully",
+      updatedPost: post
+    });
+
   } catch (error) {
-    res.status(400).json({
+    console.error(error);
+    return res.status(400).json({
       message: "Something went wrong"
     });
   }
 };
 
-const getLikes = async (req,res) => {
-  
-}
-export {getAllPosts,getUser,getLikes, getAllUsers,favoritePosts ,register, imageUpload, login, getUserProfile,updateProfile,uploadPosts,deleteAccount,deletePost,likePost, commentPost,deleteComment};
+
+// const favoritePosts = async (req, res) => {
+//   try {
+//     const user = req.user;
+//     const postId = req.body.postId;
+
+//     if (!user) {
+//       return res.status(404).json({
+//         message: "User not found"
+//       });
+//     }
+
+    
+//     const post = await Post.findById(postId);
+
+//     if (!post) {
+//       return res.status(404).json({
+//         message: "Post not found"
+//       });
+//     }
+
+//     const postIndex = user.favorites.findIndex(favorite => favorite.toString() === postId);
+
+//     if (postIndex !== -1) {
+      
+//       user.favorites.splice(postIndex, 1);
+
+//       await user.save();
+
+//       return res.status(200).json({
+//         message: "Post removed from favorites successfully"
+//       });
+//     } else {
+      
+//       user.favorites.push(post);
+
+//       await user.save();
+
+//       return res.status(200).json({
+//         message: "Post added to favorites successfully"
+//       });
+//     }
+//   } catch (error) {
+//     res.status(400).json({
+//       message: "Something went wrong"
+//     });
+//   }
+// };
+
+const getFavorites = async (req, res) => {
+  console.log('favorites working ');
+  try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    
+    const populatedUser = await User.findById(user._id).populate('favorites');
+
+    if (!populatedUser) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    
+    const favoritePosts = populatedUser.favorites;
+
+    res.status(200).json({
+      message: "Favorites retrieved successfully",
+      number:favoritePosts.length,
+      favorites: favoritePosts
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Something went wrong"
+    });
+  }
+};
+const following = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const targetUserId = req.body.targetUserId;
+
+    if (userId === targetUserId) {
+      return res.status(400).json({ message: "Cannot follow yourself" });
+    }
+
+   
+    const user = await User.findById(userId);
+    const isAlreadyFollowing = user.following.includes(targetUserId);
+
+    if (isAlreadyFollowing) {
+     
+      await User.findByIdAndUpdate(userId, {
+        $pull: { following: targetUserId }
+      });
+      await User.findByIdAndUpdate(targetUserId, {
+        $pull: { followers: userId }
+      });
+      res.status(200).json({ message: "Successfully unfollowed user" });
+    } else {
+      
+      await User.findByIdAndUpdate(userId, {
+        $addToSet: { following: targetUserId }
+      });
+      await User.findByIdAndUpdate(targetUserId, {
+        $addToSet: { followers: userId }
+      });
+      res.status(200).json({ message: "Successfully followed user" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+
+export {getAllPosts,following ,getUser,getFavorites, getAllUsers,register, imageUpload, login, getUserProfile,updateProfile,uploadPosts,deleteAccount,deletePost,likePost, commentPost,deleteComment};

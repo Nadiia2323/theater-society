@@ -1,24 +1,64 @@
-import "./Comments.css"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faEdit, faComment } from '@fortawesome/free-solid-svg-icons';
+import "./Comments.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faEdit, faComment } from "@fortawesome/free-solid-svg-icons";
 import { formatDate } from "../utils/formatDate";
+import { getToken } from "../utils/login";
 
 export default function Comments(props) {
-    const { comment, index } = props
+    const { comment,post } = props;
+    console.log('comment :>> ', comment);
+    console.log('post in comments :>> ', post);
+
+    const deleteComment = async () => {
+        const postId = post._id
+        const commentId = comment._id
+  try {
+    const token = getToken();
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+    myHeaders.append("Authorization", `Bearer ${token}`);
+
+    const urlencoded = new URLSearchParams();
+    urlencoded.append("postId", postId);
+    urlencoded.append("commentId", commentId);
+
+    const requestOptions = {
+      method: "DELETE",
+      headers: myHeaders,
+      body: urlencoded,
+    };
+
+    const response = await fetch(
+      "http://localhost:5000/myApi/users/deleteComment",
+      requestOptions
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const result = await response.json();
     
+  } catch (error) {
+    console.error("Error :>> ", error);
+  }
+};
+
+
   return (
-      <div className="comments">
-          <div className="comment">
-              <p className="comment-text">{comment.text}</p>
-              <p className="comment-date">{formatDate(comment.createdAt) }</p>
-              <div className="comment-settinngs">
-                 
-                   <FontAwesomeIcon icon={faEdit} className="post-action-icon" />
-         <FontAwesomeIcon icon={faTrash} className="post-action-icon" />
-          </div>
-          
-              
-          </div>
+    <div className="comments">
+      <div className="comment">
+        <p className="comment-text">{comment.text}</p>
+        <p className="comment-date">{formatDate(comment.createdAt)}</p>
+        <div className="comment-settinngs">
+          <FontAwesomeIcon icon={faEdit} className="post-action-icon" />
+          <FontAwesomeIcon
+            icon={faTrash}
+            className="post-action-icon"
+            onClick={deleteComment}
+          />
+        </div>
       </div>
-  )
+    </div>
+  );
 }
