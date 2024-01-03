@@ -1,5 +1,5 @@
 import express from "express";
-import { commentPost, deleteAccount, deleteComment, deletePost, following, getAllPosts, getAllUsers, getFavorites,  getUser, getUserProfile, likePost, login, updateProfile, uploadPosts } from "../controller/userController.js";
+import { commentPost, deleteAccount, deleteComment, deletePost, following, getAllPosts, getAllUsers, getFavorites,  getFollowers,  getUser, getUserProfile, likePost, login, searchUser, updateProfile, uploadPosts } from "../controller/userController.js";
 import { register } from "../controller/userController.js";
 import { imageUpload } from "../controller/userController.js";
 import multerUpload from "../middlewares/multer.js";
@@ -12,7 +12,9 @@ route.get('/all', getAllUsers)
 
 route.get('/profile', jwtAuth, getUserProfile)
 route.get('/favorites', jwtAuth, getFavorites)
-route.get('/allPosts',getAllPosts)
+route.get('/allPosts', getAllPosts)
+route.get('/search', jwtAuth, searchUser)
+route.get('/followers',jwtAuth,getFollowers)
 route.get("/:userId", getUser)
 route.post('/following',jwtAuth ,following)
 

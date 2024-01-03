@@ -663,8 +663,48 @@ const following = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+ const searchUser = async(req,res) => {
+   console.log('searchworking ');
+   console.log('object :>> ', req.query.q);
+   try {
+    const searchQuery = req.query.q;
+     const users = await User.find({ name: new RegExp(searchQuery, 'i') });
+     if (users.length === 0) {
+  return res.status(404).json({ message: 'No users found' });
+}
+     if (users) {
+      res.json(users);
+     }
+    
+  } catch (error) {
+    res.status(500).json({ message: 'something went wrong' });
+  }
+ }
+//not working yet//
+const getFollowers = async (req,res) => {
+  console.log('getfollowers');
+ try {
+    
+   const userId = req.user._id;
+   console.log('userId :>> ', userId);
 
+    
+   const user = await User.findById(userId).populate('following')
+  .populate('followers');
+   if (!user) {
+  return res.status(404).json({ message: 'User not found' });
+}
 
+    
+   const followingUsers = user.followers;
+   console.log('followingUsers :>> ', followingUsers);
 
+    
+    res.json(followingUsers);
+  } catch (error) {
+  console.error("Error: ", error);
+  res.status(500).json({ message: 'Error fetching following users' });
+}
+}
 
-export {getAllPosts,following ,getUser,getFavorites, getAllUsers,register, imageUpload, login, getUserProfile,updateProfile,uploadPosts,deleteAccount,deletePost,likePost, commentPost,deleteComment};
+export {getAllPosts,getFollowers,searchUser,following ,getUser,getFavorites, getAllUsers,register, imageUpload, login, getUserProfile,updateProfile,uploadPosts,deleteAccount,deletePost,likePost, commentPost,deleteComment};

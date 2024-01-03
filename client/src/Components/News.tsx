@@ -6,6 +6,7 @@ import { faHeart as farHeart } from '@fortawesome/free-regular-svg-icons';
 import { faHeart as fasHeart } from '@fortawesome/free-solid-svg-icons';
 import { getToken } from "../utils/login";
 import { AuthContext } from "../context/AuhContext";
+import PostModal from "./PostModal";
 
 interface TheaterUser {
   city?: string;
@@ -55,6 +56,7 @@ export default function News() {
     const {user} = useContext(AuthContext)
   const [allPosts, setAllPosts] = useState([])
   const [Likes, setLikes] = useState({});
+  const [selectedPost,setSelectedPost] = useState(null)
   
   const getAllPosts = async () => {
   try {
@@ -115,6 +117,13 @@ const requestOptions = {
     
     return post.likes.includes(user?.id);
   };
+    const handlePostClick = (post: Post) => {
+    setSelectedPost(post);
+    console.log("selectedPost :>> ", selectedPost);
+  };
+  const handleCloseModal = () => {
+    setSelectedPost(null);
+  };
  
   console.log('allPosts :>> ', allPosts);
   useEffect(() => {
@@ -131,7 +140,8 @@ const requestOptions = {
                     allPosts.users.map((post: Post, index: number) => (
                         <div
                             key={post._id}
-                            className="post"
+                        className="post"
+                        
                         >
                             <div className="image-container" >
          
@@ -144,7 +154,7 @@ const requestOptions = {
                                 </div>
                             </div>
                             <div>
-                                <img className="image" src={post.imageUrl} alt=""  />
+                                <img className="image" src={post.imageUrl} alt="" onClick={() => handlePostClick(post)} />
                                 <p className="date">{formatDate(post.updatedAt)}</p>
                                 <div className="caption-overlay">
                                     <h3 className="caption">{post.caption}</h3>
@@ -153,6 +163,14 @@ const requestOptions = {
                             </div>
                         </div>
                     ))}</div>
+      {selectedPost && (
+        <div className="modal-container">
+          <div className="modal-close-button" onClick={handleCloseModal}>
+            X
+          </div>
+          <PostModal post={selectedPost} />
+        </div>
+      )}
     <div>
       
       {/* <p>Number of Theaters: {allTheaters.number}</p>
