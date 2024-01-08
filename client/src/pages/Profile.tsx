@@ -7,6 +7,7 @@ import { AuthContext, AuthContextProps } from "../context/AuhContext";
 import News from "../Components/News";
 import Menu from "../Components/Menu";
 import Favorites from "../Components/Favorites";
+import TheaterProfile from "./TheaterProfile";
 // interface ServerOkResponse extends UserImageType {
 //   message: string;
 // }
@@ -113,7 +114,7 @@ export default function Profile() {
           {!showPosts && !favorites && <News />}
           {favorites && <Favorites />}
         </div>
-      )}
+      )}: <TheaterProfile/>
     </div>
   );
 }

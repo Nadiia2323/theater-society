@@ -226,12 +226,12 @@ const login = async (req, res) => {
     }
   }
 };
-
 const getUserProfile = async (req, res) => {
   console.log("getUserProfile is running");
   try {
     const user = await User.findById(req.user._id).populate('posts');
-    console.log('user after :>> ', user);
+    const theaterUser = await TheaterUserModel.findById(req.user._id);
+
     if (user) {
       res.status(200).json({
         message: "user profile",
@@ -240,12 +240,32 @@ const getUserProfile = async (req, res) => {
           email: user.email,
           userName: user.name,
           profilePhoto: user.profilePhoto,
-          posts: user.posts, 
+          posts: user.posts,
           quote: user.quote,
           about: user.about,
           favorites: user.favorites,
           followers: user.followers,
           following: user.following
+        }
+      });
+    } else if (theaterUser) {
+      res.status(200).json({
+        message: "theater profile",
+        theater: {
+          id: theaterUser._id,
+            theaterName: theaterUser.theaterName,
+            email: theaterUser.email,
+          profilePhoto: theaterUser.profilePhoto,
+          country: theaterUser.country,
+          city: theaterUser.city,
+          quote: theaterUser.quote,
+          about: theaterUser.about,
+          actors: theaterUser.actors,
+          director: theaterUser.director,
+          repertoire: theaterUser.gallery,
+          followers: theaterUser.followers,
+          following: theaterUser.following
+            
         }
       });
     } else {
@@ -258,7 +278,6 @@ const getUserProfile = async (req, res) => {
     });
   }
 };
-
 
 
 

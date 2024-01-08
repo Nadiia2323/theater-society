@@ -12,7 +12,8 @@ export const AuthContext = createContext({});
 //   profilePhoto:string
 // }
 
- export interface AuthContextProps {
+export interface AuthContextProps {
+  theater: {} | null;
   user: User | null;
   userChecked?: boolean;
   isLoading?: boolean;
@@ -23,7 +24,8 @@ export const AuthContext = createContext({});
 
 export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   
-  const [user, setUser] = useState<User|null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [ theater, setTheater] = useState(null)
   const [userChecked, setUserChecked] = useState(false)
   const [isLoading, setIsLoading] = useState (false)
 
@@ -46,9 +48,20 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
           requestOptions
         );
         const result = await response.json();
-        console.log("%c result UserProfile :>> ", "color:red", result);
-        setUser(result.user);
-        setUserChecked(true)
+        const user = result.user
+        const theaterUser = result.theater
+        
+        if (user) {
+         setUser(user);
+          setUserChecked(true) 
+        } else if(theaterUser) {
+          setTheater(theaterUser)
+          setUserChecked(true)
+        }
+
+        // console.log("%c result UserProfile :>> ", "color:red", result);
+        
+        
       } catch (error) {
         console.log("error :>> ", error);
       } finally {
@@ -140,7 +153,8 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     setUserChecked(false)
   }, []);
     const contextValue: AuthContextProps = {
-    user,
+      user,
+      theater,
     userChecked,
     isLoading,
     registration,

@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
 
 const theaterUserSchema = new mongoose.Schema({
-    theaterName: {
+  theaterName: {
     type: String,
     required: true,
-    
   },
   profilePhoto: {
     type: String,
@@ -16,31 +15,41 @@ const theaterUserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    require: true,
-    unique: true,
+    required: true,
   },
-        country: {
+  country: {
     type: String,
     required: false,
-    
-    },
-            city: {
+  },
+  city: {
     type: String,
     required: false,
-    
-    },
-         followers: {
-    type: Number,
-    required: false,
-    
-  },    following: {
-    type: Number,
-    required: false,
-    
   },
-})
+  director: {
+    type: String,
+  },
+  quote: {
+    type: String,
+  },
+  about: {
+    type: String,
+  },
+  gallery: {
+    type: [String],
+  },
+  actors: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  }],
+  followers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  }],
+  following: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  }],
+}, { timestamps: true });
 
-const TheaterUserModel = mongoose.model("theateruser", theaterUserSchema);
-export default TheaterUserModel
-
-
+const TheaterUserModel = mongoose.model("TheaterUser", theaterUserSchema);
+export default TheaterUserModel;
