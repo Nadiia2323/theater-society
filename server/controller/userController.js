@@ -256,6 +256,7 @@ const getUserProfile = async (req, res) => {
             theaterName: theaterUser.theaterName,
             email: theaterUser.email,
           profilePhoto: theaterUser.profilePhoto,
+          backgroundPhoto: theaterUser.backgroundPhoto,
           country: theaterUser.country,
           city: theaterUser.city,
           quote: theaterUser.quote,

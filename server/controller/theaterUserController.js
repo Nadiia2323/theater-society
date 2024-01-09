@@ -2,6 +2,7 @@
 import TheaterUserModel from "../model/TheaterUserModel.js";
 import User from "../model/UserModel.js";
 import { encryptPassword } from "../unils/encryptPassword.js";
+import { v2 as cloudinary } from "cloudinary";
 
 const getAllTheatherUsers = async (req, res) => {
     console.log('route running');
@@ -127,6 +128,70 @@ const uploadTheaterPosts = async(req, res) => {
     });
   }
 
-       
-     }
-export { getAllTheatherUsers,registerTheater, getTheaterProfile, uploadTheaterPosts };
+
+}
+     
+const backgroundPhoto = async (req,res) => {
+  console.log("background working");
+  console.log('req.file :>> ', req.file);
+  if (req.file) {
+    try {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "background_image",
+      });
+      console.log("result uploading :>> ", result);
+      
+      const theaterUser=req.user
+    if (theaterUser) {
+      theaterUser.backgroundPhoto = result.secure_url;
+      await theaterUser.save();
+    }
+
+      res.status(201).json({
+        message: "image uploaded",
+        backgroundPhoto: result.secure_url,
+
+      });
+    } catch (error) {
+      console.log("error :>> ", error);
+      res.status(500).json({ error: "Failed to upload image" });
+    }
+  } else {
+    res.status(500).json({
+      message: "file not supported",
+    });
+  }
+}
+  
+const uploadImage = async (req, res) => {
+   if (req.file) {
+    try {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "Photo",
+      });
+      console.log("result uploading :>> ", result);
+      
+      const theaterUser=req.user
+    if (theaterUser) {
+      theaterUser.profilePhoto = result.secure_url;
+      await theaterUser.save();
+    }
+
+      res.status(201).json({
+        message: "image uploaded",
+        profilePhoto: result.secure_url,
+
+      });
+    } catch (error) {
+      console.log("error :>> ", error);
+      res.status(500).json({ error: "Failed to upload image" });
+    }
+  } else {
+    res.status(500).json({
+      message: "file not supported",
+    });
+  }
+  
+}
+
+export {uploadImage,backgroundPhoto, getAllTheatherUsers,registerTheater, getTheaterProfile, uploadTheaterPosts };

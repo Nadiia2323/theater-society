@@ -11,12 +11,13 @@ const UpdateProfile = () => {
     email: "",
     password: "",
     quote: "",
-    about:""
+    about: "",
   });
   const [selectedFile, setSelectedFile] = useState<File | string>("");
+  const [background, setBackground] = useState<File | string>("");
   // const [userPhoto, setUserPhoto] = useState<UserImageType | null>(null);
-  const { user } = useContext(AuthContext);
-  console.log("user :>> ", user);
+  const { user, theater } = useContext(AuthContext);
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUserData((prevUserData) => ({
@@ -25,33 +26,48 @@ const UpdateProfile = () => {
     }));
 
     const file = e.target.files?.[0];
-console.log('file :>> ', file);
-    setSelectedFile(file);
-    console.log("selectedFile :>> ", selectedFile);
-  };
+    if (name === "profilePhoto") {
+      setSelectedFile(file);
+    } else if (name === "backgroundPhoto") {
+      setBackground(file);
+    }
+  }
 
-  const handleProfilePhotoUpload = async () => {
+
+  const handleProfilePhotoUpload = async (type) => {
+    console.log("type :>> ", type);
+
     const token = getToken();
     const myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${token}`);
 
     const formdata = new FormData();
-    formdata.append("profilePhoto",  selectedFile);
+    let apiUrl;
+
+    if (type === "user") {
+      formdata.append("profilePhoto", selectedFile);
+      apiUrl = "http://localhost:5000/myApi/users/profilePhoto";
+    } else if (type === "theater") {
+      formdata.append("photo", selectedFile);
+      apiUrl = "http://localhost:5000/myApi/theaters/photo";
+    } else {
+      console.log("Invalid type");
+      return;
+    }
 
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
       body: formdata,
-      
     };
-    try {
-      const response = await fetch("http://localhost:5000/myApi/users/profilePhoto", requestOptions)
-      const result = await response.json()
-      console.log('result :>> ', result);
-    } catch (error) {
-      console.log('error :>> ', error);
-    }
 
+    try {
+      const response = await fetch(apiUrl, requestOptions);
+      const result = await response.json();
+      console.log("result :>> ", result);
+    } catch (error) {
+      console.log("error :>> ", error);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -71,10 +87,10 @@ console.log('file :>> ', file);
       updatedData.password = userData.password;
     }
     if (userData.quote) {
-      updatedData.quote = userData.quote
+      updatedData.quote = userData.quote;
     }
     if (userData.about) {
-      updatedData.about = userData.about
+      updatedData.about = userData.about;
     }
 
     if (Object.keys(updatedData).length > 0) {
@@ -112,7 +128,7 @@ console.log('file :>> ', file);
           requestOptions
         );
         const result = await response.json();
-        alert(result.message)
+        alert(result.message);
       } catch (error) {
         console.error("error:", error);
       }
@@ -124,46 +140,71 @@ console.log('file :>> ', file);
   return (
     <>
       <Menu />
-      <div className="form-container">
-
-        <h2>Update Profile</h2>
-        <div className="profilePhto-holder">
-        <div>
-          
-              <img className="profilePhoto" src={user.profilePhoto || selectedFile } alt="" /> Profile Photo
-            
-        </div>
-        <div className="upload-button">
-          <input type="file" onChange={handleInputChange} />
-        <button onClick={handleProfilePhotoUpload}>upload photo</button>
+      {user && (
+        <div className="form-container">
+          <h2>Update Profile</h2>
+          <div className="profilePhto-holder">
+            <div>
+              <img
+                className="profilePhoto"
+                src={user.profilePhoto || selectedFile}
+                alt=""
+              />{" "}
+              Profile Photo
+            </div>
+            <div className="upload-button">
+              <input type="file" onChange={handleInputChange} />
+              <button onClick={() => handleProfilePhotoUpload("user")}>
+                Upload Photo
+              </button>
+            </div>
           </div>
-          </div>
-        
-        <form className="form" onSubmit={handleSubmit}>
-          <label>
-            
-            Name:
-            <input
-              type="text"
-              name="name"
-              placeholder={user.userName }
-              value={userData.name}
-              onChange={handleInputChange}
-            />
-          </label>
 
-          <label>
-            Email: <input
-              type="email"
-              name="email"
-              placeholder={user.email}
-              value={userData.email }
-              onChange={handleInputChange}
-            />
-          </label>
-          <label > Quote: <input type="text" name="quote" placeholder={user.quote} value={userData.quote} onChange={handleInputChange}/></label>
-          <label > About: <input type="text" name="about" placeholder={user.about} value={userData.about} onChange={handleInputChange} /></label>
-          {/* <label>
+          <form className="form" onSubmit={handleSubmit}>
+            <label>
+              Name:
+              <input
+                type="text"
+                name="name"
+                placeholder={user.userName}
+                value={userData.name}
+                onChange={handleInputChange}
+              />
+            </label>
+
+            <label>
+              Email:{" "}
+              <input
+                type="email"
+                name="email"
+                placeholder={user.email}
+                value={userData.email}
+                onChange={handleInputChange}
+              />
+            </label>
+            <label>
+              {" "}
+              Quote:{" "}
+              <input
+                type="text"
+                name="quote"
+                placeholder={user.quote}
+                value={userData.quote}
+                onChange={handleInputChange}
+              />
+            </label>
+            <label>
+              {" "}
+              About:{" "}
+              <input
+                type="text"
+                name="about"
+                placeholder={user.about}
+                value={userData.about}
+                onChange={handleInputChange}
+              />
+            </label>
+            {/* <label>
             Password:
             <input
               type="password"
@@ -173,11 +214,112 @@ console.log('file :>> ', file);
             />
           </label> */}
 
+            <button type="submit">Update</button>
+          </form>
+        </div>
+      )}
 
+      {theater && (
+        <div className="form-container">
+          <h2>Update Profile</h2>
+          <div className="profilePhto-holder">
+            <div>
+              <img
+                className="profilePhoto"
+                src={theater.profilePhoto || selectedFile}
+                alt=""
+              />{" "}
+              Profile Photo
+            </div>
+            <div className="upload-button">
+              <input
+                type="file"
+                onChange={handleInputChange}
+                name="profilePhoto"
+              />
+              <button onClick={() => handleProfilePhotoUpload("theater")}>
+                Upload Photo
+              </button>
+            </div>
+            <div>
+              <img
+                className="profilePhoto"
+                src={theater.backgroundPhoto || background}
+                alt=""
+              />{" "}
+              Profile Photo
+            </div>
+            <div className="upload-button">
+              <input
+                type="file"
+                onChange={handleInputChange}
+                name="background"
+              />
+              <button>Upload Photo</button>
+            </div>
+          </div>
 
-          <button type="submit">Update</button>
-        </form>
-      </div>
+          <form className="form" onSubmit={handleSubmit}>
+            <label>
+              Name:
+              <input
+                type="text"
+                name="name"
+                placeholder={theater.theaterName}
+                onChange={handleInputChange}
+              />
+            </label>
+
+            <label>
+              Email:{" "}
+              <input
+                type="email"
+                name="email"
+                placeholder={theater.email}
+                onChange={handleInputChange}
+              />
+            </label>
+            <label>
+              Country:{" "}
+              <input type="text" name="country" placeholder={theater.country} />
+            </label>
+            <label>
+              {" "}
+              City: <input type="text" name="city" placeholder={theater.city} />
+            </label>
+            <label>
+              Director:{" "}
+              <input
+                type="text"
+                name="director"
+                placeholder={theater.director}
+              />
+            </label>
+            <label>
+              {" "}
+              Quote:{" "}
+              <input
+                type="text"
+                name="quote"
+                placeholder={theater.quote}
+                onChange={handleInputChange}
+              />
+            </label>
+            <label>
+              {" "}
+              About:{" "}
+              <input
+                type="text"
+                name="about"
+                placeholder={theater.about}
+                onChange={handleInputChange}
+              />
+            </label>
+
+            <button type="submit">Update</button>
+          </form>
+        </div>
+      )}
     </>
   );
 };

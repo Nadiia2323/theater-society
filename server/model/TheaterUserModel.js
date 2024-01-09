@@ -9,6 +9,9 @@ const theaterUserSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  backgroundPhoto: {
+    type: String,
+  },
   email: {
     type: String,
     required: true,

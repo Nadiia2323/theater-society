@@ -34,9 +34,9 @@ const router = createBrowserRouter([
   {
     path: "/profileSettings",
     element: (
-      <ProtectedRoute>
+      // <ProtectedRoute>
         <UpdateProfile />
-      </ProtectedRoute>
+      /* </ProtectedRoute> */
     ),
   },
 ]);

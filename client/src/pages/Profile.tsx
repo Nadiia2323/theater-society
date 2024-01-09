@@ -114,7 +114,7 @@ export default function Profile() {
           {!showPosts && !favorites && <News />}
           {favorites && <Favorites />}
         </div>
-      )}: <TheaterProfile/>
+      )} <TheaterProfile/>
     </div>
   );
 }
