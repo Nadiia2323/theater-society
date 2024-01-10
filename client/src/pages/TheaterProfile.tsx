@@ -1,12 +1,41 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuhContext";
 import "./TheaterProfile.css"
+import Posts from "../Components/Posts";
+import News from "../Components/News";
+import Favorites from "../Components/Favorites";
 
 
 export default function TheaterProfile() {
     console.log("theater profile");
+  const [showPosts, setShowPosts] = useState(true);
+  const [showPlusIcon, setShowPlusIcon] = useState(false);
+  const [favorites, setFavorites] = useState(false);
+
+  const [plusClicked, setPlusClicked] = useState(false);
     const { theater } = useContext(AuthContext)
     console.log('theater :>> ', theater);
+     const handlePostsClick = () => {
+    setShowPosts(true);
+    setShowPlusIcon(true);
+    setPlusClicked(false);
+    setFavorites(false)
+    };
+      const handlePlusIconClick = () => {
+    setPlusClicked(true);
+    };
+     const handleNewsClick = () => {
+    setShowPosts(false);
+    setShowPlusIcon(false);
+    setPlusClicked(false);
+    setFavorites(false)
+    };
+     const handelClickFavorites = () => {
+    setFavorites(true);
+    setShowPosts(false);
+    setShowPlusIcon(false);
+    setPlusClicked(false);
+  };
     
 
     return (<div className="profileContainer">
@@ -20,15 +49,35 @@ export default function TheaterProfile() {
                 </div>
                 <div className="theaterName">
              <h1 className="glowing-txt">{theater.theaterName}</h1></div>
-                <p>county</p>
-                <p>city</p>
-                <p>director</p>
-                <p>quote</p>
-                <p>about</p>
-                <p>followers</p>
-                <p>following</p>
+                <p>county: {theater.country }</p>
+                <p>city: {theater.city }</p>
+                <p>director:{theater.director }</p>
+                <p>"{theater.quote}"</p>
+                <p>{theater.about }</p>
+                <p>followers:{theater.followers.length }</p>
+                <p>following:{ theater.following.length}</p>
                 <button>follow</button>
                 <button>send message</button>
+                <div className="news-container">
+            <div className="addPost">
+              <p className="posts" onClick={handlePostsClick}>
+                posts
+              </p>
+              {showPosts && (
+                <span className="plus-icon" onClick={handlePlusIconClick}>
+                  +
+                </span>
+              )}
+            </div>
+            <p className="news" onClick={handleNewsClick}>
+              news
+            </p>
+            <p onClick={handelClickFavorites}>favorites </p>
+            
+                </div>
+                {showPosts && !favorites && <Posts plusClicked={plusClicked} />}
+          {!showPosts && !favorites && <News />}
+          {favorites && <Favorites />}
 
             </>
         )}

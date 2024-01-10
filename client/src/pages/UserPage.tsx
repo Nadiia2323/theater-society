@@ -16,7 +16,7 @@ export default function UserPage() {
     const [selectedPost, setSelectedPost] = useState(null);
     const [isFollowing, setIsFollowing] = useState(false);
   const { userId } = useParams();
-  const { user } = useContext(AuthContext);
+  const { user,theater } = useContext(AuthContext);
 
   const getUser = async () => {
     try {
@@ -106,6 +106,32 @@ export default function UserPage() {
       console.log("error :>> ", error);
     }
   };
+  const addActorsToCast = async () => {
+    const token = getToken()
+    try {
+      
+      const myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+myHeaders.append("Authorization", `Bearer ${token}`)
+
+const urlencoded = new URLSearchParams();
+urlencoded.append("userId", userId);
+
+const requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: urlencoded,
+  
+};
+      const response = await fetch("http://localhost:5000/myApi/theaters/actors", requestOptions)
+      const result = await response.json()
+    console.log('result :>> ', result);
+
+  
+    } catch (error) {
+      console.log('error :>> ', error);
+    }
+  }
   useEffect(() => {
     getUser();
   }, [userId]);
@@ -144,6 +170,7 @@ export default function UserPage() {
   {isFollowing ? 'Unfollow' : 'Follow'}
 </button>
             <button>send message</button>
+            {theater && (<button onClick={addActorsToCast}>Add to Cast</button>)}
           </div>
         </div>
       )}

@@ -52,6 +52,16 @@ const theaterUserSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   }],
+   posts: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Post'
+  }],
+    favorites: [
+       {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Post'
+  }
+  ],
 }, { timestamps: true });
 
 const TheaterUserModel = mongoose.model("TheaterUser", theaterUserSchema);

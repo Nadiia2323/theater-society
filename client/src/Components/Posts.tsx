@@ -32,7 +32,8 @@ export default function Posts({ plusClicked }:PostsProps) {
   // };
   
 
-  const { user } = useContext(AuthContext);
+  const { user, theater } = useContext(AuthContext);
+ 
   //  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleLike = async (postId) => {
@@ -81,34 +82,42 @@ const requestOptions = {
       setSelectedFile(file || "");
     }
   };
+    const userType = theater ? 'theater' : 'user';
 
-  const createPost = async () => {
-    setShowModal(false);
-    const token = getToken();
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${token}`);
-
-    const formdata = new FormData();
-    formdata.append("caption", caption);
-    formdata.append("posts", selectedFile);
-
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: formdata,
-    };
-
-    try {
-      const response = await fetch(
-        "http://localhost:5000/myApi/users/posts",
-        requestOptions
-      );
-      const result = await response.text();
-      console.log(result);
-    } catch (error) {
-      console.log("error", error);
-    }
+  const handleCreatePostClick = () => {
+    createPost(userType);
   };
+
+  const createPost = async (userType) => {
+  setShowModal(false);
+  const token = getToken();
+  const myHeaders = new Headers();
+  myHeaders.append("Authorization", `Bearer ${token}`);
+
+  const formdata = new FormData();
+  formdata.append("caption", caption);
+  formdata.append("posts", selectedFile);
+
+  
+  const url = userType === 'theater'
+    ? "http://localhost:5000/myApi/theaters/posts"
+    : "http://localhost:5000/myApi/users/posts";
+
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: formdata,
+  };
+
+  try {
+    const response = await fetch(url, requestOptions);
+    const result = await response.text();
+    console.log(result);
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
   const cancel = () => {
     setShowModal(false);
   };
@@ -151,9 +160,13 @@ const requestOptions = {
     
   };
   const isLikedByCurrentUser = (post) => {
+    if (user) {
+      
+    } else if (theater) {
+      return post.likes.includes(theater.id);
+    }
     
     
-    return post.likes.includes(user.id);
   };
 
  
@@ -199,13 +212,57 @@ const requestOptions = {
               />
             </label>
           </div>
-          <button onClick={createPost}>Create new post</button>
+          <button onClick={handleCreatePostClick}>Create new post</button>
           <button onClick={cancel}>Cancel</button>
         </div>
       )}
 
    <div className="post-container" >
-  {user &&
+  {theater &&
+    theater.posts &&
+    theater.posts.length > 0 &&
+    theater.posts.map((post: Post, index: number) => (
+      <div
+        key={post._id}
+        className="post"
+      >
+        <div className="image-container" >
+          <div className="dropdown" onClick={(e) => e.stopPropagation()}>
+            <ul
+              className="dropbtn icons btn-right showLeft"
+              
+            >
+              <li></li>
+              <li></li>
+              <li></li>
+            </ul>
+            
+              <div id={`myDropdown-${post._id}`} className="dropdown-content">
+                <a href="#about">Edit</a>
+                <a href="#contact" onClick={() => handlePostDelete(post._id)}>Delete</a>
+
+              </div>
+            
+          </div>
+          <div className="likes" onClick={() => {
+  
+  handleLike(post._id);
+}}>
+            <FontAwesomeIcon icon={isLikedByCurrentUser(post) ? fasHeart : farHeart} />
+            <p>{post.likes?.length }</p>
+</div>
+         </div>
+          <div> 
+          <img className="image" src={post.imageUrl} alt="" onClick={() => handlePostClick(post)} />
+          <p className="date">{formatDate(post.updatedAt)}</p>
+          <div className="caption-overlay">
+            <h3 className="caption">{post.caption}</h3>
+          </div>
+          <div className="post-settings"></div>
+        </div>
+      </div>
+    ))}
+          {user &&
     user.posts &&
     user.posts.length > 0 &&
     user.posts.map((post: Post, index: number) => (

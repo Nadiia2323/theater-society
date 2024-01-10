@@ -1,6 +1,7 @@
 
 import TheaterUserModel from "../model/TheaterUserModel.js";
 import User from "../model/UserModel.js";
+import Post from "../model/PostModel.js";
 import { encryptPassword } from "../unils/encryptPassword.js";
 import { v2 as cloudinary } from "cloudinary";
 
@@ -95,41 +96,45 @@ const registerTheater = async  (req, res) => {
      }
      }
 const uploadTheaterPosts = async(req, res) => {
-         const { email, caption } = req.body  //imagine user has sent a caption
-  
-   if (req.file) {
+  const { caption } = req.body; 
+
+  if (req.file) {
     try {
+      
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: "posts",
       });
-      console.log("result uploading :>> ", result);
-      // const user = await User.findOne(email); 
-      const user = req.user
-      if (user) {
-        const newPost = { imageUrl: result.secure_url, caption: req.body.caption }
-        const posts = [...user.posts, newPost]
-        // await user.save()
-      user.posts = posts;
-      await user.save();
-    }
 
+      // Create a new Post document
+      const newPost = new Post({
+        imageUrl: result.secure_url,
+        caption: caption,
+        user: req.user._id 
+      });
+      await newPost.save();
+
+      
+      const user = await TheaterUserModel.findById(req.user._id);
+      user.posts.push(newPost._id);
+      await user.save();
+
+      // Send the response
       res.status(201).json({
         message: "post uploaded",
-        posts: result.secure_url,
-
+        post: newPost
       });
+
     } catch (error) {
-      console.log("error :>> ", error);
+      console.error("Error uploading post:", error);
       res.status(500).json({ error: "Failed to upload post" });
     }
   } else {
-    res.status(500).json({
-      message: "file not supported",
+    res.status(400).json({ 
+      message: "No file provided",
     });
   }
-
-
 }
+
      
 const backgroundPhoto = async (req,res) => {
   console.log("background working");
@@ -194,4 +199,62 @@ const uploadImage = async (req, res) => {
   
 }
 
-export {uploadImage,backgroundPhoto, getAllTheatherUsers,registerTheater, getTheaterProfile, uploadTheaterPosts };
+const updateTheaterProfile = async (req, res) => {
+  
+  console.log("update  theater profile is working");
+  console.log('user :>> ', req.user);
+ 
+  
+
+  const { name, email, profilePhoto,quote,about,country,city,director } = req.body;
+  
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    await TheaterUserModel.updateOne({ email: req.user.email }, { name, email, profilePhoto,quote,about,country,city,director });
+
+    res.status(200).json({ message: "Profile updated successfully" });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+
+  
+}
+
+const addActors = async(req, res) => {
+  console.log('addActors :>> ');
+  try {
+    const theaterId = req.user._id; 
+    console.log('theaterId :>> ', theaterId);
+    const userId = req.body.userId; 
+    console.log('userId :>> ', userId);
+
+    const theater = await TheaterUserModel.findById(theaterId);
+    if (!theater) {
+      return res.status(404).json({ message: "Theater not found" });
+    }
+
+    const isAlreadyActor = theater.actors.includes(userId);
+
+    if (isAlreadyActor) {
+      
+      theater.actors = theater.actors.filter(actorId => actorId.toString() !== userId);
+      await theater.save();
+      return res.status(200).json({ message: "Actor removed from the cast", actors: theater.actors });
+    } else {
+      
+      theater.actors.push(userId);
+      await theater.save();
+      return res.status(200).json({ message: "Actor successfully added to the cast", actors: theater.actors });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+export {addActors,updateTheaterProfile,uploadImage,backgroundPhoto, getAllTheatherUsers,registerTheater, getTheaterProfile, uploadTheaterPosts };

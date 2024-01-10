@@ -13,10 +13,26 @@ const UpdateProfile = () => {
     quote: "",
     about: "",
   });
+  const [theaterData, setTheaterData] = useState({
+    theaterName: "",
+    email: "",
+    country: "",
+    city: "",
+    quote: "",
+    about: "",
+    director: "",
+  });
   const [selectedFile, setSelectedFile] = useState<File | string>("");
   const [background, setBackground] = useState<File | string>("");
-  // const [userPhoto, setUserPhoto] = useState<UserImageType | null>(null);
+
   const { user, theater } = useContext(AuthContext);
+  const handleInputTheaterChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setTheaterData((prevUserData) => ({
+      ...prevUserData,
+      [name]: value,
+    }));
+  }
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -28,12 +44,36 @@ const UpdateProfile = () => {
     const file = e.target.files?.[0];
     if (name === "profilePhoto") {
       setSelectedFile(file);
+      setBackground("");
     } else if (name === "backgroundPhoto") {
       setBackground(file);
+      setSelectedFile("");
     }
-  }
+  };
 
+  const handleBackgroundUpload = async () => {
+    try {
+      const token = getToken();
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${token}`);
+      const formdata = new FormData();
+      formdata.append("backgroundPhoto", background);
 
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: formdata,
+      };
+      const response = await fetch(
+        "http://localhost:5000/myApi/theaters/background",
+        requestOptions
+      );
+      const result = await response.json();
+      console.log("result :>> ", result);
+    } catch (error) {
+      console.log("error :>> ", error);
+    }
+  };
   const handleProfilePhotoUpload = async (type) => {
     console.log("type :>> ", type);
 
@@ -136,7 +176,84 @@ const UpdateProfile = () => {
       alert("Please fill in at least one field to update.");
     }
   };
+  const handleSubmitTheater = async (e) => {
+e.preventDefault();
 
+    const updatedData = {};
+
+    if (theaterData.theaterName) {
+      updatedData.name = theaterData.theaterName;
+    }
+
+    if (theaterData.email) {
+      updatedData.email = theaterData.email;
+    }
+
+    if (theaterData.quote) {
+      updatedData.quote = theaterData.quote;
+    }
+    if (theaterData.about) {
+      updatedData.about = theaterData.about;
+    }
+    if (theaterData.city) {
+      updatedData.city = theaterData.city
+    }
+    if (theaterData.country) {
+      updatedData.country = theaterData.country
+    }
+    if (theaterData.director) {
+      updatedData.director = theaterData.director
+    }
+
+if (Object.keys(updatedData).length > 0) {
+   try {
+    const token = getToken()
+        const myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+myHeaders.append("Authorization", `Bearer ${token}`)
+ const urlencoded = new URLSearchParams();
+        if (updatedData.name) {
+          urlencoded.append("theaterName", updatedData.name);
+        }
+        if (updatedData.email) {
+          urlencoded.append("email", updatedData.email);
+        }
+        
+        if (updatedData.quote) {
+          urlencoded.append("quote", updatedData.quote);
+        }
+        if (updatedData.about) {
+          urlencoded.append("about", updatedData.about);
+     }
+     if (updatedData.city) {
+      urlencoded.append("city", updatedData.city);
+     }
+     if (updatedData.country) {
+      urlencoded.append("country", updatedData.country);
+     }
+     if (updatedData.director) {
+      urlencoded.append("director", updatedData.director);
+     }
+
+const requestOptions = {
+  method: 'PUT',
+  headers: myHeaders,
+  body: urlencoded,
+  
+};
+    const response = await fetch("http://localhost:5000/myApi/theaters/settings", requestOptions)
+    const result = await response.json()
+    console.log('result :>> ', result);
+  } catch (error) {
+    console.log('error :>> ', error);
+  }
+} else {
+   alert("Please fill in at least one field to update.");
+}
+   
+    
+  }
+  console.log("theater :>> ", theaterData);
   return (
     <>
       <Menu />
@@ -253,20 +370,23 @@ const UpdateProfile = () => {
               <input
                 type="file"
                 onChange={handleInputChange}
-                name="background"
+                name="backgroundPhoto"
               />
-              <button>Upload Photo</button>
+              <button className="bg" onClick={handleBackgroundUpload}>
+                Upload Photo
+              </button>
             </div>
           </div>
 
-          <form className="form" onSubmit={handleSubmit}>
+          <form className="form" onSubmit={handleSubmitTheater} >
             <label>
               Name:
               <input
                 type="text"
                 name="name"
+                value={theaterData.theaterName}
                 placeholder={theater.theaterName}
-                onChange={handleInputChange}
+                onChange={handleInputTheaterChange}
               />
             </label>
 
@@ -275,17 +395,18 @@ const UpdateProfile = () => {
               <input
                 type="email"
                 name="email"
+                value={theaterData.email}
                 placeholder={theater.email}
-                onChange={handleInputChange}
+                onChange={handleInputTheaterChange}
               />
             </label>
             <label>
               Country:{" "}
-              <input type="text" name="country" placeholder={theater.country} />
+              <input type="text" name="country" placeholder={theater.country} value={theaterData.country} onChange={handleInputTheaterChange}/>
             </label>
             <label>
               {" "}
-              City: <input type="text" name="city" placeholder={theater.city} />
+              City: <input type="text" name="city" placeholder={theater.city} value={theaterData.city} onChange={handleInputTheaterChange}/>
             </label>
             <label>
               Director:{" "}
@@ -293,6 +414,8 @@ const UpdateProfile = () => {
                 type="text"
                 name="director"
                 placeholder={theater.director}
+                value={theaterData.director}
+                onChange={handleInputTheaterChange}
               />
             </label>
             <label>
@@ -302,7 +425,9 @@ const UpdateProfile = () => {
                 type="text"
                 name="quote"
                 placeholder={theater.quote}
-                onChange={handleInputChange}
+                value={theaterData.quote}
+                
+                onChange={handleInputTheaterChange}
               />
             </label>
             <label>
@@ -312,7 +437,8 @@ const UpdateProfile = () => {
                 type="text"
                 name="about"
                 placeholder={theater.about}
-                onChange={handleInputChange}
+                value={theaterData.about}
+                onChange={handleInputTheaterChange}
               />
             </label>
 

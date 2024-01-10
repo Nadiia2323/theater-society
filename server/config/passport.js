@@ -15,10 +15,10 @@ const jwtStrategy = new JwtStrategy(jwtOptions, async (jwt_payload, done) => {
       return done(null, user);
     }
 
-    const theatreUser = await TheaterUserModel.findById(jwt_payload.sub);
-    if (theatreUser) {
+    const theaterUser = await TheaterUserModel.findById(jwt_payload.sub);
+    if (theaterUser) {
       console.log("token valid, theatre user authenticated");
-      return done(null, theatreUser);
+      return done(null, theaterUser);
     }
 
     console.log("token invalid");

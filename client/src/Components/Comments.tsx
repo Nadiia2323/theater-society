@@ -38,7 +38,7 @@ export default function Comments(props) {
     }
 
     const result = await response.json();
-    
+    console.log('result :>> ', result);
   } catch (error) {
     console.error("Error :>> ", error);
   }

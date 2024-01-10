@@ -8,7 +8,7 @@ import { faHeart as fasHeart } from '@fortawesome/free-solid-svg-icons';
 import { formatDate } from "../utils/formatDate";
 
 export default function Favorites() {
-    const { user } = useContext(AuthContext);
+    const { user,theater } = useContext(AuthContext);
   const [favorites, setFavorites] = useState([])
   const [Likes, setLikes] = useState({});
 

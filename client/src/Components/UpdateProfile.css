@@ -2,6 +2,9 @@
     background-color: white;
     
 } */
+.bg{
+    color: red;
+}
 .form {
     display: flex;
     flex-direction: column;
