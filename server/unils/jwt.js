@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 
-const issueToken = (userId) => {
+const issueToken = (userId, isTheaterUser) => {
 
     const signOptions = {
         expiresIn: "2 days",
@@ -8,7 +8,8 @@ const issueToken = (userId) => {
     };
 
     const payload = {
-        sub: userId
+        sub: userId,
+        isTheaterUser
     }
     const secretOrPrivatKey = process.env.MYKEY 
 

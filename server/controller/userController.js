@@ -184,6 +184,7 @@ const login = async (req, res) => {
 
       if (existingUser || existingTheaterUser) {
         const user = existingUser || existingTheaterUser;
+        const isTheaterUser = !!user.theaterName;
         console.log(user);
         const isPasswordValid = await verifyPassword(
           req.body.password,
@@ -195,7 +196,7 @@ const login = async (req, res) => {
           });
         }
         if (isPasswordValid) {
-          const token = issueToken(user._id);
+          const token = issueToken(user._id, isTheaterUser);
           if (token) {
             res.status(200).json({
               message: "user succsefully logged in",
@@ -400,7 +401,7 @@ const deletePost = async (req, res) => {
 };
 
 const likePost = async (req, res) => {
-  console.log('req.user :>> ', req.user.theaterName);
+  console.log('req.user :>> ', req.user);
   try {
     const userId = req.user._id;
     const postId = req.body.postId;
@@ -412,32 +413,49 @@ const likePost = async (req, res) => {
     }
 
     const post = await Post.findById(postId);
+    console.log('post :>> ', post);
+
     let currentUser;
+    let alreadyLiked
     if (isTheaterUser) {
-       currentUser = await TheaterUserModel.findById(userId)
+      currentUser = await TheaterUserModel.findById(userId)
+      // alreadyLikedIndex = post.likes.theater.indexOf(userId)
+      alreadyLiked = post.likes.some((p) => p.theater.toString() === userId)
     } else {
-       currentUser = await User.findById(userId);
+      currentUser = await User.findById(userId);
+      // alreadyLikedIndex = post.likes.user.indexOf(userId)
+      alreadyLiked = post.likes.some((p) => p.user.toString() === userId)
     }
+  
     
-    
+    console.log('alreadyLiked :>> ', alreadyLiked);
+    console.log('currentUser :>> ', currentUser);
 
     if (!post || !currentUser) {
       return res.status(404).json({ message: "Post or User not found" });
     }
 
-    const alreadyLikedIndex = post.likes.indexOf(userId);
+    // const alreadyLikedIndex = post.likes.indexOf(userId);
 
-    if (alreadyLikedIndex !== -1) {
-      post.likes.splice(alreadyLikedIndex, 1);
+    if (alreadyLiked) {
+      // console.log("already liked - remove ")
+      // post.likes.splice(alreadyLikedIndex, 1);
 
-      const favoriteIndex = currentUser.favorites.indexOf(postId);
-      if (favoriteIndex !== -1) {
-        currentUser.favorites.splice(favoriteIndex, 1);
-      }
+      // const favoriteIndex = currentUser.favorites.indexOf(postId);
+      // if (favoriteIndex !== -1) {
+      //   console.log("if liked triggered")
+      //   currentUser.favorites.splice(favoriteIndex, 1);
+      // }
     } else {
-      post.likes.push(userId);
+      console.log("Not liked - add")
+      if (isTheaterUser) {
+        post.likes.push({ theater: userId})
+      } else {
+        post.likes.push({ user: userId})
+      }
 
       if (!currentUser.favorites.includes(postId)) {
+        console.log("if not liked triggered")
         currentUser.favorites.push(postId);
       }
     }
@@ -447,7 +465,7 @@ const likePost = async (req, res) => {
 
     res.status(200).json({
       message:
-        alreadyLikedIndex !== -1
+        alreadyLiked
           ? "Like removed successfully"
           : "Post liked successfully",
       updatedLikes: post.likes.length,

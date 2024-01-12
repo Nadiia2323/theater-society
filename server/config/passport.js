@@ -9,19 +9,25 @@ const jwtOptions = {
 
 const jwtStrategy = new JwtStrategy(jwtOptions, async (jwt_payload, done) => {
   try {
-    const user = await User.findOne({ _id: jwt_payload.sub });
+    let user;
+    if (jwt_payload.isTheaterUser) {
+      user = await TheaterUserModel.findById(jwt_payload.sub)
+    } else {
+      user = await User.findById(jwt_payload.sub);
+    }
+    // const user = await User.findOne({ _id: jwt_payload.sub });
     if (user) {
       console.log("token valid, user authenticated");
       return done(null, user);
     }
 
-    const theaterUser = await TheaterUserModel.findById(jwt_payload.sub);
-    if (theaterUser) {
-      console.log("token valid, theatre user authenticated");
-      return done(null, theaterUser);
-    }
+    // const theaterUser = await TheaterUserModel.findById(jwt_payload.sub);
+    // if (theaterUser) {
+    //   console.log("token valid, theatre user authenticated");
+    //   return done(null, theaterUser);
+    // }
 
-    console.log("token invalid");
+    // console.log("token invalid");
     return done(null, false);
   } catch (error) {
     console.log(error);

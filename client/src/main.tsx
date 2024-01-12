@@ -18,9 +18,9 @@ const router = createBrowserRouter([
     path: "/profile",
     element: (
       //! this is causing issue with navigate after login
-     <ProtectedRoute>
+    //  <ProtectedRoute>
         <Profile />
-     </ProtectedRoute>
+     /* </ProtectedRoute> */
     ),
   },
   {
@@ -34,9 +34,9 @@ const router = createBrowserRouter([
   {
     path: "/profileSettings",
     element: (
-      <ProtectedRoute>
+      // <ProtectedRoute>
         <UpdateProfile />
-      </ProtectedRoute> 
+      /* </ProtectedRoute>  */
     ),
   },
 ]);
