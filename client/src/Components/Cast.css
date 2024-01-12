@@ -1,0 +1,25 @@
+.cast-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    
+}
+
+.actor {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.actor img {
+    width: 100px;
+   
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.actor h3 {
+    margin: 10px 0;
+}

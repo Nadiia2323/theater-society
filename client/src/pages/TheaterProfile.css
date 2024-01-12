@@ -1,5 +1,6 @@
 body{
     background: black;
+    font-family: Arial, sans-serif;
 }
 .profileImage {
     position: absolute;
@@ -33,7 +34,7 @@ body{
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.42);
-    /* Чорний колір з 50% прозорістю */
+    
     z-index: 4;
 }
 
@@ -45,6 +46,7 @@ body{
     width: 100%;
     position: absolute;
     top: 0;
+    
 }
 .theaterName{
     font-size: 34px;
@@ -53,4 +55,79 @@ body{
     left: 30%;
     top: 20px;
     z-index: 4;
+}
+.info-theater-container{
+display: flex;
+flex-direction: row;
+gap: 15rem;
+
+justify-content: center;
+}
+.styled-quote {
+    display: flex;
+    width: 90vh;
+    margin: 20px 0;
+    padding: 20px;
+    /* background-color: #a3d4ff9b;
+    border-left: 10px solid #96c5f4; */
+    font-style: italic;
+    position: relative;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.styled-quote p {
+    margin: 0;
+    color: #dbd8d8;
+}
+
+.styled-quote cite {
+    display: block;
+    text-align: right;
+    color: #666;
+    margin-top: 10px;
+    
+}
+
+.styled-quote::before {
+    content: '“';
+    font-size: 50px;
+    position: absolute;
+    left: 10px;
+    top: -10px;
+    color: #96c5f4;
+     
+    
+}
+
+.styled-quote::after {
+    content: '”';
+    font-size: 50px;
+    position: absolute;
+    right: 10px;
+    bottom: -10px;
+    color: #96c5f4;
+}
+.followers-box{
+   display: flex;
+   flex-direction: row;
+   gap: 5rem;
+}
+.buttons{
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    
+}
+.buttons button{
+background-color: #96c5f4;
+    
+    color: black;
+   
+    border: none;
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
 }

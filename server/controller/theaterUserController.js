@@ -255,6 +255,28 @@ const addActors = async(req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+const getCast = async (req, res) => {
+  try {
+    const theaterId = req.user._id; 
+
+    
+    const theater = await TheaterUserModel.findById(theaterId).populate('actors');
+
+   
+    if (!theater) {
+      return res.status(404).json({ message: "Theater not found" });
+    }
+
+    
+    res.status(200).json({
+      message: "Cast retrieved successfully",
+      cast: theater.actors
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error occurred while retrieving the cast" });
+  }
+};
 
 
-export {addActors,updateTheaterProfile,uploadImage,backgroundPhoto, getAllTheatherUsers,registerTheater, getTheaterProfile, uploadTheaterPosts };
+export {getCast,addActors,updateTheaterProfile,uploadImage,backgroundPhoto, getAllTheatherUsers,registerTheater, getTheaterProfile, uploadTheaterPosts };

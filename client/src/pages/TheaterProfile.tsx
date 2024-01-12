@@ -4,6 +4,7 @@ import "./TheaterProfile.css"
 import Posts from "../Components/Posts";
 import News from "../Components/News";
 import Favorites from "../Components/Favorites";
+import Cast from "../Components/Cast";
 
 
 export default function TheaterProfile() {
@@ -11,6 +12,7 @@ export default function TheaterProfile() {
   const [showPosts, setShowPosts] = useState(true);
   const [showPlusIcon, setShowPlusIcon] = useState(false);
   const [favorites, setFavorites] = useState(false);
+  const [cast, setCast]= useState(false)
 
   const [plusClicked, setPlusClicked] = useState(false);
     const { theater } = useContext(AuthContext)
@@ -19,7 +21,8 @@ export default function TheaterProfile() {
     setShowPosts(true);
     setShowPlusIcon(true);
     setPlusClicked(false);
-    setFavorites(false)
+       setFavorites(false)
+       setCast(false)
     };
       const handlePlusIconClick = () => {
     setPlusClicked(true);
@@ -28,14 +31,23 @@ export default function TheaterProfile() {
     setShowPosts(false);
     setShowPlusIcon(false);
     setPlusClicked(false);
-    setFavorites(false)
+       setFavorites(false)
+       setCast(false)
     };
      const handelClickFavorites = () => {
     setFavorites(true);
     setShowPosts(false);
     setShowPlusIcon(false);
-    setPlusClicked(false);
+       setPlusClicked(false);
+       setCast(false)
   };
+  const handelClickCast = () => {
+    setCast(true)
+    setFavorites(false)
+    setShowPosts(false);
+    setShowPlusIcon(false);
+    setPlusClicked(false);
+  }
     
 
     return (<div className="profileContainer">
@@ -48,16 +60,31 @@ export default function TheaterProfile() {
                     <img className="profileImage" src={theater.profilePhoto || "https://asset.cloudinary.com/dqgvmwnpl/41951ab3c05afd2f89c7a431fc592465"} alt="" />
                 </div>
                 <div className="theaterName">
-             <h1 className="glowing-txt">{theater.theaterName}</h1></div>
-                <p>county: {theater.country }</p>
-                <p>city: {theater.city }</p>
-                <p>director:{theater.director }</p>
-                <p>"{theater.quote}"</p>
-                <p>{theater.about }</p>
+            <h1 className="glowing-txt">{theater.theaterName}</h1></div>
+          <div className="info-theater-container">
+            <div className="director">
+              <p> {theater.country } / {theater.city }</p>
+              <p>DIRECTOR<br/>
+                {theater.director}</p>
+            </div>
+                
+               
+            <div className="info-box">
+              <div className="followers-box">
                 <p>followers:{theater.followers.length }</p>
-                <p>following:{ theater.following.length}</p>
+              <p>following:{theater.following.length}</p>
+                </div>
+                
+              <p>{theater.about }</p>
+            </div>
+          </div>
+           <blockquote className="styled-quote">
+              <p>{theater.quote}</p>
+              <cite>– {theater.theaterName }</cite>
+          </blockquote>
+          <div className="buttons">
                 <button>follow</button>
-                <button>send message</button>
+                <button>send message</button></div>
                 <div className="news-container">
             <div className="addPost">
               <p className="posts" onClick={handlePostsClick}>
@@ -73,11 +100,15 @@ export default function TheaterProfile() {
               news
             </p>
             <p onClick={handelClickFavorites}>favorites </p>
+            <p>Perfomance</p>
+            <p onClick={handelClickCast}>Cast</p>
             
                 </div>
-                {showPosts && !favorites && <Posts plusClicked={plusClicked} />}
-          {!showPosts && !favorites && <News />}
-          {favorites && <Favorites />}
+            {showPosts && !favorites && !cast && <Posts plusClicked={plusClicked} />}
+        {!showPosts && !favorites && !cast && <News />}
+        {favorites && <Favorites />}
+          {cast && <Cast />}
+          
 
             </>
         )}
