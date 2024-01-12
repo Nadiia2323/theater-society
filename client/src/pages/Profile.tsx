@@ -20,7 +20,7 @@ export interface User {
   favorites?: [];
   id: string;
   posts?: [];
-  profilePhoto?: UserImageType;
+  profilePhoto?: string;
   quote?: string;
   userName?: string;
   followers?: [];
@@ -28,7 +28,7 @@ export interface User {
 }
 
 export default function Profile() {
-  const { user, getProfile }: AuthContextProps = useContext(AuthContext);
+  const { user, theater, isLoading, getProfile }: AuthContextProps = useContext(AuthContext);
 
   const [showPosts, setShowPosts] = useState(true);
   const [showPlusIcon, setShowPlusIcon] = useState(false);
@@ -64,6 +64,10 @@ export default function Profile() {
     getProfile();
   }, []);
 
+  if (isLoading) {
+    return <h1>loading</h1>
+  }
+
   return (
     <div>
       <NavBar />
@@ -85,8 +89,10 @@ export default function Profile() {
             </div>
             <div className="bio-container">
               <div className="followers-container">
-                <p>followers:{user.followers?.length }</p>
-                <p>following:{user.following?.length}</p>
+                <p >{user.followers?.length}<br/>followers
+                </p>
+                <p>{user.following?.length}
+                <br/>following</p>
               </div>
               <p className="quote">"{user.quote}"</p>
               <p className="about">{user.about}</p>
@@ -114,7 +120,8 @@ export default function Profile() {
           {!showPosts && !favorites && <News />}
           {favorites && <Favorites />}
         </div>
-      )} <TheaterProfile/>
+      )}
+      {theater && <TheaterProfile /> }
     </div>
   );
 }

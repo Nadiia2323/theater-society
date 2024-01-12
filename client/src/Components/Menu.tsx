@@ -77,10 +77,7 @@ const requestOptions = {
 
       <ul className="nav-menu">
         <li className="li" onClick={profilePage}>Home</li>
-          <li className="li">Favorites</li>
-            <li className="li">Theaters</li>
-            <li className="li" onClick={searchUser}>Users</li>
-          <li className="li">News</li>
+            <li className="li" onClick={searchUser}>Search</li>
           <li className="li" onClick={settingPage}>Settings</li>
           <li className="li" onClick={logout}>logout</li>
           <li className="li" onClick={openDeleteModal}>Delete Account</li>

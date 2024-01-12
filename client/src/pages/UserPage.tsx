@@ -16,7 +16,8 @@ export default function UserPage() {
     const [selectedPost, setSelectedPost] = useState(null);
     const [isFollowing, setIsFollowing] = useState(false);
   const { userId } = useParams();
-  const { user,theater } = useContext(AuthContext);
+  const { user, theater } = useContext(AuthContext);
+  console.log('user :>> ', user);
 
   const getUser = async () => {
     try {
@@ -154,18 +155,19 @@ const requestOptions = {
                 }
                 alt="Profile"
               />
-              <h3 className="name">{usersPage.userName}</h3>
+              <h3 className="name">{usersPage.name}</h3>
             </div>
             <div className="bio-container">
               <div className="followers-container">
-                <p>followers:{usersPage.followers.length}</p>
-                <p>following{usersPage.following.length}:</p>
+                <p>{usersPage.followers.length}
+                <br/>followers</p>
+                <p>{usersPage.following.length}<br/>following</p>
               </div>
               <p className="quote">"{usersPage.quote}"</p>
               <p className="about">{usersPage.about}</p>
             </div>
           </div>
-          <div>
+          <div className="buttons">
           <button onClick={followOrUnfollow}>
   {isFollowing ? 'Unfollow' : 'Follow'}
 </button>

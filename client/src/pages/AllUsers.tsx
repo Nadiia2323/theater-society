@@ -89,7 +89,9 @@ useEffect(() => {
    return (
     <div>
         <NavBar />
-        <Menu />
+           <Menu />
+           <p>What are you looking for?</p>
+           <h2>Users | Theaters</h2>
         <div className="search-container">
             <input 
                 type="text" 
@@ -125,7 +127,7 @@ useEffect(() => {
                         {theater.map(theater => (
                             <li className="theater-list" key={theater._id}>
                                 <div className="actor">
-                                <img src={ theater.profilePhoto} alt="" />
+                                <img className="Usersphoto" src={ theater.profilePhoto} alt="" />
                                   <h3> {theater.theaterName}</h3> 
                                 </div>
                             </li>

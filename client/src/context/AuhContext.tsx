@@ -3,7 +3,7 @@
 import { useState, createContext, useEffect,  } from "react";
 import { User } from "../pages/Profile";
 // import { useNavigate } from "react-router-dom";
-export const AuthContext = createContext({});
+export const AuthContext = createContext({} as AuthContextProps);
 // export interface User {
   
 //   id: number;
@@ -15,11 +15,11 @@ export const AuthContext = createContext({});
 export interface AuthContextProps {
   theater: {} | null;
   user: User | null;
-  userChecked?: boolean;
+  userChecked: boolean;
   isLoading?: boolean;
   registration?: (data: any, url: string) => Promise<any>;
   login?: (loginCredentials: { email: string; password: string }) => Promise<void>;
-  getProfile?: () => Promise<void>;
+  getProfile: () => Promise<void>;
 }
 
 export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -27,13 +27,15 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [user, setUser] = useState<User | null>(null);
   const [ theater, setTheater] = useState(null)
   const [userChecked, setUserChecked] = useState(false)
-  const [isLoading, setIsLoading] = useState (false)
+  const [isLoading, setIsLoading] = useState (true)
 
   const getProfile = async () => {
     setIsLoading(true)
+    setUser(null)
+    setTheater(null)
     const token = localStorage.getItem("token");
     if (!token) {
-      // alert("register first!");
+      alert("register first!");
     } else {
       const myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${token}`);
@@ -48,6 +50,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
           requestOptions
         );
         const result = await response.json();
+        console.log('result :>> ', result);
         const user = result.user
         const theaterUser = result.theater
         
@@ -66,6 +69,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
         console.log("error :>> ", error);
       } finally {
         setIsLoading(false)
+        // setUserChecked(true)
       }
     }
   };
@@ -150,7 +154,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   useEffect(() => {
     getProfile();
-    setUserChecked(false)
+    
   }, []);
     const contextValue: AuthContextProps = {
       user,

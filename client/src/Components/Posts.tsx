@@ -161,7 +161,7 @@ const requestOptions = {
   };
   const isLikedByCurrentUser = (post) => {
     if (user) {
-      
+      return post.likes.includes(user.id)
     } else if (theater) {
       return post.likes.includes(theater.id);
     }
