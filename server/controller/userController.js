@@ -420,11 +420,14 @@ const likePost = async (req, res) => {
     if (isTheaterUser) {
       currentUser = await TheaterUserModel.findById(userId)
       // alreadyLikedIndex = post.likes.theater.indexOf(userId)
-      alreadyLiked = post.likes.some((p) => p.theater.toString() === userId)
+      alreadyLiked = post.likes.some((p) => p.theater.toString() === userId.toString())
     } else {
       currentUser = await User.findById(userId);
       // alreadyLikedIndex = post.likes.user.indexOf(userId)
-      alreadyLiked = post.likes.some((p) => p.user.toString() === userId)
+      alreadyLiked = post.likes.some((p) => {
+        console.log(typeof p.user.toString(), " - ", typeof userId.toString())
+        p.user.toString() === userId.toString()
+      })
     }
   
     
