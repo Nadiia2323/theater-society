@@ -38,29 +38,32 @@
 }
 
 .post-actions {
-  position: relative;
-  left: 90%;
-  top: -10%;
-  gap: 1rem;
+  position: absolute;
+ right: 0;
+ bottom: -10px;
+
 }
 
 .likes {
+  display: flex;
+  gap: 2px;
+  padding-top: 5px;
   color: white;
-  font-size: 28px;
+  font-size: 18px;
   position: absolute;
   padding-left: 5px;
   z-index: 1;
   cursor: pointer;
 }
 .clichedPost-container {
-  /* position: absolute; */
+  position: absolute;
   background: rgba(0, 0, 0, 0.5);
  
-/* top: 50%; 
-width: 400px;
+top: 50%; 
+/* width: 400px; */
    left: 50%;
-   transform: translate(-10%, -110%);  */
-  transform: translate(-10%, -80%);
+   transform: translate(-50%, -50%); 
+  /* transform: translate(-10%, -80%); */
 }
 .clickedPost {
   z-index: 2;
@@ -76,6 +79,10 @@ width: 400px;
   position: relative;
   background-color: rgba(0, 0, 0, 0.813);
   font-size: 12px;
+  padding-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .clickedPost-img {
   width: 400px;
@@ -91,13 +98,17 @@ width: 400px;
 
   overflow: hidden;
   transition: top 0.3s;
+  
+  width: 90%;
 
   text-overflow: ellipsis;
 }
 .post:hover .caption-overlay {
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-  transform: translateX(-30%);
+  transform: translateX(-31%);
   left: 30%;
   bottom: 5%;
 }
@@ -111,6 +122,8 @@ width: 400px;
 .showLeft {
   color: #fff !important;
 }
+
+
 
 .icons li {
   background: none repeat scroll 0 0 #fff;
@@ -135,7 +148,7 @@ width: 400px;
   left: 55vh;
 
   color: white;
-  font-size: 6px;
+  font-size: 2px;
   border: none;
   cursor: pointer;
   z-index: 1;
@@ -185,26 +198,111 @@ width: 400px;
   color: white;
 }
 .modal-container {
-  position: relative;
-  z-index: 2;
-
-  top: 50%;
-  /* right: 50%; */
-
-  background: rgba(0, 0, 0, 0.5);
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
+position: absolute;
+  
+  left: 50%;
+  transform: translate(-50%, -50%);
  
+  z-index: 5;
+  
+  display: flex;
+  justify-content: center; 
+  
+  height: 200%;
+  width: 100%; 
+  
+  background: rgba(0, 0, 0, 0.5);
+  
 }
 
 .modal-close-button {
+  
   position: absolute;
-  left: 45%;
-  top: -79%;
-  z-index: 3;
+ width: 20px;
+    height: 20px;
+    line-height: 20px; 
+    text-align: center; 
+    background-color: #fff; 
+    color: #000; 
+    font-size: 16px; 
+    border-radius: 15px; 
+    cursor: pointer;
 
-  cursor: pointer;
-  color: white;
+top: 5px;
+left: 93%;
+z-index: 10;
 }
+
+.post-author {
+  
+  color: #979595;
+ 
+  font-size: 0.9rem;
+ 
+  margin-right: 10px;
+ cursor: pointer;
+}
+/* Стили для затемнения фона */
+.newPost-overlay {
+  position: fixed;
+  /* Фиксированное позиционирование */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  /* Полупрозрачный черный фон */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  /* Высокий z-index, чтобы окно было над другими элементами */
+}
+
+/* Стили для модального окна */
+.newPost {
+  background-color: #333;
+  /* Темный фон модального окна */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  /* Добавляем тень для объемности */
+  width: 400px;
+  /* Ширина окна */
+}
+
+.newPost img {
+  max-width: 100%;
+  /* Чтобы изображение не выходило за границы */
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.newPost input[type="text"],
+.newPost input[type="file"] {
+  width: 100%;
+  /* Полная ширина */
+  padding: 10px;
+  margin-bottom: 10px;
+  /* Отступ снизу */
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  /* Граница поля ввода */
+  box-sizing: border-box;
+  /* Чтобы padding не влиял на общую ширину */
+}
+
+.newPost button {
+  padding: 10px 15px;
+  margin-right: 10px;
+  /* Отступ справа */
+  background-color: #007bff;
+  /* Синий цвет кнопки */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.newPost button:hover {
+    background-color: #0056b3}

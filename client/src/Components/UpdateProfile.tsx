@@ -260,20 +260,24 @@ const requestOptions = {
       {user && (
         <div className="form-container">
           <h2>Update Profile</h2>
+          
           <div className="profilePhto-holder">
+            
             <div>
               <img
                 className="profilePhoto"
-                src={user.profilePhoto || selectedFile}
+                src={user.profilePhoto?user.profilePhoto:"https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" }
                 alt=""
               />{" "}
-              Profile Photo
+              
             </div>
+            
             <div className="upload-button">
               <input type="file" onChange={handleInputChange} />
               <button onClick={() => handleProfilePhotoUpload("user")}>
                 Upload Photo
               </button>
+              
             </div>
           </div>
 

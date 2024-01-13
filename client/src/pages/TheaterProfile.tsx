@@ -64,15 +64,17 @@ export default function TheaterProfile() {
           <div className="info-theater-container">
             <div className="director">
               <p> {theater.country } / {theater.city }</p>
-              <p>DIRECTOR<br/>
-                {theater.director}</p>
+              <p>
+                {theater.director}<br/>
+                DIRECTOR
+              </p>
             </div>
                 
                
             <div className="info-box">
               <div className="followers-box">
-                <p>followers:{theater.followers.length }</p>
-              <p>following:{theater.following.length}</p>
+                <p>{theater.followers.length } <br/>followers</p>
+              <p>{theater.following.length} <br/>following</p>
                 </div>
                 
               <p>{theater.about }</p>
@@ -82,9 +84,8 @@ export default function TheaterProfile() {
               <p>{theater.quote}</p>
               <cite>– {theater.theaterName }</cite>
           </blockquote>
-          <div className="buttons">
-                <button>follow</button>
-                <button>send message</button></div>
+          
+                
                 <div className="news-container">
             <div className="addPost">
               <p className="posts" onClick={handlePostsClick}>

@@ -68,12 +68,14 @@ const findUser = async () => {
             const response = await fetch(`http://localhost:5000/myApi/users/search?q=${searchQuery}`, requestOptions);
             const result = await response.json();
             console.log('result :>> ', result);
-            setUsers(result); 
+            setUsers(result.users); 
+            setTheater(result.theaters)
         } catch (error) {
             console.error('Error :>> ', error);
             setError('Failed to load users');
         }
     }
+    
 
 useEffect(() => {
     getUsers()
@@ -90,7 +92,7 @@ useEffect(() => {
     <div>
         <NavBar />
            <Menu />
-           <p>What are you looking for?</p>
+           <h2>What are you looking for?</h2>
            <h2>Users | Theaters</h2>
         <div className="search-container">
             <input 
@@ -110,7 +112,7 @@ useEffect(() => {
                     <ul className="list">
                         {users.map(user => (
                             <li className="users-list" key={user._id} onClick={() => handleSelectUser(user)}>
-                                <img className="Usersphoto" src={user.profilePhoto} alt={`Profile of ${user.name}`} />
+                                <img className="Usersphoto" src={user.profilePhoto || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"} />
                                 {user.name}
                             </li> 
                         ))}
@@ -120,16 +122,17 @@ useEffect(() => {
                 )}
             </div>
 
-            <div className="theater-container">
-                <h2>Theaters</h2>
+            <div className="theaters-container">
+                   <h2>Theaters</h2>
+                   {error && <p>Error: {error}</p>}
                 {theater && theater.length > 0 ? (
                     <ul className="list">
                         {theater.map(theater => (
-                            <li className="theater-list" key={theater._id}>
-                                <div className="actor">
-                                <img className="Usersphoto" src={ theater.profilePhoto} alt="" />
-                                  <h3> {theater.theaterName}</h3> 
-                                </div>
+                            <li className="theater-list" key={theater._id} onClick={() => handleSelectUser(theater)}>
+                                
+                                <img className="Usersphoto"  src={theater.profilePhoto || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"} />
+                                   {theater.theaterName}
+                                
                             </li>
                         ))}
                     </ul>

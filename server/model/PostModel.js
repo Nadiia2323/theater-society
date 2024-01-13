@@ -51,6 +51,7 @@ const postSchema = new mongoose.Schema({
       ref: 'TheaterUserModel',
       required: false
     },
+    userName:{type:String},
     text: { type: String },
     createdAt: { type: Date, default: Date.now }
   }],

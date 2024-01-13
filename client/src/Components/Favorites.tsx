@@ -6,11 +6,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as farHeart } from '@fortawesome/free-regular-svg-icons';
 import { faHeart as fasHeart } from '@fortawesome/free-solid-svg-icons';
 import { formatDate } from "../utils/formatDate";
+import PostModal from "./PostModal";
 
 export default function Favorites() {
     const { user,theater } = useContext(AuthContext);
   const [favorites, setFavorites] = useState([])
   const [Likes, setLikes] = useState({});
+  const [selectedPost,setSelectedPost] = useState(null)
 
   const getFavorites = async () => {
     try {
@@ -39,7 +41,7 @@ export default function Favorites() {
      console.log('post :>> ', post);
      console.log('user.id :>> ', user?.id);
     
-    return post.likes.includes(user?.id);
+     return post.likes.some(like => like.user === user?.id);
   };
   const handleLike = async (postId) => {
   
@@ -74,6 +76,13 @@ export default function Favorites() {
       console.log('error :>> ', error);
     }
   }
+    const handlePostClick = (post: Post) => {
+    setSelectedPost(post);
+    console.log("selectedPost :>> ", selectedPost);
+  };
+  const handleCloseModal = () => {
+    setSelectedPost(null);
+  };
     
     useEffect(() => {
      getFavorites()
@@ -81,7 +90,14 @@ export default function Favorites() {
     
 
     return (
-     <div className="post-container" >
+      <div className="post-container" >
+       
+         {selectedPost && (
+        <div className="modal-container">
+         
+          <PostModal post={selectedPost} onClose={handleCloseModal} />
+        </div>
+      )}
                 {favorites &&
                     favorites.length > 0 &&
                    favorites.map((post: Post, index: number) => (
@@ -100,7 +116,7 @@ export default function Favorites() {
                                 </div>
                             </div>
                             <div>
-                                <img className="image" src={post.imageUrl} alt=""  />
+                                <img className="image" src={post.imageUrl} alt=""  onClick={() => handlePostClick(post)}   />
                                 <p className="date">{formatDate(post.updatedAt)}</p>
                                 <div className="caption-overlay">
                                     <h3 className="caption">{post.caption}</h3>

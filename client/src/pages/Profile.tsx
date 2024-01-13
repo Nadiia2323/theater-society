@@ -89,7 +89,7 @@ export default function Profile() {
             </div>
             <div className="bio-container">
               <div className="followers-container">
-                <p >{user.followers?.length}<br/>followers
+                <p  >{user.followers?.length}<br/>followers
                 </p>
                 <p>{user.following?.length}
                 <br/>following</p>
@@ -110,10 +110,10 @@ export default function Profile() {
                 </span>
               )}
             </div>
-            <p className="news" onClick={handleNewsClick}>
+            <p className="posts" onClick={handleNewsClick}>
               news
             </p>
-            <p onClick={handelClickFavorites}>favorites </p>
+            <p className="posts" onClick={handelClickFavorites}>favorites </p>
             
           </div>
           {showPosts && !favorites && <Posts plusClicked={plusClicked} />}

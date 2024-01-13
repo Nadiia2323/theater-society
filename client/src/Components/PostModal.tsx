@@ -4,6 +4,7 @@ import { getToken } from "../utils/login";
 import "./Posts.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faEdit, faComment } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from "react-router-dom";
 
 
 export interface Post {
@@ -22,9 +23,11 @@ interface PostModalProps {
 }
 
 
-export default function PostModal({ post }: PostModalProps) {
+export default function PostModal({ post, onClose }: PostModalProps) {
   console.log('post :>> ', post);
   const [newComment, setNewComment] = useState("");
+    const navigate = useNavigate();
+  
   
   
     
@@ -36,10 +39,13 @@ export default function PostModal({ post }: PostModalProps) {
     setNewComment(comment);
     
   };
+  console.log('new :>> ', newComment);
  
-  const postComment = async () => {
+  const postComment = async (e) => {
+    e.preventDefault()
     const token = getToken();
     const postId = post?._id;
+    console.log('postId :>> ', postId);
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
     myHeaders.append("Authorization", `Bearer ${token}`);
@@ -64,10 +70,15 @@ export default function PostModal({ post }: PostModalProps) {
       console.log("error :>> ", error);
     }
   };
-
+const handleAuthorClick = () => {
+   if (post.user && post.user._id) {
+        navigate(`/user/${post.user._id}`); 
+    }
+}
  
     return (
       <div className="clichedPost-container" >
+        <div className="modal-close-button" onClick={onClose} >X</div>
         
         <div className="clickedPost" >
           
@@ -81,10 +92,16 @@ export default function PostModal({ post }: PostModalProps) {
          
           <div className="clickedPost-caption">
             <h3>{post.caption}</h3> 
+           
             <div className="post-actions">
-      <FontAwesomeIcon icon={faEdit} className="post-action-icon"  />
-              <FontAwesomeIcon icon={faTrash} className="post-action-icon"        />
-      </div>
+              {post.user.name && (
+                <p className="post-author" onClick={handleAuthorClick}>-{post.user.name }</p>
+              )}
+               
+      {/* <FontAwesomeIcon icon={faEdit} className="post-action-icon"  /> */}
+              {/* <FontAwesomeIcon icon={faTrash} className="post-action-icon"        /> */}
+            </div>
+            
     </div>
                       <div className="comments">
                         {post.comments?.map((comment, index) => (

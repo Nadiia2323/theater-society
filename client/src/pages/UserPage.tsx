@@ -17,7 +17,7 @@ export default function UserPage() {
     const [isFollowing, setIsFollowing] = useState(false);
   const { userId } = useParams();
   const { user, theater } = useContext(AuthContext);
-  console.log('user :>> ', user);
+  console.log('user in page :>> ', user);
 
   const getUser = async () => {
     try {
@@ -28,17 +28,23 @@ export default function UserPage() {
       );
       const result = await response.json();
         setUsersPage(result);
-        const currentUserId = user?.id; 
+        const currentUserId = user.id  
         console.log('currentUserId :>> ', currentUserId);
-    const isCurrentUserFollowing = result.followers.includes(currentUserId);
+      const isCurrentUserFollowing = result.followers.includes(currentUserId);
+      console.log('isCurrentUserFollowing :>> ',isCurrentUserFollowing );
     setIsFollowing(isCurrentUserFollowing);
     } catch (error) {
       console.error("Error :>> ", error);
     }
   };
-  const isLikedByCurrentUser = (post) => {
-    return post.likes.includes(user?.id);
-  };
+  // const isLikedByCurrentUser = (post) => {
+  //   return post.likes.includes(user?.id);
+  // };
+const isLikedByCurrentUser = (post) => {
+  const currentUser = user 
+  return post.likes.includes(currentUser?.id);
+};
+
 
   const handleLike = async (postId) => {
     const token = getToken();
@@ -68,6 +74,21 @@ export default function UserPage() {
           [postId]: updatedLikes,
         }));
       }
+       setUsersPage(prevState => {
+        const newPosts = prevState.posts.map(post => {
+          if (post._id === postId) {
+            const hasLiked = post.likes.includes(user?.id);
+            return {
+              ...post,
+              likes: hasLiked
+                ? post.likes.filter(id => id !== user?.id)
+                : [...post.likes, user?.id],
+            };
+          }
+          return post;
+        });
+        return { ...prevState, posts: newPosts };
+      });
     } catch (error) {
       console.log("error :>> ", error);
     }
@@ -133,6 +154,7 @@ const requestOptions = {
       console.log('error :>> ', error);
     }
   }
+  
   useEffect(() => {
     getUser();
   }, [userId]);
@@ -143,6 +165,7 @@ const requestOptions = {
     <>
       <NavBar />
       <Menu />
+      
       {usersPage && (
         <div className="profile-section">
           <div className="profile-container">
@@ -171,9 +194,17 @@ const requestOptions = {
           <button onClick={followOrUnfollow}>
   {isFollowing ? 'Unfollow' : 'Follow'}
 </button>
-            <button>send message</button>
+            
             {theater && (<button onClick={addActorsToCast}>Add to Cast</button>)}
           </div>
+        </div>
+      )}
+        {selectedPost && (
+        <div className="modal-container">
+          <div className="modal-close-button" >
+            X
+          </div>
+          <PostModal post={selectedPost} onClose={handleCloseModal} />
         </div>
       )}
       <div className="post-container">
@@ -211,14 +242,7 @@ const requestOptions = {
             </div>
           ))}
       </div>
-      {selectedPost && (
-        <div className="modal-container">
-          <div className="modal-close-button" onClick={handleCloseModal}>
-            X
-          </div>
-          <PostModal post={selectedPost} />
-        </div>
-      )}
+    
     </>
   );
 }

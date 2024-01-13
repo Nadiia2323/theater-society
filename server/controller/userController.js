@@ -34,12 +34,18 @@ const getUser = async (req, res) => {
     console.log("userId :>> ", userId);
 
     const userById = await User.findById(userId).populate("posts");
-    console.log("userById :>> ", userById);
 
     if (userById) {
       res.status(200).json(userById);
     } else {
-      res.status(404).send("User not found");
+      
+      const theaterById = await TheaterUserModel.findById(userId).populate("posts");
+
+      if (theaterById) {
+        res.status(200).json(theaterById);
+      } else {
+        res.status(404).send("User or Theater not found");
+      }
     }
   } catch (error) {
     console.error("Error :>> ", error);
@@ -47,9 +53,10 @@ const getUser = async (req, res) => {
   }
 };
 
+
 const getAllPosts = async (req, res) => {
   try {
-    const allPosts = await Post.find({});
+    const allPosts = await Post.find({}).sort({ createdAt: -1 }).populate('user');
     if (allPosts && allPosts.length > 0) {
       return res.json({
         number: allPosts.length,
@@ -322,7 +329,7 @@ const uploadPosts = async (req, res) => {
       await newPost.save();
 
       const user = await User.findById(req.user._id);
-      user.posts.push(newPost._id);
+      user.posts.unshift(newPost._id);
       await user.save();
 
       res.status(201).json({
@@ -400,65 +407,44 @@ const deletePost = async (req, res) => {
   }
 };
 
+
 const likePost = async (req, res) => {
   console.log('req.user :>> ', req.user);
   try {
     const userId = req.user._id;
     const postId = req.body.postId;
     const isTheaterUser = !!req.user.theaterName;
-    console.log('isTheaterUser :>> ', isTheaterUser);
 
     if (!userId) {
       return res.status(401).json({ message: "Login first" });
     }
 
     const post = await Post.findById(postId);
-    console.log('post :>> ', post);
-
-    let currentUser;
-    let alreadyLiked
-    if (isTheaterUser) {
-      currentUser = await TheaterUserModel.findById(userId)
-      // alreadyLikedIndex = post.likes.theater.indexOf(userId)
-      alreadyLiked = post.likes.some((p) => p.theater.toString() === userId.toString())
-    } else {
-      currentUser = await User.findById(userId);
-      // alreadyLikedIndex = post.likes.user.indexOf(userId)
-      alreadyLiked = post.likes.some((p) => {
-        console.log(typeof p.user.toString(), " - ", typeof userId.toString())
-        p.user.toString() === userId.toString()
-      })
-    }
-  
-    
-    console.log('alreadyLiked :>> ', alreadyLiked);
-    console.log('currentUser :>> ', currentUser);
-
-    if (!post || !currentUser) {
-      return res.status(404).json({ message: "Post or User not found" });
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
     }
 
-    // const alreadyLikedIndex = post.likes.indexOf(userId);
+    let currentUser = isTheaterUser
+      ? await TheaterUserModel.findById(userId)
+      : await User.findById(userId);
+
+    if (!currentUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    let likeField = isTheaterUser ? 'theater' : 'user';
+    let alreadyLiked = post.likes.some(like => like[likeField]?.toString() === userId.toString());
 
     if (alreadyLiked) {
-      // console.log("already liked - remove ")
-      // post.likes.splice(alreadyLikedIndex, 1);
-
-      // const favoriteIndex = currentUser.favorites.indexOf(postId);
-      // if (favoriteIndex !== -1) {
-      //   console.log("if liked triggered")
-      //   currentUser.favorites.splice(favoriteIndex, 1);
-      // }
+      
+      post.likes = post.likes.filter(like => like[likeField]?.toString() !== userId.toString());
+      
+      currentUser.favorites = currentUser.favorites.filter(favId => favId.toString() !== postId.toString());
     } else {
-      console.log("Not liked - add")
-      if (isTheaterUser) {
-        post.likes.push({ theater: userId})
-      } else {
-        post.likes.push({ user: userId})
-      }
-
+     
+      post.likes.push({ [likeField]: userId });
+      
       if (!currentUser.favorites.includes(postId)) {
-        console.log("if not liked triggered")
         currentUser.favorites.push(postId);
       }
     }
@@ -467,14 +453,12 @@ const likePost = async (req, res) => {
     await currentUser.save();
 
     res.status(200).json({
-      message:
-        alreadyLiked
-          ? "Like removed successfully"
-          : "Post liked successfully",
+      message: alreadyLiked ? "Like removed successfully" : "Post liked successfully",
       updatedLikes: post.likes.length,
       favorites: currentUser.favorites,
     });
   } catch (error) {
+    console.error('Error in likePost:', error);
     res.status(500).json({ message: "Something went wrong" });
   }
 };
@@ -482,6 +466,8 @@ const likePost = async (req, res) => {
 const commentPost = async (req, res) => {
   try {
     const userId = req.user._id;
+    const userName = req.user.name || req.user.theaterName
+    console.log('userName :>> ', userName);
     const commentText = req.body.text;
     const postId = req.body.postId;
 
@@ -493,7 +479,6 @@ const commentPost = async (req, res) => {
 
     
     const post = await Post.findById(postId);
-
     if (!post) {
       return res.status(404).json({
         message: "Post not found",
@@ -502,6 +487,7 @@ const commentPost = async (req, res) => {
 
     
     const newComment = {
+      userName:userName,
       user: userId,
       text: commentText,
       createdAt: new Date(), 
@@ -511,9 +497,14 @@ const commentPost = async (req, res) => {
     post.comments.push(newComment);
     await post.save();
 
+     const user = await User.findById(userId);
+
     return res.status(201).json({
       message: "Comment added successfully",
-      updatedPost: post,
+      comment: {
+        ...newComment,
+        
+      },
     });
   } catch (error) {
     console.error(error);
@@ -637,7 +628,7 @@ const getFavorites = async (req, res) => {
 if (isTheaterUser) {
   currentUser = await TheaterUserModel.findById(userId).populate('favorites')
 } else {
-  currentUser = await User.findById(userId).populate("favorites");
+  currentUser = await User.findById(userId).populate("favorites")
 }
     
 
@@ -696,22 +687,44 @@ const following = async (req, res) => {
   }
 };
 
+// const searchUser = async (req, res) => {
+//   console.log("searchworking ");
+//   console.log("object :>> ", req.query.q);
+//   try {
+//     const searchQuery = req.query.q;
+//     const users = await User.find({ name: new RegExp(searchQuery, "i") });
+//     if (users.length === 0) {
+//       return res.status(404).json({ message: "No users found" });
+//     }
+//     if (users) {
+//       res.json(users);
+//     }
+//   } catch (error) {
+//     res.status(500).json({ message: "something went wrong" });
+//   }
+// };
 const searchUser = async (req, res) => {
-  console.log("searchworking ");
-  console.log("object :>> ", req.query.q);
+  console.log("search working");
+  console.log("query :>> ", req.query.q);
   try {
     const searchQuery = req.query.q;
     const users = await User.find({ name: new RegExp(searchQuery, "i") });
-    if (users.length === 0) {
-      return res.status(404).json({ message: "No users found" });
+    const theaters = await TheaterUserModel.find({ theaterName: new RegExp(searchQuery, "i") });
+
+    if (users.length === 0 && theaters.length === 0) {
+      return res.status(404).json({ message: "No users or theaters found" });
     }
-    if (users) {
-      res.json(users);
-    }
+
+    res.json({
+      users: users,
+      theaters: theaters
+    });
+
   } catch (error) {
     res.status(500).json({ message: "something went wrong" });
   }
 };
+
 //not working yet//
 const getFollowers = async (req, res) => {
   console.log("getfollowers");

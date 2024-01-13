@@ -27,16 +27,14 @@ export default function Posts({ plusClicked }:PostsProps) {
   const [showDropDown, setShowDropDown] = useState<string | null>(null);
    const [Likes, setLikes] = useState({});
 
-  // const handleLike = () => {
-  //   setIsLiked(!isLiked);
-  // };
+ 
   
 
   const { user, theater } = useContext(AuthContext);
  
-  //  const dropdownRef = useRef<HTMLDivElement>(null);
+ 
 
-  const handleLike = async (postId) => {
+  const handleLike = async (postId: string) => {
   
   const token= getToken()
   const myHeaders = new Headers();
@@ -88,7 +86,7 @@ const requestOptions = {
     createPost(userType);
   };
 
-  const createPost = async (userType) => {
+  const createPost = async (userType:"theater" | "user") => {
   setShowModal(false);
   const token = getToken();
   const myHeaders = new Headers();
@@ -159,20 +157,26 @@ const requestOptions = {
     
     
   };
-  const isLikedByCurrentUser = (post) => {
+// const isLikedByCurrentUser = (post: Post) => {
+//   const userId = user ? user.id : theater ? theater.id : null;
+
+  
+//   return post.likes.some(like => like.user === userId);
+// };
+const isLikedByCurrentUser = (post) => {
     if (user) {
-      return post.likes.includes(user.id)
+      return user.favorites.includes(post._id);
     } else if (theater) {
-      return post.likes.includes(theater.id);
+      return theater.favorites.includes(post._id);
     }
-    
-    
+    return false
   };
 
- 
+
  const handleCloseModal = () => {
    setSelectedPost(null)
- }
+  }
+  
 
 
   useEffect(() => {
@@ -188,7 +192,7 @@ const requestOptions = {
 
   return (
     <div >
-      {showModal && (
+      {showModal && (<div className="newPost-overlay">
         <div className="newPost">
           <div>
             <img
@@ -214,6 +218,7 @@ const requestOptions = {
           </div>
           <button onClick={handleCreatePostClick}>Create new post</button>
           <button onClick={cancel}>Cancel</button>
+          </div>
         </div>
       )}
 
@@ -248,8 +253,9 @@ const requestOptions = {
   
   handleLike(post._id);
 }}>
-            <FontAwesomeIcon icon={isLikedByCurrentUser(post) ? fasHeart : farHeart} />
-            <p>{post.likes?.length }</p>
+            <FontAwesomeIcon icon={isLikedByCurrentUser(post) ? fasHeart : farHeart } className="custom-icon" />
+            <p>{post.likes?.length}</p>
+            
 </div>
          </div>
           <div> 
@@ -258,18 +264,26 @@ const requestOptions = {
           <div className="caption-overlay">
             <h3 className="caption">{post.caption}</h3>
           </div>
-          <div className="post-settings"></div>
+          {/* <div className="post-settings"></div> */}
         </div>
       </div>
     ))}
+        {selectedPost && (
+  <div className="modal-container">
+    
+    <PostModal post={selectedPost} onClose={handleCloseModal} />
+  </div>
+)}
           {user &&
     user.posts &&
     user.posts.length > 0 &&
-    user.posts.map((post: Post, index: number) => (
+          user.posts.map((post: Post, index: number) => (
+      
       <div
         key={post._id}
         className="post"
       >
+       
         <div className="image-container" >
           <div className="dropdown" onClick={(e) => e.stopPropagation()}>
             <ul
@@ -282,7 +296,7 @@ const requestOptions = {
             </ul>
             
               <div id={`myDropdown-${post._id}`} className="dropdown-content">
-                <a href="#about">Edit</a>
+                {/* <a href="#about">Edit</a> */}
                 <a href="#contact" onClick={() => handlePostDelete(post._id)}>Delete</a>
 
               </div>
@@ -306,12 +320,7 @@ const requestOptions = {
         </div>
       </div>
     ))}
-        {selectedPost && (
-  <div className="modal-container">
-    <div className="modal-close-button" onClick={handleCloseModal}>X</div>
-    <PostModal post={selectedPost} />
-  </div>
-)}
+        
 
 </div>
 

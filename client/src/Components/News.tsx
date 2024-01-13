@@ -115,7 +115,7 @@ const requestOptions = {
      console.log('post :>> ', post);
      console.log('user.id :>> ', user?.id);
     
-    return post.likes.includes(user?.id);
+     return post.likes.some(like => like.user === user?.id);
   };
     const handlePostClick = (post: Post) => {
     setSelectedPost(post);
@@ -134,6 +134,14 @@ const requestOptions = {
   return (
     <>
       <div className="post-container" >
+         {selectedPost && (
+        <div className="modal-container">
+          {/* <div className="modal-close-button" onClick={handleCloseModal}>
+            X
+          </div> */}
+          <PostModal post={selectedPost} onClose={handleCloseModal} />
+        </div>
+      )}
                 {allPosts &&
                     allPosts.users &&
                     allPosts.users.length > 0 &&
@@ -149,7 +157,7 @@ const requestOptions = {
   
                                     handleLike(post._id);
                                 }}>
-                                    <FontAwesomeIcon icon={isLikedByCurrentUser(post) ? fasHeart : farHeart} />
+                                    <FontAwesomeIcon icon={isLikedByCurrentUser(post) ? fasHeart : farHeart}  />
                                     <p>{post.likes?.length}</p>
                                 </div>
                             </div>
@@ -163,14 +171,7 @@ const requestOptions = {
                             </div>
                         </div>
                     ))}</div>
-      {selectedPost && (
-        <div className="modal-container">
-          <div className="modal-close-button" onClick={handleCloseModal}>
-            X
-          </div>
-          <PostModal post={selectedPost} />
-        </div>
-      )}
+     
     <div>
       
       {/* <p>Number of Theaters: {allTheaters.number}</p>

@@ -8,4 +8,7 @@
  .theaterCard{
     background-color: #3d3f3f;
  }
- 
+ .custom-icon {
+     padding-top: 5px;
+     font-size: 14px;
+ }
