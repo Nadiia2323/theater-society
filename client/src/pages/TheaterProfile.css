@@ -59,9 +59,15 @@ body{
 .info-theater-container{
 display: flex;
 flex-direction: row;
-gap: 15rem;
+/* justify-content: end; */
+gap: 10rem;
+width: 100%;
+align-items: center;
 
 justify-content: center;
+}
+.info-box{
+    width: 80vh;
 }
 .styled-quote {
     display: flex;

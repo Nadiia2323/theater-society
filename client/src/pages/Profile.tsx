@@ -22,7 +22,7 @@ export interface User {
   posts?: [];
   profilePhoto?: string;
   quote?: string;
-  userName?: string;
+  name?: string;
   followers?: [];
   following?:[]
 }
@@ -61,7 +61,7 @@ export default function Profile() {
   };
 
   useEffect(() => {
-    getProfile();
+    
   }, []);
 
   if (isLoading) {

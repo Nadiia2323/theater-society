@@ -39,7 +39,7 @@ const getUser = async (req, res) => {
       res.status(200).json(userById);
     } else {
       
-      const theaterById = await TheaterUserModel.findById(userId).populate("posts");
+      const theaterById = await TheaterUserModel.findById(userId).populate("posts").populate('actors');
 
       if (theaterById) {
         res.status(200).json(theaterById);

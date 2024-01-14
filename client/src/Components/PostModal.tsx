@@ -2,36 +2,46 @@ import { useState } from "react";
 import Comments from "./Comments"
 import { getToken } from "../utils/login";
 import "./Posts.css"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faEdit, faComment } from '@fortawesome/free-solid-svg-icons';
+
 import { useNavigate } from "react-router-dom";
+import { User } from "../pages/Profile";
 
 
 export interface Post {
-  caption?: string;
-  comments?: string[];
-  createdAt?: string;
-  imageUrl: string;
-  likes?: string[];
-  updatedAt: string;
   _id: string;
+  caption: string;
+  imageUrl: string;
+ user: User; 
+  likes: Array<{ user: string }> 
+  comments: Comment[]; 
+  createdAt: string; 
+  updatedAt: string;
+  __v: number; 
 }
+
+export interface Comment {
+  
+  _id: string;
+  text: string;
+  user: string; 
+  createdAt: string;
+  
+}
+
 
 interface PostModalProps {
   post: Post;
-  
+  onClose: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 
 export default function PostModal({ post, onClose }: PostModalProps) {
   console.log('post :>> ', post);
   const [newComment, setNewComment] = useState("");
+  const [comments, setComments] = useState(post.comments || []);
+
     const navigate = useNavigate();
   
-  
-  
-    
-
 
      const handleCommentOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log("e.target.value :>> ", e.target.value);
@@ -41,7 +51,7 @@ export default function PostModal({ post, onClose }: PostModalProps) {
   };
   console.log('new :>> ', newComment);
  
-  const postComment = async (e) => {
+  const postComment = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     const token = getToken();
     const postId = post?._id;
@@ -65,6 +75,11 @@ export default function PostModal({ post, onClose }: PostModalProps) {
         requestOptions
       );
       const result = await response.json();
+      if (response.ok) {
+      
+        setComments(prevComments => [...prevComments, result.comment]);
+        setNewComment("");
+    }
       console.log("comment result :>> ", result);
     } catch (error) {
       console.log("error :>> ", error);
@@ -93,18 +108,17 @@ const handleAuthorClick = () => {
           <div className="clickedPost-caption">
             <h3>{post.caption}</h3> 
            
-            <div className="post-actions">
-              {post.user.name && (
-                <p className="post-author" onClick={handleAuthorClick}>-{post.user.name }</p>
-              )}
-               
-      {/* <FontAwesomeIcon icon={faEdit} className="post-action-icon"  /> */}
-              {/* <FontAwesomeIcon icon={faTrash} className="post-action-icon"        /> */}
-            </div>
+          <div className="post-actions">
+  {post.user && post.user.name && (
+    <p className="post-author" onClick={() => handleAuthorClick(post.user._id)}>
+      - {post.user.name}
+    </p>
+  )}
+</div>
             
     </div>
                       <div className="comments">
-                        {post.comments?.map((comment, index) => (
+                        {comments.map((comment, index) => (
                           <Comments
                             post = {post}
                             comment={comment}
@@ -119,7 +133,8 @@ const handleAuthorClick = () => {
                         <input
                           type="text"
                           id="commentText"
-                          placeholder="Comment..."
+              placeholder="Comment..."
+              value={newComment}
                           onChange={handleCommentOnChange}
                         />
                         <button type="submit" onClick={postComment}>

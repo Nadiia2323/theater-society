@@ -105,7 +105,7 @@ const uploadTheaterPosts = async(req, res) => {
         folder: "posts",
       });
 
-      // Create a new Post document
+      
       const newPost = new Post({
         imageUrl: result.secure_url,
         caption: caption,
@@ -115,7 +115,7 @@ const uploadTheaterPosts = async(req, res) => {
 
       
       const user = await TheaterUserModel.findById(req.user._id);
-      user.posts.push(newPost._id);
+      user.posts.unshift(newPost._id);
       await user.save();
 
       // Send the response

@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 export default function Comments(props) {
   const { comment, post } = props;
   const { user, theater } = useContext(AuthContext)
-  console.log('user :>> ', user);
+  console.log('user in postModal :>> ', user);
     console.log('comment :>> ', comment);
   console.log('post in comments :>> ', post);
   const navigate = useNavigate();
@@ -44,6 +44,7 @@ export default function Comments(props) {
     }
 
     const result = await response.json();
+    alert(result.message);
     console.log('result :>> ', result);
   } catch (error) {
     console.error("Error :>> ", error);
@@ -69,12 +70,14 @@ export default function Comments(props) {
             className="post-action-icon"
             onClick={deleteComment}
           /> */}
-          {user?.id === comment.user && (
-            <FontAwesomeIcon
-              icon={faTrash}
-              className="post-action-icon"
-              onClick={deleteComment}
-            />)}
+          {(user?.id === comment.user || theater?.id === comment.user) && (
+  <FontAwesomeIcon
+    icon={faTrash}
+    className="post-action-icon"
+    onClick={deleteComment}
+  />
+)}
+
         </div>
       </div>
     </div>

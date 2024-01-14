@@ -1,52 +1,103 @@
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../Components/NavBar";
 import Menu from "../Components/Menu";
 import { getToken } from "../utils/login";
 import { formatDate } from "../utils/formatDate";
-import PostModal from "../Components/PostModal";
+import PostModal, { Post } from "../Components/PostModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart as farHeart } from "@fortawesome/free-regular-svg-icons";
 import { faHeart as fasHeart } from "@fortawesome/free-solid-svg-icons";
 import { AuthContext } from "../context/AuhContext";
+import { User } from "./Profile";
+import { Theater } from "./TheaterProfile";
+import Cast from "../Components/Cast";
 
 export default function UserPage() {
-  const [usersPage, setUsersPage] = useState(null);
+   const [showPosts, setShowPosts] = useState(true);
+  
+  const [cast, setCast]= useState(false)
+  const [usersPage, setUsersPage] = useState<User>();
+  const [theaterPage,setTheaterPage] = useState<Theater>()
   const [likes, setLikes] = useState({});
     const [selectedPost, setSelectedPost] = useState(null);
-    const [isFollowing, setIsFollowing] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isUserInCast, setIsUserInCast] = useState(false);
+
   const { userId } = useParams();
   const { user, theater } = useContext(AuthContext);
+  const navigate = useNavigate();
   console.log('user in page :>> ', user);
 
-  const getUser = async () => {
-    try {
-      const requestOptions = { method: "GET" };
-      const response = await fetch(
-        `http://localhost:5000/myApi/users/${userId}`,
-        requestOptions
-      );
-      const result = await response.json();
-        setUsersPage(result);
-        const currentUserId = user.id  
-        console.log('currentUserId :>> ', currentUserId);
-      const isCurrentUserFollowing = result.followers.includes(currentUserId);
-      console.log('isCurrentUserFollowing :>> ',isCurrentUserFollowing );
-    setIsFollowing(isCurrentUserFollowing);
-    } catch (error) {
-      console.error("Error :>> ", error);
-    }
-  };
-  // const isLikedByCurrentUser = (post) => {
-  //   return post.likes.includes(user?.id);
+  // const getUser = async () => {
+  //   try {
+  //     const requestOptions = { method: "GET" };
+  //     const response = await fetch(
+  //       `http://localhost:5000/myApi/users/${userId}`,
+  //       requestOptions
+  //     );
+  //     const result = await response.json();
+  //     if (result.theaterName) {
+  //       setTheaterPage(result)
+  //     } 
+  //     if (result.name) {
+  //       setUsersPage(result)
+  //     }
+     
+      
+  //     const currentUserId = user?.id ||theater?.id 
+     
+  //       console.log('currentUserId :>> ', currentUserId);
+  //     const isCurrentUserFollowing = result.followers.includes(currentUserId);
+  //     console.log('isCurrentUserFollowing :>> ', isCurrentUserFollowing);
+      
+  //     setIsFollowing(isCurrentUserFollowing);
+  //     const userInTroupe = theater?.actors.includes(userId);
+  //     if (userInTroupe) {
+  //       setIsUserInCast(userInTroupe);
+  //     }
+    
+  //     //  const isCurrentUserInCast = currentUserId === userId
+  //     // setIsUserInCast(isCurrentUserInCast)
+  //     // console.log('isCurrentUserInCast :>> ', isCurrentUserInCast);
+  //   } catch (error) {
+  //     console.error("Error :>> ", error);
+  //   }
   // };
-const isLikedByCurrentUser = (post) => {
-  const currentUser = user 
-  return post.likes.includes(currentUser?.id);
+  const getUser = async () => {
+  try {
+    const requestOptions = { method: "GET" };
+    const response = await fetch(`http://localhost:5000/myApi/users/${userId}`, requestOptions);
+    const result = await response.json();
+
+    const currentUserId = user?.id || theater?.id;
+
+    // Check if the response is for a theater
+    if (result.theaterName) {
+      setTheaterPage(result);
+      const userInTroupe = theater?.actors.includes(userId);
+      setIsUserInCast(userInTroupe);
+    } 
+    // Check if the response is for a user
+    else if (result.name) {
+      setUsersPage(result);
+      const isCurrentUserFollowing = result.followers.includes(currentUserId);
+      setIsFollowing(isCurrentUserFollowing);
+    }
+
+  } catch (error) {
+    console.error("Error :>> ", error);
+  }
+};
+
+ 
+const isLikedByCurrentUser = (post: Post) => {
+  const currentUser = user || theater
+  return post?.likes.includes(currentUser?.id);
 };
 
 
-  const handleLike = async (postId) => {
+  const handleLike = async (postId:string) => {
     const token = getToken();
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
@@ -153,20 +204,39 @@ const requestOptions = {
     } catch (error) {
       console.log('error :>> ', error);
     }
+  } 
+   const handelClickCast = () => {
+    setCast(true)
+   
+    setShowPosts(false);
+    
   }
+  const handlePost = () => {
+     setCast(false)
+   
+    setShowPosts(true);
+  }
+  //  const handleActorClick = (actor) => () => {
+  //   console.log('actor :>> ', actor);
+  //   navigate(`/user/${actor._id}`);
+  // };
+  console.log('isUserInCast :>> ', isUserInCast);
+  console.log('isFollowing :>> ', isFollowing);
+  console.log('theaterPage :>> ', theaterPage);
+  console.log('userPage :>> ', usersPage);
   
   useEffect(() => {
     getUser();
-  }, [userId]);
-  console.log("usersPage :>> ", usersPage);
-  console.log("selectedPost :>> ", selectedPost);
+   
+  }, []);
+  
 
   return (
     <>
-      <NavBar />
+     
       <Menu />
       
-      {usersPage && (
+      {usersPage && (<> <NavBar />
         <div className="profile-section">
           <div className="profile-container">
             <div className="photo-container">
@@ -195,23 +265,117 @@ const requestOptions = {
   {isFollowing ? 'Unfollow' : 'Follow'}
 </button>
             
-            {theater && (<button onClick={addActorsToCast}>Add to Cast</button>)}
+            {theater && (<button onClick={addActorsToCast}> {isUserInCast ? 'Remove from Cast' : 'Add to Cast'}</button>)}
+            
           </div>
-        </div>
+        </div></>
       )}
-        {selectedPost && (
+        {selectedPost && usersPage && (
         <div className="modal-container">
-          <div className="modal-close-button" >
-            X
-          </div>
+          
           <PostModal post={selectedPost} onClose={handleCloseModal} />
         </div>
       )}
-      <div className="post-container">
-        {usersPage &&
-          usersPage.posts &&
-          usersPage.posts.length > 0 &&
-          usersPage.posts.map((post: Post, index: number) => (
+      {
+  usersPage && (
+    <div className="post-container">
+      {usersPage.posts && usersPage.posts.length > 0 ? (
+        usersPage.posts.map((post: Post, index: number) => (
+          <div key={post._id} className="post">
+            <div className="image-container">
+              <div
+                className="likes"
+                onClick={() => {
+                  handleLike(post._id);
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={isLikedByCurrentUser(post) ? fasHeart : farHeart}
+                />
+                <p>{post.likes?.length}</p>
+              </div>
+            </div>
+            <div>
+              <img
+                className="image"
+                src={post.imageUrl}
+                alt=""
+                onClick={() => handlePostClick(post)}
+              />
+              <p className="date">{formatDate(post.updatedAt)}</p>
+              <div className="caption-overlay">
+                <h3 className="caption">{post.caption}</h3>
+              </div>
+              <div className="post-settings"></div>
+            </div>
+          </div>
+        ))
+      ) : (
+        <p>No posts found</p>
+      )}
+    </div>
+  )
+}
+
+      {theaterPage && ( <> <div className="backgroundPhoto-container">
+                    <img className="backgroundPhoto" src={theaterPage.backgroundPhoto || "https://asset.cloudinary.com/dqgvmwnpl/6efd73b8eaf42f2d25a79c25497150b1"} alt="" />
+                
+                
+                    <img className="profileImage" src={theaterPage.profilePhoto || "https://asset.cloudinary.com/dqgvmwnpl/41951ab3c05afd2f89c7a431fc592465"} alt="" />
+                </div>
+                <div className="theaterName">
+            <h1 className="glowing-txt">{theaterPage.theaterName}</h1></div>
+          <div className="info-theater-container">
+            <div className="director">
+              <p> {theaterPage.country } / {theaterPage.city }</p>
+              <p>
+                {theaterPage.director}<br/>
+                DIRECTOR
+              </p>
+            </div>
+                
+               
+            <div className="info-box">
+              <div className="followers-box">
+                <p>{theaterPage.followers.length } <br/>followers</p>
+              <p>{theaterPage.following.length} <br/>following</p>
+                </div>
+                
+              <p>{theaterPage.about }</p>
+            </div>
+          </div>
+           <blockquote className="styled-quote">
+              <p>{theaterPage.quote}</p>
+              <cite>– {theaterPage.theaterName }</cite>
+        </blockquote>
+        <div className="buttons">
+          <button onClick={followOrUnfollow}>
+  {isFollowing ? 'Unfollow' : 'Follow'}
+</button></div>
+        <div className="news-container">
+            <div className="addPost">
+              <p className="posts" onClick={handlePost} >
+                posts
+              </p>
+             
+            </div>
+            
+            
+            <p className="posts">perfomance</p>
+          <p className="posts"onClick={handelClickCast} >cast</p>
+          </div>
+      </>)}
+        {selectedPost && theaterPage && (
+        <div className="modal-container">
+         
+          <PostModal post={selectedPost} onClose={handleCloseModal} />
+        </div>
+      )}
+        {showPosts && (<div className="post-container">
+        {theaterPage &&
+          theaterPage.posts &&
+          theaterPage.posts.length > 0 &&
+          theaterPage.posts.map((post: Post, index: number) => (
             <div key={post._id} className="post">
               <div className="image-container">
                 <div
@@ -241,8 +405,15 @@ const requestOptions = {
               </div>
             </div>
           ))}
-      </div>
-    
+      </div>)} 
+    {cast && (<div className="cast-container">
+      {theaterPage?.actors.map(actor => (
+        <div key={actor._id} className="actor" >
+          <img src={actor.profilePhoto} alt={actor.name} />
+          <h3>{actor.name}</h3>
+        </div>
+      ))}
+    </div>)}
     </>
   );
 }

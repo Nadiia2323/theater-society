@@ -253,11 +253,11 @@ export default function SignUp() {
   }, []);
   // }
   return (
-    <div className="form-container">
-      <h3>{heading}</h3>
+    <div className="form-container-sign">
+      <h3 className="h3">{heading}</h3>
       {!hasAccount ? (
         <div className="select-category">
-          <p>Select your registration category</p>
+          <p className="p">Select your registration category</p>
           <div className="select-buttons">
             <div className="container">
               <div className="btn">
@@ -266,7 +266,7 @@ export default function SignUp() {
                 </a>
               </div>
 
-              <p>or</p>
+              <p className="p">or</p>
 
               <div className="btn">
                 <a href="#" onClick={() => handleSelect("User")}>
@@ -279,8 +279,8 @@ export default function SignUp() {
             <>
               <div className="theater-container">
                 <div className="info-holder">
-                  <h2>Theater Registration</h2>
-                  <p>
+                  <h2 className="h2">Theater Registration</h2>
+                  <p className="p">
                     Register your theater and become part of our vibrant theater
                     community. Gain access to tools for managing and promoting
                     your theater, announce upcoming productions, and engage with
@@ -289,7 +289,7 @@ export default function SignUp() {
                 </div>
                 <div className="reg-form">
                   <div className="theater-name">
-                    <label htmlFor="theaterName">Theater Name</label>
+                    <label className="label-sign" htmlFor="theaterName">Theater Name</label>
                     <span className="theater-icon">🏛</span>
                     <input
                       // type="text"
@@ -301,7 +301,7 @@ export default function SignUp() {
                     />
                   </div>
                   <div className="email">
-                    <label htmlFor="email">Email</label>
+                    <label className="label-sign"  htmlFor="email">Email</label>
                     <span className="icon-email">✉</span>
                     <input
                       type="email"
@@ -315,7 +315,7 @@ export default function SignUp() {
                     <p className="errorMessage">{errorMessage.emailError}</p>
                   )}
                   <div className="pass">
-                    <label htmlFor="password">Password</label>
+                    <label className="label-sign" htmlFor="password">Password</label>
                     <span className="icon-pass" onClick={toggleVisibility}>
                       &#128274;
                     </span>
@@ -328,7 +328,7 @@ export default function SignUp() {
                     />
                   </div>
                   <div className="pass">
-                    <label htmlFor="repeatPass">Repeat Password</label>
+                    <label className="label-sign" htmlFor="repeatPass">Repeat Password</label>
                     <span className="icon-pass" onClick={toggleVisibility}>
                       &#128274;
                     </span>
@@ -362,8 +362,8 @@ export default function SignUp() {
             <>
               <div className="theater-container">
                 <div className="info-holder">
-                  <h2>User Registration</h2>
-                  <p>
+                  <h2 className="h2">User Registration</h2>
+                  <p className="p">
                     Join StageConnect and enjoy the benefits of being a part of
                     our theater community. Access discussions, event
                     announcements, opportunities for viewing, and sharing
@@ -372,7 +372,7 @@ export default function SignUp() {
                 </div>
                 <div className="reg-form">
                   <div className="user-name">
-                    <label htmlFor="userName">User Name</label>
+                    <label className="label-sign" htmlFor="userName">User Name</label>
                     <span className="user-icon">👤</span>
                     <input
                       type="text"
@@ -382,7 +382,7 @@ export default function SignUp() {
                     />
                   </div>
                   <div className="email">
-                    <label htmlFor="emailUser">Email</label>
+                    <label className="label-sign" htmlFor="emailUser">Email</label>
                     <span className="icon-email">✉</span>
 
                     <input
@@ -396,7 +396,7 @@ export default function SignUp() {
                     <p className="errorMessage">{errorMessage.emailError}</p>
                   )}
                   <div className="pass">
-                    <label htmlFor="passwordUser">Password</label>
+                    <label className="label-sign" htmlFor="passwordUser">Password</label>
                     <span className="icon-pass" onClick={toggleVisibility}>
                       &#128274;
                     </span>
@@ -408,7 +408,7 @@ export default function SignUp() {
                     />
                   </div>
                   <div className="pass">
-                    <label htmlFor="Pass">Repeat Password</label>
+                    <label className="label-sign" htmlFor="Pass">Repeat Password</label>
                     <span className="icon-pass" onClick={toggleVisibility}>
                       &#128274;
                     </span>
@@ -441,7 +441,7 @@ export default function SignUp() {
       ) : (
         <div className="signin">
           <div className="email">
-            <label htmlFor="email">Email</label>
+            <label className="label-sign" htmlFor="email">Email</label>
             <span className="icon-email">✉</span>
             <input
               type="email"
@@ -450,7 +450,7 @@ export default function SignUp() {
             />
           </div>
           <div className="pass">
-            <label htmlFor="password">Password</label>
+            <label className="label-sign" htmlFor="password">Password</label>
             <span className="icon-pass" onClick={toggleVisibility}>
               &#128274;
             </span>

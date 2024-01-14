@@ -5,6 +5,29 @@ import Posts from "../Components/Posts";
 import News from "../Components/News";
 import Favorites from "../Components/Favorites";
 import Cast from "../Components/Cast";
+import { Post } from "../Components/PostModal";
+
+export interface Theater {
+  about: string;
+  actors: string[];
+  backgroundPhoto: string;
+  city: string;
+  country: string;
+  director: string;
+  email: string;
+  favorites: string[];
+  followers: string[];
+  following: string[];
+  id: string;
+  posts: Post[]; 
+  profilePhoto: string;
+  quote: string;
+  repertoire: string[]; 
+  theaterName: string;
+}
+
+
+
 
 
 export default function TheaterProfile() {
@@ -97,12 +120,12 @@ export default function TheaterProfile() {
                 </span>
               )}
             </div>
-            <p className="news" onClick={handleNewsClick}>
+            <p className="posts" onClick={handleNewsClick}>
               news
             </p>
-            <p onClick={handelClickFavorites}>favorites </p>
-            <p>Perfomance</p>
-            <p onClick={handelClickCast}>Cast</p>
+            <p className="posts" onClick={handelClickFavorites}>favorites </p>
+            <p className="posts">perfomance</p>
+            <p className="posts" onClick={handelClickCast}>cast</p>
             
                 </div>
             {showPosts && !favorites && !cast && <Posts plusClicked={plusClicked} />}

@@ -2,6 +2,7 @@
 
 import { useState, createContext, useEffect,  } from "react";
 import { User } from "../pages/Profile";
+import { Theater } from "../pages/TheaterProfile";
 // import { useNavigate } from "react-router-dom";
 export const AuthContext = createContext({} as AuthContextProps);
 // export interface User {
@@ -13,7 +14,7 @@ export const AuthContext = createContext({} as AuthContextProps);
 // }
 
 export interface AuthContextProps {
-  theater: {} | null;
+  theater: Theater | null;
   user: User | null;
   userChecked: boolean;
   isLoading?: boolean;

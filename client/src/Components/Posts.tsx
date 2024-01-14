@@ -25,7 +25,8 @@ export default function Posts({ plusClicked }:PostsProps) {
   const [showModal, setShowModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [showDropDown, setShowDropDown] = useState<string | null>(null);
-   const [Likes, setLikes] = useState({});
+  
+   const [likes, setLikes] = useState({});
 
  
   
@@ -55,11 +56,12 @@ const requestOptions = {
     const result = await response.json()
     console.log('result :>> ', result);
     if (response.ok) {
-    
-    const updatedLikes = result.updatedLikes;
     setLikes(prevLikes => ({
       ...prevLikes,
-      [postId]: updatedLikes
+      [postId]: {
+        count: result.updatedLikes,
+        likedByCurrentUser: !prevLikes[postId]?.likedByCurrentUser
+      }
     }));
   }
 
@@ -70,7 +72,7 @@ const requestOptions = {
 
   
 }
-  
+  console.log('likes :>> ', likes);
 
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === "caption") {
@@ -111,6 +113,7 @@ const requestOptions = {
     const response = await fetch(url, requestOptions);
     const result = await response.text();
     console.log(result);
+    alert(result.message)
   } catch (error) {
     console.log("error", error);
   }
@@ -157,21 +160,27 @@ const requestOptions = {
     
     
   };
+//   const isLikedByCurrentUser = (post) => {
+//   return likes[post._id]?.likedByCurrentUser;
+// };
+
 // const isLikedByCurrentUser = (post: Post) => {
 //   const userId = user ? user.id : theater ? theater.id : null;
 
   
 //   return post.likes.some(like => like.user === userId);
 // };
+// const isLikedByCurrentUser = (post) => {
+//     if (user) {
+//       return user.favorites.includes(post._id);
+//     } else if (theater) {
+//       return theater.favorites.includes(post._id);
+//     }
+//     return false
+//   };
 const isLikedByCurrentUser = (post) => {
-    if (user) {
-      return user.favorites.includes(post._id);
-    } else if (theater) {
-      return theater.favorites.includes(post._id);
-    }
-    return false
-  };
-
+  return likes[post._id]?.likedByCurrentUser;
+};
 
  const handleCloseModal = () => {
    setSelectedPost(null)
@@ -243,7 +252,7 @@ const isLikedByCurrentUser = (post) => {
             </ul>
             
               <div id={`myDropdown-${post._id}`} className="dropdown-content">
-                <a href="#about">Edit</a>
+               
                 <a href="#contact" onClick={() => handlePostDelete(post._id)}>Delete</a>
 
               </div>
@@ -253,7 +262,7 @@ const isLikedByCurrentUser = (post) => {
   
   handleLike(post._id);
 }}>
-            <FontAwesomeIcon icon={isLikedByCurrentUser(post) ? fasHeart : farHeart } className="custom-icon" />
+            <FontAwesomeIcon icon={isLikedByCurrentUser(post) ? fasHeart : farHeart } />
             <p>{post.likes?.length}</p>
             
 </div>
@@ -264,7 +273,7 @@ const isLikedByCurrentUser = (post) => {
           <div className="caption-overlay">
             <h3 className="caption">{post.caption}</h3>
           </div>
-          {/* <div className="post-settings"></div> */}
+         
         </div>
       </div>
     ))}

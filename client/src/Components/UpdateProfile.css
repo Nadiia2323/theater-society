@@ -41,7 +41,15 @@
     justify-content: center;
     margin-bottom: 20px;
 }
-
+.profilePhtoTh-holder{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+.bg{
+    display: flex;
+    flex-direction: row;
+}
 .profilePhoto {
     border-radius: 50%;
     border: 3px solid #007bff;
@@ -49,6 +57,7 @@
     width: 200px;
         height: 200px;
 }
+
 
 .upload-button {
     display:flex;

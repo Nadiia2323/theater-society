@@ -105,6 +105,7 @@ const UpdateProfile = () => {
       const response = await fetch(apiUrl, requestOptions);
       const result = await response.json();
       console.log("result :>> ", result);
+      alert(result.message)
     } catch (error) {
       console.log("error :>> ", error);
     }
@@ -243,7 +244,8 @@ const requestOptions = {
 };
     const response = await fetch("http://localhost:5000/myApi/theaters/settings", requestOptions)
     const result = await response.json()
-    console.log('result :>> ', result);
+     console.log('result :>> ', result);
+     alert(result.message)
   } catch (error) {
     console.log('error :>> ', error);
   }
@@ -325,15 +327,7 @@ const requestOptions = {
                 onChange={handleInputChange}
               />
             </label>
-            {/* <label>
-            Password:
-            <input
-              type="password"
-              name="password"
-              value={userData.password}
-              onClick={handleInputChange}
-            />
-          </label> */}
+          
 
             <button type="submit">Update</button>
           </form>
@@ -343,16 +337,15 @@ const requestOptions = {
       {theater && (
         <div className="form-container">
           <h2>Update Profile</h2>
-          <div className="profilePhto-holder">
-            <div>
+          <div className="profilePhtoTh-holder">
+            <div className="bg">
               <img
                 className="profilePhoto"
                 src={theater.profilePhoto || selectedFile}
                 alt=""
               />{" "}
-              Profile Photo
-            </div>
-            <div className="upload-button">
+              <h5>Profile Photo</h5>
+              <div className="upload-button">
               <input
                 type="file"
                 onChange={handleInputChange}
@@ -362,15 +355,16 @@ const requestOptions = {
                 Upload Photo
               </button>
             </div>
-            <div>
+            </div>
+            
+            <div className="bg">
               <img
                 className="profilePhoto"
                 src={theater.backgroundPhoto || background}
                 alt=""
               />{" "}
-              Profile Photo
-            </div>
-            <div className="upload-button">
+              <h5>Background Photo</h5>
+              <div className="upload-button">
               <input
                 type="file"
                 onChange={handleInputChange}
@@ -380,6 +374,8 @@ const requestOptions = {
                 Upload Photo
               </button>
             </div>
+            </div>
+            
           </div>
 
           <form className="form" onSubmit={handleSubmitTheater} >
