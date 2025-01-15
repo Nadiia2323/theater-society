@@ -44,7 +44,7 @@ export default function AllUsers() {
   method: 'GET',
   
 };
-const response = await fetch("http://localhost:5000/myApi/theaters/all", requestOptions)
+const response = await fetch("http://localhost:5000/myApi/theaters/al", requestOptions)
       const result = await response.json()
       console.log('result :>> ', result);
       setTheater(result.theaterUsers)

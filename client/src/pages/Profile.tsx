@@ -72,7 +72,7 @@ export default function Profile() {
     <div>
       <NavBar />
       <Menu />
-      {user && (
+      {user.userName && (
         <div className="profile-section">
           <div className="profile-container">
             <div className="photo-container">
@@ -85,7 +85,7 @@ export default function Profile() {
                 }
                 alt="your photo"
               />
-              <h3 className="name">{user.userName}</h3>
+              <h3 className="name">{user.name}</h3>
             </div>
             <div className="bio-container">
               <div className="followers-container">
@@ -121,7 +121,8 @@ export default function Profile() {
           {favorites && <Favorites />}
         </div>
       )}
-      {theater && <TheaterProfile /> }
+      
+      {theater?.theaterName && <TheaterProfile /> }
     </div>
   );
 }
