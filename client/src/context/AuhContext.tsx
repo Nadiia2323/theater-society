@@ -1,17 +1,8 @@
-// create context
-
-import { useState, createContext, useEffect,  } from "react";
+import { useState, createContext, useEffect } from "react";
 import { User } from "../pages/Profile";
 import { Theater } from "../pages/TheaterProfile";
-// import { useNavigate } from "react-router-dom";
+
 export const AuthContext = createContext({} as AuthContextProps);
-// export interface User {
-  
-//   id: number;
-//   name: string;
-//   email: string;
-//   profilePhoto:string
-// }
 
 export interface AuthContextProps {
   theater: Theater | null;
@@ -19,24 +10,30 @@ export interface AuthContextProps {
   userChecked: boolean;
   isLoading?: boolean;
   registration?: (data: any, url: string) => Promise<any>;
-  login?: (loginCredentials: { email: string; password: string }) => Promise<void>;
+  login?: (loginCredentials: {
+    email: string;
+    password: string;
+  }) => Promise<void>;
   getProfile: () => Promise<void>;
 }
 
-export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  
+export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
-  const [ theater, setTheater] = useState(null)
-  const [userChecked, setUserChecked] = useState(false)
-  const [isLoading, setIsLoading] = useState (true)
+  const [theater, setTheater] = useState(null);
+  const [userChecked, setUserChecked] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const getProfile = async () => {
-    setIsLoading(true)
-    setUser(null)
-    setTheater(null)
+    setIsLoading(true);
+    setUser(null);
+    setTheater(null);
     const token = localStorage.getItem("token");
+
     if (!token) {
-      alert("register first!");
+      setUserChecked(false);
+      setIsLoading(false);
     } else {
       const myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${token}`);
@@ -51,30 +48,28 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
           requestOptions
         );
         const result = await response.json();
-        console.log('result :>> ', result);
-        const user = result.user
-        const theaterUser = result.theater
-        
+        console.log("result :>> ", result);
+        const user = result.user;
+        const theaterUser = result.theater;
+
         if (user) {
-         setUser(user);
-          setUserChecked(true) 
-        } else if(theaterUser) {
-          setTheater(theaterUser)
-          setUserChecked(true)
+          setUser(user);
+          setUserChecked(true);
+        } else if (theaterUser) {
+          setTheater(theaterUser);
+          setUserChecked(true);
         }
 
         // console.log("%c result UserProfile :>> ", "color:red", result);
-        
-        
       } catch (error) {
         console.log("error :>> ", error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
         // setUserChecked(true)
       }
     }
   };
-  const registration = async (data:any, url:string) => {
+  const registration = async (data: any, url: string) => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
 
@@ -99,7 +94,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
         requestOptions
       );
       const result = await response.json();
-      return result
+      return result;
       // console.warn("result :>> ", result);
       // Handle result or update user state
       setUser(result.savedUser);
@@ -108,7 +103,10 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   };
 
-  const login = async(loginCredentials: { email: string; password: string }) => {
+  const login = async (loginCredentials: {
+    email: string;
+    password: string;
+  }) => {
     // setIsLoading(true)
 
     console.log("loginCredentials :>> ", loginCredentials);
@@ -155,11 +153,10 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   useEffect(() => {
     getProfile();
-    
   }, []);
-    const contextValue: AuthContextProps = {
-      user,
-      theater,
+  const contextValue: AuthContextProps = {
+    user,
+    theater,
     userChecked,
     isLoading,
     registration,
@@ -168,8 +165,6 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
   };
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };

@@ -9,7 +9,7 @@ export default function Home() {
   const { user } = useContext(AuthContext);
   console.log("user :>> ", user ? user.email : "no user in context");
 
-  const [showSignUp, setShowSignUp] = useState<Boolean>(false);
+  const [showSignUp, setShowSignUp] = useState(false);
   function handelJoinClick() {
     setShowSignUp(true);
   }

@@ -279,3 +279,55 @@ body {
     font-size: 1em;
   }
 }
+@media only screen and (max-width: 600px) {
+  .logo-img{
+    margin-left: 1vh;
+width: auto;
+height: 7vh;
+  }
+  .logo-name{
+font-size: 2vh;
+  }
+
+  .description {
+    font-size: 16px;
+    width: 90%;
+    padding: 0 10px;
+  }
+
+  .partText {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .joinButton {
+    margin-top: 5vh ;
+    padding-top: 0;
+    z-index: 2;
+  }
+
+  .glowing-btn {
+    font-size: 2em;
+    padding: 0.25em 0.75em;
+    border-radius: 0.5rem;
+    
+  }
+
+  .info-container {
+   
+    z-index: 2;
+    padding: 10px;
+    
+  }
+
+  .bg-container video {
+    z-index: 1;
+    object-fit: cover;
+   
+  }
+
+  .glowing-txt {
+    font-size: 1.2em;
+    
+  }
+}
