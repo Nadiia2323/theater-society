@@ -133,6 +133,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
         if (result.token) {
           localStorage.setItem("token", result.token);
           setUser(result.user);
+          await getProfile();
           // const navigate = useNavigate();
 
           // navigate("/profile");

@@ -24,11 +24,12 @@ export interface User {
   quote?: string;
   name?: string;
   followers?: [];
-  following?:[]
+  following?: [];
 }
 
 export default function Profile() {
-  const { user, theater, isLoading, getProfile }: AuthContextProps = useContext(AuthContext);
+  const { user, theater, isLoading, getProfile }: AuthContextProps =
+    useContext(AuthContext);
 
   const [showPosts, setShowPosts] = useState(true);
   const [showPlusIcon, setShowPlusIcon] = useState(false);
@@ -44,14 +45,14 @@ export default function Profile() {
     setShowPosts(true);
     setShowPlusIcon(true);
     setPlusClicked(false);
-    setFavorites(false)
+    setFavorites(false);
   };
 
   const handleNewsClick = () => {
     setShowPosts(false);
     setShowPlusIcon(false);
     setPlusClicked(false);
-    setFavorites(false)
+    setFavorites(false);
   };
   const handelClickFavorites = () => {
     setFavorites(true);
@@ -60,12 +61,10 @@ export default function Profile() {
     setPlusClicked(false);
   };
 
-  useEffect(() => {
-    
-  }, []);
+  useEffect(() => {}, []);
 
   if (isLoading) {
-    return <h1>loading</h1>
+    return <h1>loading</h1>;
   }
 
   return (
@@ -89,10 +88,16 @@ export default function Profile() {
             </div>
             <div className="bio-container">
               <div className="followers-container">
-                <p  >{user.followers?.length}<br/>followers
+                <p>
+                  {user.followers?.length}
+                  <br />
+                  followers
                 </p>
-                <p>{user.following?.length}
-                <br/>following</p>
+                <p>
+                  {user.following?.length}
+                  <br />
+                  following
+                </p>
               </div>
               <p className="quote">"{user.quote}"</p>
               <p className="about">{user.about}</p>
@@ -113,16 +118,17 @@ export default function Profile() {
             <p className="posts" onClick={handleNewsClick}>
               news
             </p>
-            <p className="posts" onClick={handelClickFavorites}>favorites </p>
-            
+            <p className="posts" onClick={handelClickFavorites}>
+              favorites{" "}
+            </p>
           </div>
           {showPosts && !favorites && <Posts plusClicked={plusClicked} />}
           {!showPosts && !favorites && <News />}
           {favorites && <Favorites />}
         </div>
       )}
-      
-      {theater?.theaterName && <TheaterProfile /> }
+
+      {theater?.theaterName && <TheaterProfile />}
     </div>
   );
 }
