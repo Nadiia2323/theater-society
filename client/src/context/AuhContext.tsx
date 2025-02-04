@@ -134,9 +134,6 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
           localStorage.setItem("token", result.token);
           setUser(result.user);
           await getProfile();
-          // const navigate = useNavigate();
-
-          // navigate("/profile");
         }
       }
       if (!response.ok) {
@@ -146,9 +143,6 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     } catch (error) {
       console.log("error :>> ", error);
-      // } finally {
-      //   setIsLoading(false)
-      // }
     }
   };
 

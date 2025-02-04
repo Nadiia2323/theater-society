@@ -242,24 +242,20 @@ z-index: 10;
   margin-right: 10px;
  cursor: pointer;
 }
-/* Стили для затемнения фона */
+
 .newPost-overlay {
   position: fixed;
-  /* Фиксированное позиционирование */
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.6);
-  /* Полупрозрачный черный фон */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  /* Высокий z-index, чтобы окно было над другими элементами */
 }
 
-/* Стили для модального окна */
 .newPost {
   background-color: #333;
   /* Темный фон модального окна */
