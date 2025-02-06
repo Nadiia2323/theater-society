@@ -224,7 +224,7 @@ export default function SignUp() {
   const handleLoginOnClick = async () => {
     if (loginCredentials?.email && loginCredentials?.password) {
       await login(loginCredentials);
-      console.log('loginCredentials :>> ', loginCredentials);
+      console.log("loginCredentials :>> ", loginCredentials);
 
       const isUserLogged = isUserLoggedIn();
       if (isUserLogged) {
@@ -234,7 +234,7 @@ export default function SignUp() {
           "isUserLogged pre nav",
           isUserLogged
         );
-        navigate('/profile');
+        navigate("/profile");
       }
     } else {
       alert("Please provide both email and password.");
@@ -245,7 +245,6 @@ export default function SignUp() {
     // const isUserLogged = isUserLoggedIn();
     // if (isUserLogged && user !== undefined) {
     //   console.warn("user", user, "isUserLogged", isUserLogged);
-
     //   navigate("/profile");
     // } else {
     //   console.log("user is logged out");
@@ -289,7 +288,9 @@ export default function SignUp() {
                 </div>
                 <div className="reg-form">
                   <div className="theater-name">
-                    <label className="label-sign" htmlFor="theaterName">Theater Name</label>
+                    <label className="label-sign" htmlFor="theaterName">
+                      Theater Name
+                    </label>
                     <span className="theater-icon">🏛</span>
                     <input
                       // type="text"
@@ -301,7 +302,9 @@ export default function SignUp() {
                     />
                   </div>
                   <div className="email">
-                    <label className="label-sign"  htmlFor="email">Email</label>
+                    <label className="label-sign" htmlFor="email">
+                      Email
+                    </label>
                     <span className="icon-email">✉</span>
                     <input
                       type="email"
@@ -315,7 +318,9 @@ export default function SignUp() {
                     <p className="errorMessage">{errorMessage.emailError}</p>
                   )}
                   <div className="pass">
-                    <label className="label-sign" htmlFor="password">Password</label>
+                    <label className="label-sign" htmlFor="password">
+                      Password
+                    </label>
                     <span className="icon-pass" onClick={toggleVisibility}>
                       &#128274;
                     </span>
@@ -328,7 +333,9 @@ export default function SignUp() {
                     />
                   </div>
                   <div className="pass">
-                    <label className="label-sign" htmlFor="repeatPass">Repeat Password</label>
+                    <label className="label-sign" htmlFor="repeatPass">
+                      Repeat Password
+                    </label>
                     <span className="icon-pass" onClick={toggleVisibility}>
                       &#128274;
                     </span>
@@ -372,7 +379,9 @@ export default function SignUp() {
                 </div>
                 <div className="reg-form">
                   <div className="user-name">
-                    <label className="label-sign" htmlFor="userName">User Name</label>
+                    <label className="label-sign" htmlFor="userName">
+                      User Name
+                    </label>
                     <span className="user-icon">👤</span>
                     <input
                       type="text"
@@ -382,7 +391,9 @@ export default function SignUp() {
                     />
                   </div>
                   <div className="email">
-                    <label className="label-sign" htmlFor="emailUser">Email</label>
+                    <label className="label-sign" htmlFor="emailUser">
+                      Email
+                    </label>
                     <span className="icon-email">✉</span>
 
                     <input
@@ -396,7 +407,9 @@ export default function SignUp() {
                     <p className="errorMessage">{errorMessage.emailError}</p>
                   )}
                   <div className="pass">
-                    <label className="label-sign" htmlFor="passwordUser">Password</label>
+                    <label className="label-sign" htmlFor="passwordUser">
+                      Password
+                    </label>
                     <span className="icon-pass" onClick={toggleVisibility}>
                       &#128274;
                     </span>
@@ -408,7 +421,9 @@ export default function SignUp() {
                     />
                   </div>
                   <div className="pass">
-                    <label className="label-sign" htmlFor="Pass">Repeat Password</label>
+                    <label className="label-sign" htmlFor="Pass">
+                      Repeat Password
+                    </label>
                     <span className="icon-pass" onClick={toggleVisibility}>
                       &#128274;
                     </span>
@@ -441,7 +456,9 @@ export default function SignUp() {
       ) : (
         <div className="signin">
           <div className="email">
-            <label className="label-sign" htmlFor="email">Email</label>
+            <label className="label-sign" htmlFor="email">
+              Email
+            </label>
             <span className="icon-email">✉</span>
             <input
               type="email"
@@ -450,7 +467,9 @@ export default function SignUp() {
             />
           </div>
           <div className="pass">
-            <label className="label-sign" htmlFor="password">Password</label>
+            <label className="label-sign" htmlFor="password">
+              Password
+            </label>
             <span className="icon-pass" onClick={toggleVisibility}>
               &#128274;
             </span>
@@ -466,7 +485,6 @@ export default function SignUp() {
                 Login
               </a>
             </div>
-            {/* <button className="btn" onClick={handleLoginOnClick}>login</button> */}
           </div>
         </div>
       )}
