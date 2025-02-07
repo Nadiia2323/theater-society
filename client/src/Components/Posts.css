@@ -299,8 +299,94 @@ z-index: 10;
   border-radius: 4px;
   cursor: pointer;
 }
+.post-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding-top: 10vh;
+}
 
-.newPost button:hover {
+.post {
+  width: 70vh;
+  height: 70vh;
+  position: relative;
+  display: inline-block;
+}
+
+.image {
+  width: 65vh;
+  height: 65vh;
+  border: 2px solid #edf1f5;
+  filter: drop-shadow(0 0 8px #96c5f4);
+}
+
+.selectedImg {
+  width: 40vh;
+  height: 40vh;
+}
+
+.newPost {
+  position: fixed;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .dropbtn {
+      top: 5px;
+      /* Уменьшаем отступ сверху */
+      right: 5px;
+      /* Уменьшаем отступ справа */
+      font-size: 14px;
+      /* Делаем кнопку меньше */
+    }
+  .post-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .post {
+    width: 45vw;
+    height: auto;
+  }
+
+  .image {
+    width: 45vw;
+    height: auto;
+  }
+
+  .clickedPost {
+    width: 90%;
+  }
+}
+
+@media (max-width: 480px) {
+  .post-container {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .post {
+    width: 90vw;
+    height: auto;
+  }
+
+  .image {
+    width: 90vw;
+    height: auto;
+  }
+        .dropbtn {
+          top: 2px;
+          /* Ещё меньше отступ */
+          right: 2px;
+          font-size: 12px;
+          /* Делаем ещё меньше */
+        }
+}
+
+/* .newPost button:hover {
     background-color: #0056b3}
         @media (max-width: 768px) {
           .profile-container {
@@ -402,4 +488,4 @@ z-index: 10;
             left: 85%;
             font-size: 16px;
           }
-        }
+        } */

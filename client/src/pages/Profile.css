@@ -125,49 +125,46 @@
     align-items: center;
     gap: 2rem;
   }
-  
+
   .followers-container {
-  display: flex;
-  justify-content: center;
-  margin: 1rem;
-    
-  }
-  
-  .news-container {
     flex-direction: column;
-    height: auto;
-    gap: 1rem;
-    padding: 1rem;
+    gap: 2rem;
+    align-items: center;
   }
-  
+
+  .news-container {
+   display: flex;
+   flex-direction: row;
+  }
+
   .photo {
     width: 120px;
     height: 120px;
   }
-  
+
   .bio-container {
     width: 90%;
   }
-  
+
   .post-container {
     grid-template-columns: repeat(1, 1fr);
   }
-  
+
   .post {
     width: 90vw;
     height: auto;
   }
-  
+
   .image {
     width: 90vw;
     height: auto;
   }
-  
+
   .plus-icon {
     left: 30px;
     font-size: 20px;
   }
-  
+
   .close-button {
     left: 90%;
     font-size: 18px;
@@ -178,44 +175,44 @@
   .profile-container {
     gap: 1rem;
   }
-  
+
   .photo {
     width: 100px;
     height: 100px;
   }
-  
+
   .followers-container {
     gap: 1rem;
   }
-  
+
   .news-container {
     gap: 0.5rem;
     padding: 0.5rem;
   }
-  
+
   .bio-container {
     width: 95%;
   }
-  
+
   .post-container {
     grid-template-columns: repeat(1, 1fr);
   }
-  
+
   .post {
     width: 95vw;
     height: auto;
   }
-  
+
   .image {
     width: 95vw;
     height: auto;
   }
-  
+
   .plus-icon {
     left: 20px;
     font-size: 18px;
   }
-  
+
   .close-button {
     left: 85%;
     font-size: 16px;
