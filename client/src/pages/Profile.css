@@ -1,5 +1,6 @@
 #root {
   background-color: black;
+  width: 100%;
 }
 
 .profile-container {
@@ -127,9 +128,8 @@
   }
 
   .followers-container {
-    flex-direction: column;
-    gap: 2rem;
-    align-items: center;
+    flex-direction: row;
+    justify-content: space-around;
   }
 
   .news-container {
@@ -138,8 +138,8 @@
   }
 
   .photo {
-    width: 120px;
-    height: 120px;
+    width: 180px;
+    height: 180px;
   }
 
   .bio-container {
@@ -177,8 +177,8 @@
   }
 
   .photo {
-    width: 100px;
-    height: 100px;
+    width: 180px;
+    height: 180px;
   }
 
   .followers-container {
